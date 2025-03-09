@@ -1,5 +1,5 @@
 document.getElementById(`button`).onclick = function() {
-    let text = document.getElementById(`input`).value;
+    let text = document.getElementById(`input`).value.trimEnd();
     let lines = text.split('\n');
     let quotedLines = lines.map(line => `"${line}"`);
     let result = quotedLines.map(line => line === '""' ? '' : line).join('\n');

@@ -1,9 +1,3 @@
-/*document.getElementById(`button`).onclick = function() {
-    let text = document.getElementById(`input`).value;
-    result = `"${text}"`;
-    document.getElementById(`result`).textContent = result;
-}*/
-
 document.getElementById(`button`).onclick = function() {
     let text = document.getElementById(`input`).value;
     let lines = text.split('\n');

@@ -5,6 +5,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding-bottom: 40px;
 }
 
 select {
@@ -44,4 +45,5 @@ footer {
     position: fixed;
     bottom: 0;
     font-size: 12px;
+    height: 40px; 
 }

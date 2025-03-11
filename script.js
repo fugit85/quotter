@@ -25,5 +25,4 @@ document.getElementById(`copy`).onclick = function() {
     let result = document.getElementById(`result`);
     result.select();
     document.execCommand(`copy`);
-    alert(`Copied to clipboard!`);
 }

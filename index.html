@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Закавычник</title>
-    <meta name="description" content="Закавычник строк во фразовое или точное соответствие. Не изменяет регистр букв. Просто и удобно. Попробуйте!"/>
+    <meta name="description" content="Закавычник строк во фразовое или точное соответствие. Не меняет регистра букв. Просто и удобно. Попробуйте!"/>
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="quote.png">
     <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
@@ -18,20 +18,33 @@
 </head>
 <body>
     <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TGXGCDGN"
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TGXGCDGN"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    <h1>Закавычник</h1>
-    <textarea id="input" placeholder="Введите текст"></textarea>
-    <select id="mode">
-        <option value="phrase">Фразовое</option>
-        <option value="exact">Точное</option>
-    </select>
-    <button id="button">Закавычить</button>
-    <textarea id="result"></textarea>
-    <button id="copy">Копировать</button>
+
+    <div class="topnav">
+        <a class="active" href="index.html">Закавычник</a>
+        <a href="capiralizator.html">Капитализатор</a>
+    </div>
+
+    <div class="content">
+        <h1>Закавычник</h1>
+        <textarea id="input" placeholder="Введите текст"></textarea>
+        <div>
+            <select id="mode">
+                <option value="phrase">Фразовое</option>
+                <option value="exact">Точное</option>
+            </select>
+            <button id="button-quote">Закавычить</button>
+        </div>
+        <textarea id="result"></textarea>
+        <div>
+            <button id="copy">Копировать</button>
+            <button id="clear">Очистить</button>
+        </div>
+    </div>
+    <footer>
+        <p>2025 - Tools for PPС daily routine</p>
+    </footer>
 </body>
-<footer>
-    <p>2025 - Tools for PPС daily routine</p>
-</footer>
 </html>

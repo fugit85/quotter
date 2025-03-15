@@ -73,3 +73,32 @@ if (copyButton) {
         }
     }
 }
+
+function setDuplicateButtonClickHandler() {
+    let buttonDuplicate = document.getElementById('button-dublicate');
+    let inputElement = document.getElementById('input');
+    let resultElement = document.getElementById('result');
+    let typeElement = document.getElementById('type');
+
+    if (buttonDuplicate && inputElement && resultElement && typeElement) {
+        buttonDuplicate.onclick = function() {
+            let text = inputElement.value.trim();
+            let type = typeElement.value;
+            let result;
+
+            if (type === 'string') {
+                let lines = text.split('\n').map(line => line.trim());
+                let uniqueLines = [...new Set(lines)];
+                result = uniqueLines.join('\n');
+            } else if (type === 'words') {
+                let words = text.split(/\s+/);
+                let uniqueWords = [...new Set(words)];
+                result = uniqueWords.join('\n');
+            }
+
+            resultElement.textContent = result;
+        }
+    }
+}
+
+setDuplicateButtonClickHandler();

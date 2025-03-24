@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Закавычник</title>
+    <meta name="description" content="Закавычник строк во фразовое или точное соответствие. Не меняет регистра букв. Просто и удобно. Попробуйте!"/>
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="quote.png">
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-TGXGCDGN');</script>
+    <!-- End Google Tag Manager -->
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TGXGCDGN"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div class="topnav">
+        <a href="index.html">Закавычник</a>
+        <a href="capiralizator.html">Капитализатор</a>
+        <a href="undublicator.html">Дубликаты</a>
+        <a class="active" href="munisator.html">Минусатор</a>
+    </div>
+
+    <div class="content">
+        <h1>Минусатор</h1>
+        <div class="minus">
+            <textarea id="input" placeholder="Введите текст"></textarea>
+            <textarea id="result" readonly></textarea>
+            <div>
+                <button id="start-minus">Минусовать</button>
+                <button id="clear">Очистить</button>
+                
+            </div>
+            <div>
+                <button id="get-minus-words">Получить список</button>
+                <button id="copy">Копировать</button>
+            </div>
+
+         </div>
+         <label>Кликай на слова или отмечай строки ↓</label>
+        <fieldset id="fieldset"></fieldset>
+    </div>
+    <footer>
+        <p>2025 - Tools for PPС daily routine. Made for fun. AI power.</p>
+    </footer>
+</body>
+</html>

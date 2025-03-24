@@ -50,6 +50,22 @@ select {
     border-radius: 4px;
 }
 
+fieldset {
+    border: none;
+    border-radius: 5px;
+    padding: 65px;
+    margin: 10px 0;
+    background-color: #ffffff;
+}
+
+.minus {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    align-items: center;
+    justify-items: center;
+}
+
 button {
     height: 30px;
     width: 120px;

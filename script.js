@@ -102,3 +102,85 @@ function setDuplicateButtonClickHandler() {
 }
 
 setDuplicateButtonClickHandler();
+
+function setStartMinusButtonClickHandler() {
+    let buttonStartMinus = document.getElementById('start-minus');
+    let buttonGetMinusWords = document.getElementById('get-minus-words');
+    let inputElement = document.getElementById('input');
+    let resultElement = document.getElementById('result');
+    let fieldsetElement = document.getElementById('fieldset');
+
+    if (buttonStartMinus && buttonGetMinusWords && inputElement && resultElement && fieldsetElement) {
+        buttonStartMinus.onclick = function() {
+            fieldsetElement.innerHTML = ''; // Clear previous content
+            let text = inputElement.value.trim();
+            let lines = text.split('\n');
+
+            lines.forEach(line => {
+                let div = document.createElement('div');
+                let checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.style.marginRight = '5px';
+
+                div.appendChild(checkbox);
+
+                let words = line.split(' ');
+                words.forEach(word => {
+                    word = word.trim();
+                    if (word) {
+                        let span = document.createElement('span');
+                        span.textContent = word + ' ';
+                        span.style.cursor = 'pointer';
+
+                        span.onclick = function() {
+                            let allSpans = fieldsetElement.querySelectorAll('span');
+                            allSpans.forEach(s => {
+                                if (s.textContent.trim() === word) {
+                                    if (s.classList.contains('highlighted')) {
+                                        s.classList.remove('highlighted');
+                                        s.style.backgroundColor = '';
+                                    } else {
+                                        s.classList.add('highlighted');
+                                        s.style.backgroundColor = 'SlateBlue';
+                                    }
+                                }
+                            });
+                        };
+
+                        div.appendChild(span);
+                    }
+                });
+
+                div.style.margin = '5px 0';
+
+                checkbox.onchange = function() {
+                    if (checkbox.checked) {
+                        div.classList.add('highlighted');
+                    } else {
+                        div.classList.remove('highlighted');
+                    }
+                };
+
+                fieldsetElement.appendChild(div);
+            });
+        };
+
+        buttonGetMinusWords.onclick = function() {
+            let checkedLines = Array.from(fieldsetElement.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(checkedBox => {
+                    let line = Array.from(checkedBox.parentElement.querySelectorAll('span'))
+                        .map(span => span.textContent.trim())
+                        .join(' ');
+                    return `[${line}]`;
+                });
+
+            let selectedWords = Array.from(fieldsetElement.querySelectorAll('span.highlighted'))
+                .map(selectedSpan => selectedSpan.textContent.trim());
+            let uniqueSelectedWords = [...new Set(selectedWords)];
+
+            resultElement.textContent = [...checkedLines, ...uniqueSelectedWords].join('\n');
+        };
+    }
+}
+
+setStartMinusButtonClickHandler();

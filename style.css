@@ -107,3 +107,9 @@ footer {
     font-size: 12px;
     height: 40px; 
 }
+
+@media (max-width: 768px) {
+    .minus {
+        grid-template-columns: 1fr;
+    }
+}

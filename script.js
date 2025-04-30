@@ -184,3 +184,28 @@ function setStartMinusButtonClickHandler() {
 }
 
 setStartMinusButtonClickHandler();
+
+function setGetWhiteListButtonClickHandler() {
+    let buttonGetWhiteList = document.getElementById('get-white-list');
+    let fieldsetElement = document.getElementById('fieldset');
+    let resultElement = document.getElementById('result');
+
+    if (buttonGetWhiteList && fieldsetElement && resultElement) {
+        buttonGetWhiteList.onclick = function() {
+            let lines = Array.from(fieldsetElement.children);
+            let whiteList = lines.filter(div => {
+                let hasChecked = div.querySelector('input[type="checkbox"]:checked');
+                let hasHighlighted = div.querySelector('span.highlighted');
+                return !hasChecked && !hasHighlighted;
+            }).map(div => {
+                return Array.from(div.querySelectorAll('span'))
+                    .map(span => span.textContent.trim())
+                    .join(' ');
+            });
+
+            resultElement.textContent = whiteList.join('\n');
+        };
+    }
+}
+
+setGetWhiteListButtonClickHandler();

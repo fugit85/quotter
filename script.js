@@ -234,16 +234,19 @@ function setInflectButtonClickHandler() {
             }
             const data = await res.json();
 
-            // Формируем человекочитаемый текст
-            let output = '';
-            for (const [base, forms] of Object.entries(data)) {
-                output += `${base}:\n`;
-                for (const [label, form] of Object.entries(forms)) {
-                    output += `  ${label}: ${form || '[–]'}\n`;
+            // Собираем все формы в один массив
+            const forms = [];
+            for (const formsObj of Object.values(data)) {
+                for (const form of Object.values(formsObj)) {
+                    if (form) forms.push(form);
                 }
-                output += '\n';
             }
-            resultEl.value = output.trim();
+
+            // Делаем уникальный список (по желанию)
+            const unique = Array.from(new Set(forms));
+
+            // Выводим каждую форму на новой строке
+            resultEl.value = unique.join('\n');
         } catch (err) {
             console.error('Fetch error:', err);
             resultEl.value = 'Ошибка при соединении с сервером';
@@ -252,3 +255,4 @@ function setInflectButtonClickHandler() {
 }
 
 setInflectButtonClickHandler();
+

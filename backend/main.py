@@ -5,7 +5,7 @@ import pymorphy3
 app = Flask(__name__)
 morph = pymorphy3.MorphAnalyzer()
 
-@app.route('/inflector', methods=['POST'])
+@app.route('/decline', methods=['POST'])
 def inflector():
     data = request.get_json() or {}
     text = data.get('text', '').strip()

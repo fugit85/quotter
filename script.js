@@ -220,11 +220,11 @@ function setInflectButtonClickHandler() {
             let inputText = inputElement.value.trim();  
 
             if (inputText) {
-                fetch('https://declination-rus.onrender.com/decline', {
-                    method: 'POST',
-                    body: JSON.stringify({ text: inputText }),  
-                    headers: { 'Content-Type': 'application/json' }
-                })
+                fetch('https://declination-rus.onrender.com/inflector', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: inputText })
+            })
                 .then(response => response.json())
                 .then(data => {
                     resultElement.value = data.result;  

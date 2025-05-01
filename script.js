@@ -208,36 +208,35 @@ function setGetWhiteListButtonClickHandler() {
     }
 }
 
-setGetWhiteListButtonClickHandler();
-
 function setInflectButtonClickHandler() {
-    let buttonInflect = document.getElementById('button-inflect');  
-    let inputElement = document.getElementById('input');            
-    let resultElement = document.getElementById('result');         
+    const button = document.getElementById('button-inflect');
+    const inputEl = document.getElementById('input');
+    const resultEl = document.getElementById('result');
 
-    if (buttonInflect && inputElement && resultElement) {
-        buttonInflect.onclick = function() {
-            let inputText = inputElement.value.trim();  
+    if (!button || !inputEl || !resultEl) return;
 
-            if (inputText) {
-                fetch('https://declination-rus.onrender.com/decline', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ text: inputText })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    resultElement.value = data.result;  
-                })
-                .catch(error => {
-                    console.error('Ошибка при склонении:', error);
-                    resultElement.value = 'Ошибка при склонении текста';
-                });
-            } else {
-                resultElement.value = 'Введите текст для склонения';
-            }
-        };
-    }
+    button.onclick = async () => {
+        const text = inputEl.value.trim();
+        if (!text) {
+            resultEl.value = 'Введите текст для склонения';
+            return;
+        }
+
+        try {
+            const res = await fetch('https://declination-rus.onrender.com/decline', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            console.log('Status:', res.status);
+            const json = await res.json();
+            console.log('Response:', json);
+            resultEl.value = json.result ?? 'Ошибка формата ответа';
+        } catch (err) {
+            console.error('Fetch error:', err);
+            resultEl.value = 'Ошибка при соединении с сервером';
+        }
+    };
 }
 
 setInflectButtonClickHandler();

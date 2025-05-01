@@ -228,10 +228,22 @@ function setInflectButtonClickHandler() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text })
             });
-            console.log('Status:', res.status);
-            const json = await res.json();
-            console.log('Response:', json);
-            resultEl.value = json.result ?? 'Ошибка формата ответа';
+            if (!res.ok) {
+                resultEl.value = `Ошибка сервера: ${res.status}`;
+                return;
+            }
+            const data = await res.json();
+
+            // Формируем человекочитаемый текст
+            let output = '';
+            for (const [base, forms] of Object.entries(data)) {
+                output += `${base}:\n`;
+                for (const [label, form] of Object.entries(forms)) {
+                    output += `  ${label}: ${form || '[–]'}\n`;
+                }
+                output += '\n';
+            }
+            resultEl.value = output.trim();
         } catch (err) {
             console.error('Fetch error:', err);
             resultEl.value = 'Ошибка при соединении с сервером';

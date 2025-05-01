@@ -4,30 +4,67 @@ from flask_cors import CORS
 import pymorphy3
 
 app = Flask(__name__)
-CORS(app)  # разрешаем запросы со страниц на GitHub Pages
+CORS(app)
 
 morph = pymorphy3.MorphAnalyzer()
+
+# Шесть падежей, два числа и три рода
+CASES   = ['nomn', 'gent', 'datv', 'accs', 'ablt', 'loct']
+NUMBERS = ['sing', 'plur']
+GENDERS = ['masc', 'femn', 'neut']
 
 @app.route('/decline', methods=['POST'])
 def decline_api():
     data = request.get_json(silent=True) or {}
     text = data.get('text', '').strip()
     if not text:
-        return jsonify({'result': ''}), 200
+        return jsonify({}), 200
 
     tokens = text.split()
-    declined = []
-    for token in tokens:
-        p = morph.parse(token)[0]
-        inf = p.inflect({'gent'})
-        declined.append(inf.word if inf else token)
+    result = {}
 
-    return jsonify({'result': ' '.join(declined)}), 200
+    for token in tokens:
+        parsed = morph.parse(token)[0]
+        key = parsed.normal_form  # ключем будет начальная форма
+
+        forms = {}
+
+        # Для существительных: всё по падежам и числам
+        for case in CASES:
+            for number in NUMBERS:
+                tagset = {case, number}
+                inf = parsed.inflect(tagset)
+                label = f"{case}_{number}"
+                forms[label] = inf.word if inf else None
+
+        # Для прилагательных: падеж + число + род (для sing), или просто падеж+plur
+        # Нужно проверить, что слово — прилагательное
+        if 'ADJF' in parsed.tag.POS or 'ADJS' in parsed.tag.POS:
+            for case in CASES:
+                # единственное число
+                for gender in GENDERS:
+                    tagset = {case, 'sing', gender}
+                    inf = parsed.inflect(tagset)
+                    label = f"{case}_sing_{gender}"
+                    forms[label] = inf.word if inf else None
+                # множественное число
+                tagset = {case, 'plur'}
+                inf = parsed.inflect(tagset)
+                label = f"{case}_plur"
+                forms[label] = inf.word if inf else None
+
+        result[key] = forms
+
+    return jsonify(result), 200
+
+@app.route('/', methods=['GET', 'HEAD'])
+def root():
+    return 'Service is up', 200
 
 @app.route('/healthz', methods=['GET'])
 def healthz():
     return 'OK', 200
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)

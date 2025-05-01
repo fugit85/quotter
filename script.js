@@ -209,3 +209,36 @@ function setGetWhiteListButtonClickHandler() {
 }
 
 setGetWhiteListButtonClickHandler();
+
+function setInflectButtonClickHandler() {
+    let buttonInflect = document.getElementById('button-inflect');  // Кнопка склонения
+    let inputElement = document.getElementById('input');            // Поле ввода
+    let resultElement = document.getElementById('result');          // Поле для отображения результата
+
+    if (buttonInflect && inputElement && resultElement) {
+        buttonInflect.onclick = function() {
+            let inputText = inputElement.value.trim();  // Берем текст из поля ввода
+
+            if (inputText) {
+                // Отправляем запрос на сервер для склонения текста
+                fetch('http://<твоя_ссылка>/inflector', {
+                    method: 'POST',
+                    body: JSON.stringify({ text: inputText }),  // Отправляем текст
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultElement.value = data.result;  // Отображаем результат склонения
+                })
+                .catch(error => {
+                    console.error('Ошибка при склонении:', error);
+                    resultElement.value = 'Ошибка при склонении текста';
+                });
+            } else {
+                resultElement.value = 'Введите текст для склонения';
+            }
+        };
+    }
+}
+
+setInflectButtonClickHandler();

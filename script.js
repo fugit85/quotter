@@ -45,11 +45,13 @@ function setClearButtonClickHandler() {
     let buttonClear = document.getElementById('clear');
     let inputElement = document.getElementById('input');
     let resultElement = document.getElementById('result');
+    let fieldsetElement = document.getElementById('fieldset');
 
-    if (buttonClear && inputElement && resultElement) {
+    if (buttonClear && inputElement && resultElement && fieldsetElement) {
         buttonClear.onclick = function() {
             inputElement.value = '';
             resultElement.textContent = '';
+            fieldsetElement.innerHTML = ''; // Clear the fieldset content
         }
     }
 }

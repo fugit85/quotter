@@ -8,7 +8,6 @@ CORS(app)
 
 morph = pymorphy3.MorphAnalyzer()
 
-# Шесть падежей, два числа и три рода
 CASES   = ['nomn', 'gent', 'datv', 'accs', 'ablt', 'loct']
 NUMBERS = ['sing', 'plur']
 GENDERS = ['masc', 'femn', 'neut']
@@ -29,16 +28,13 @@ def decline_api():
 
         forms = {}
 
-        # Для существительных: всё по падежам и числам
         for case in CASES:
             for number in NUMBERS:
                 tagset = {case, number}
                 inf = parsed.inflect(tagset)
                 label = f"{case}_{number}"
                 forms[label] = inf.word if inf else None
-
-        # Для прилагательных: падеж + число + род (для sing), или просто падеж+plur
-        # Нужно проверить, что слово — прилагательное
+                
         if 'ADJF' in parsed.tag.POS or 'ADJS' in parsed.tag.POS:
             for case in CASES:
                 # единственное число
@@ -47,7 +43,6 @@ def decline_api():
                     inf = parsed.inflect(tagset)
                     label = f"{case}_sing_{gender}"
                     forms[label] = inf.word if inf else None
-                # множественное число
                 tagset = {case, 'plur'}
                 inf = parsed.inflect(tagset)
                 label = f"{case}_plur"

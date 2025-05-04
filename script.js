@@ -208,6 +208,8 @@ function setGetWhiteListButtonClickHandler() {
     }
 }
 
+setGetWhiteListButtonClickHandler();
+
 function setInflectButtonClickHandler() {
     const button = document.getElementById('button-inflect');
     const inputEl = document.getElementById('input');

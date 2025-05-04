@@ -238,7 +238,6 @@ function setInflectButtonClickHandler() {
             }
             const data = await res.json();
 
-            // Собираем все формы (значения) из ответа
             const allForms = [];
             Object.values(data).forEach(formsObj => {
                 Object.values(formsObj).forEach(form => {
@@ -246,10 +245,8 @@ function setInflectButtonClickHandler() {
                 });
             });
 
-            // Убираем дубликаты (если нужно)
             const uniqueForms = Array.from(new Set(allForms));
 
-            // Выводим каждую форму на новой строке
             resultEl.value = uniqueForms.join('\n');
         } catch (err) {
             console.error('Fetch error:', err);

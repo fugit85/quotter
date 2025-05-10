@@ -25,17 +25,29 @@ function setButtonClickHandler() {
     }
 }
 
+
 function setCapitalButtonClickHandler() {
     let buttonCapital = document.getElementById('button-capital');
     let inputElement = document.getElementById('input');
     let resultElement = document.getElementById('result');
+    let typeElement = document.getElementById('type');
 
-    if (buttonCapital && inputElement && resultElement) {
+    if (buttonCapital && inputElement && resultElement && typeElement) {
         buttonCapital.onclick = function() {
             let text = inputElement.value;
-            let capitalizedText = text.split(' ').map(word => {
-                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-            }).join(' ');
+            let type = typeElement.value;
+
+            let capitalizedText;
+            if (type === 'first-letters') {
+                capitalizedText = text.split(' ').map(word => {
+                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                }).join(' ');
+            } else if (type === 'all-letters') {
+                capitalizedText = text.split(' ').map(word => word.toUpperCase()).join(' ');
+            } else {
+                capitalizedText = text; 
+            }
+
             resultElement.textContent = capitalizedText;
         }
     }

@@ -33,6 +33,12 @@
     <div class="content">
         <h1>Склонятор</h1>
         <textarea id="input" placeholder="Введите текст"></textarea>
+        <div class="decline-option">
+            <label><input type="checkbox" id="byAll" checked onchange="toggleOptions(this)"> Все</label>
+            <label><input type="checkbox" id="byGender" onchange="toggleOptions()"> Рода</label>
+            <label><input type="checkbox" id="byNumber" onchange="toggleOptions()"> Числа</label>
+            <label><input type="checkbox" id="byCase" onchange="toggleOptions()"> Падежи</label>
+        </div>
         <button id="button-inflect">Склонять</button>
         <textarea id="result" readonly></textarea>
         <div>

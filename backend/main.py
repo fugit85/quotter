@@ -19,39 +19,58 @@ def decline_api():
     if not text:
         return jsonify({}), 200
 
+    # Получаем настройки пользователя с фронтенда (по умолчанию True)
+    by_gender = data.get('byGender', True)
+    by_number = data.get('byNumber', True)
+    by_case   = data.get('byCase', True)
+
     tokens = text.split()
     result = {}
 
     for token in tokens:
         parsed = morph.parse(token)[0]
-        key = parsed.normal_form  # ключем будет начальная форма
+        key = parsed.normal_form  # ключ — начальная форма слова
 
         forms = {}
 
-        for case in CASES:
-            for number in NUMBERS:
-                tagset = {case, number}
-                inf = parsed.inflect(tagset)
-                label = f"{case}_{number}"
-                forms[label] = inf.word if inf else None
-                
-        if 'ADJF' in parsed.tag.POS or 'ADJS' in parsed.tag.POS:
+        if by_case:
             for case in CASES:
-                # единственное число
-                for gender in GENDERS:
-                    tagset = {case, 'sing', gender}
+                # Если разрешено склонять по числам
+                if by_number:
+                    for number in NUMBERS:
+                        tagset = {case, number}
+                        inf = parsed.inflect(tagset)
+                        label = f"{case}_{number}"
+                        forms[label] = inf.word if inf else None
+                else:
+                    # Только по падежам без учета числа
+                    tagset = {case}
                     inf = parsed.inflect(tagset)
-                    label = f"{case}_sing_{gender}"
+                    label = f"{case}"
                     forms[label] = inf.word if inf else None
-                tagset = {case, 'plur'}
-                inf = parsed.inflect(tagset)
-                label = f"{case}_plur"
-                forms[label] = inf.word if inf else None
+
+                # Если это прилагательное и разрешено склонять по родам
+                if ('ADJF' in parsed.tag or 'ADJS' in parsed.tag) and by_gender:
+                    for gender in GENDERS:
+                        if by_number:
+                            tagset = {case, 'sing', gender}
+                            label = f"{case}_sing_{gender}"
+                        else:
+                            tagset = {case, gender}
+                            label = f"{case}_{gender}"
+                        inf = parsed.inflect(tagset)
+                        forms[label] = inf.word if inf else None
+
+                    # Множественное число при включенном числе
+                    if by_number:
+                        tagset = {case, 'plur'}
+                        label = f"{case}_plur"
+                        inf = parsed.inflect(tagset)
+                        forms[label] = inf.word if inf else None
 
         result[key] = forms
 
     return jsonify(result), 200
-
 @app.route('/', methods=['GET', 'HEAD'])
 def root():
     return 'Service is up', 200

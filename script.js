@@ -316,7 +316,5 @@ function setInflectButtonClickHandler() {
     };
 }
 setInflectButtonClickHandler();
-}
 
-setInflectButtonClickHandler();
 

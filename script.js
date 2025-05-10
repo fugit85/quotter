@@ -226,6 +226,42 @@ function setGetWhiteListButtonClickHandler() {
 
 setGetWhiteListButtonClickHandler();
 
+function toggleOptions(allCheckbox) {
+    const byAll = document.getElementById('byAll');
+    const byGender = document.getElementById('byGender');
+    const byNumber = document.getElementById('byNumber');
+    const byCase = document.getElementById('byCase');
+
+    if (allCheckbox && allCheckbox.id === 'byAll') {
+        const isChecked = byAll.checked;
+        byGender.disabled = isChecked;
+        byNumber.disabled = isChecked;
+        byCase.disabled = isChecked;
+        if (isChecked) {
+        byGender.checked = false;
+        byNumber.checked = false;
+        byCase.checked = false;
+        }
+    } else {
+        if (byGender.checked || byNumber.checked || byCase.checked) {
+        byAll.checked = false;
+        byAll.disabled = false;
+        } else {
+        byAll.checked = true;
+        byAll.disabled = false;
+        toggleOptions(byAll);
+        }
+    }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+    toggleOptions(document.getElementById('byAll'));
+    });
+
+toggleOptions();
+
+
+
 function setInflectButtonClickHandler() {
     const button = document.getElementById('button-inflect');
     const inputEl = document.getElementById('input');
@@ -240,19 +276,31 @@ function setInflectButtonClickHandler() {
             return;
         }
 
+        const byAllCheckbox = document.getElementById('byAll');
+        let byGender = true, byNumber = true, byCase = true;
+
+        if (byAllCheckbox) {
+            const byAll = byAllCheckbox.checked;
+            byGender = byAll || document.getElementById('byGender')?.checked;
+            byNumber = byAll || document.getElementById('byNumber')?.checked;
+            byCase   = byAll || document.getElementById('byCase')?.checked;
+        }
+
         try {
             const res = await fetch('https://declination-rus.onrender.com/decline', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text })
+                body: JSON.stringify({ text, byGender, byNumber, byCase })
             });
+
             if (!res.ok) {
                 resultEl.value = `Ошибка сервера: ${res.status}`;
                 return;
             }
-            const data = await res.json();
 
+            const data = await res.json();
             const allForms = [];
+
             Object.values(data).forEach(formsObj => {
                 Object.values(formsObj).forEach(form => {
                     if (form) allForms.push(form);
@@ -260,13 +308,14 @@ function setInflectButtonClickHandler() {
             });
 
             const uniqueForms = Array.from(new Set(allForms));
-
             resultEl.value = uniqueForms.join('\n');
         } catch (err) {
             console.error('Fetch error:', err);
             resultEl.value = 'Ошибка при соединении с сервером';
         }
     };
+}
+setInflectButtonClickHandler();
 }
 
 setInflectButtonClickHandler();

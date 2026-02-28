@@ -34,13 +34,13 @@ def submit():
 {url}
 """
 
-    requests.post(
-        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-        json={
-            "chat_id": CHAT_ID,
-            "text": text
-        }
-    )
+    try:
+        requests.post(
+            f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+            json={"chat_id": CHAT_ID, "text": text}
+        )
+    except Exception as e:
+        print("Ошибка отправки в Telegram:", e)
 
     return jsonify({"ok": True})
 

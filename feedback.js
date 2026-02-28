@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function(){
     const comment = document.getElementById('feedbackComment').value.trim();
     const contact = document.getElementById('feedbackContact').value.trim();
 
-    fetch('https://YOUR-RENDER-URL/submit', {
+    fetch('https://feedback-service-ykt7.onrender.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

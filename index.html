@@ -38,8 +38,39 @@
     <footer>
         <p>2025 - Tools for PPС daily routine. Made for fun. AI power.</p>
     </footer>
+    <div id="feedbackModal" class="feedback-modal hidden">
+      <div class="feedback-content">
+        <button class="feedback-close" id="feedbackClose">✕</button>
+    
+        <h3>Предложить улучшение</h3>
+    
+        <form id="feedbackForm">
+          <textarea 
+            id="feedbackComment" 
+            name="comment" 
+            placeholder="Ваш комментарий"
+            required>
+          </textarea>
+    
+          <input 
+            type="text" 
+            id="feedbackContact" 
+            name="contact" 
+            placeholder="Контакт для обратной связи (необязательно)"
+          />
+    
+          <button type="submit" class="feedback-submit">
+            Отправить
+          </button>
+        </form>
+    
+        <div id="feedbackMessage" class="feedback-message"></div>
+      </div>
+    </div>
+    
 </body>
 </html>
+
 
 
 

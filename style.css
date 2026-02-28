@@ -112,3 +112,76 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+.hidden {
+  display: none;
+}
+
+.feedback-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.feedback-content {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  font-family: sans-serif;
+}
+
+.feedback-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: #701188e6;
+  color: #3f3f3f;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.feedback-close:hover {
+  background: #ababab;
+}
+
+#feedbackForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+#feedbackForm textarea {
+  resize: vertical;
+  min-height: 80px;
+  padding: 8px;
+}
+
+#feedbackForm input {
+  padding: 8px;
+}
+
+.feedback-submit {
+  padding: 10px;
+  border: none;
+  background: #701188e6;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.feedback-message {
+  margin-top: 10px;
+  font-size: 14px;
+}

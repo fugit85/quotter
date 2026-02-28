@@ -2,9 +2,47 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pymorphy3
+import requests
+
 
 app = Flask(__name__)
 CORS(app)
+
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+
+@app.route("/submit", methods=["POST"])
+def submit():
+    data = request.get_json()
+    comment = data.get("comment", "")
+    contact = data.get("contact", "")
+    url = data.get("url", "")
+
+    if not comment:
+        return jsonify({"ok": False}), 400
+
+    text = f"""
+Новый отзыв:
+
+Комментарий:
+{comment}
+
+Контакт:
+{contact}
+
+Страница:
+{url}
+"""
+
+    requests.post(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+        json={
+            "chat_id": CHAT_ID,
+            "text": text
+        }
+    )
+
+    return jsonify({"ok": True})
 
 morph = pymorphy3.MorphAnalyzer()
 

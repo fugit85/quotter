@@ -114,7 +114,7 @@ footer {
 }
 
 .hidden {
-  display: none;
+  display: none !important; 
 }
 
 .feedback-modal {
@@ -185,3 +185,4 @@ footer {
   margin-top: 10px;
   font-size: 14px;
 }
+

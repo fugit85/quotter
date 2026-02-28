@@ -3,4 +3,4 @@ werkzeug==2.1.2
 pymorphy3==1.2
 gunicorn==20.1.0
 Flask-Cors==3.0.10
-
+requests==2.31.0

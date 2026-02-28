@@ -1,8 +1,8 @@
-setuptools>=65.0.0
-wheel>=0.38.0
-flask==2.1.2
-werkzeug==2.1.2
+setuptools>=70.0.0
+wheel>=0.43.0
+flask==3.0.3
+werkzeug==3.0.3
 pymorphy3==1.2
-gunicorn==20.1.0
-Flask-Cors==3.0.10
+gunicorn==22.0.0
+Flask-Cors==4.0.1
 requests==2.31.0

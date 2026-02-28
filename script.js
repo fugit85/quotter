@@ -317,4 +317,53 @@ function setInflectButtonClickHandler() {
 }
 setInflectButtonClickHandler();
 
+function setFeedbackModalHandlers() {
+    let modal = document.getElementById('feedbackModal');
+    let closeBtn = document.getElementById('feedbackClose');
+    let form = document.getElementById('feedbackForm');
+    let messageBox = document.getElementById('feedbackMessage');
+
+    if (!modal || !closeBtn || !form || !messageBox) return;
+
+    window.openFeedbackForm = function() {
+        modal.classList.remove('hidden');
+    };
+
+    closeBtn.onclick = function() {
+        modal.classList.add('hidden');
+    };
+
+    modal.onclick = function(e) {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+        }
+    };
+
+    form.onsubmit = function(e) {
+        e.preventDefault();
+
+        let comment = document.getElementById('feedbackComment').value.trim();
+        let contact = document.getElementById('feedbackContact').value.trim();
+
+        fetch('https://feedback-service-ykt7.onrender.com/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                comment: comment,
+                contact: contact,
+                url: window.location.href
+            })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            messageBox.textContent = 'Спасибо! Ваше сообщение отправлено.';
+            form.reset();
+        })
+        .catch(function(err) {
+            messageBox.textContent = 'Ошибка отправки. Попробуйте позже.';
+        });
+    };
+}
+
+setFeedbackModalHandlers();
 

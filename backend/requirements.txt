@@ -1,4 +1,5 @@
 setuptools>=65.0.0
+wheel>=0.38.0
 flask==2.1.2
 werkzeug==2.1.2
 pymorphy3==1.2

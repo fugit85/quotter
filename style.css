@@ -145,14 +145,14 @@ footer {
   height: 32px;
   border: none;
   border-radius: 6px;
-  background: #701188e6;
+  background: #ababab;
   color: #3f3f3f;
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
 .feedback-close:hover {
-  background: #ababab;
+  background: #701188e6;
 }
 
 #feedbackForm {
@@ -185,5 +185,6 @@ footer {
   margin-top: 10px;
   font-size: 14px;
 }
+
 
 

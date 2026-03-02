@@ -173,6 +173,22 @@ footer {
   padding: 8px;
 }
 
+#feedbackComment,
+#feedbackContact {
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  overflow-y: auto;
+}
+
+#feedbackComment {
+  height: 100px;
+}
+
+#feedbackContact {
+  height: 38px;
+}
+
 .feedback-submit {
   padding: 10px;
   border: none;
@@ -186,6 +202,7 @@ footer {
   margin-top: 10px;
   font-size: 14px;
 }
+
 
 
 

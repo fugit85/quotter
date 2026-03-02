@@ -152,7 +152,8 @@ footer {
 }
 
 .feedback-close:hover {
-  background: #701188e6;
+    color: #FFFFFF;
+    background: #701188e6;
 }
 
 #feedbackForm {
@@ -185,6 +186,7 @@ footer {
   margin-top: 10px;
   font-size: 14px;
 }
+
 
 
 

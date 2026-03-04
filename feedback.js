@@ -19,41 +19,59 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   });
 
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
+ form.addEventListener('submit', function(e){
+  e.preventDefault();
+  var comment = document.getElementById('feedbackComment').value.trim();
+  var contact = document.getElementById('feedbackContact').value.trim();
+  if (!comment) return;
 
-    const comment = document.getElementById('feedbackComment').value.trim();
-    const contact = document.getElementById('feedbackContact').value.trim();
+  var submitBtn = form.querySelector('.feedback-submit');
+  submitBtn.textContent = 'Проверка...';
+  submitBtn.disabled = true;
 
-    fetch('https://feedback-service-ykt7.onrender.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        comment: comment,
-        contact: contact,
-        url: window.location.href
+  grecaptcha.ready(function() {
+    grecaptcha.execute('ВАШ_SITE_KEY', { action: 'feedback' }).then(function(token) {
+      fetch('https://feedback-service-ykt7.onrender.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          comment: comment,
+          contact: contact,
+          url: window.location.href,
+          recaptcha_token: token
+        })
       })
-    })
-    .then(res => res.json())
-    .then(data => {
-  form.style.display = 'none';
-  messageBox.innerHTML = `
-    <div class="feedback-success">
-      <div class="feedback-success-icon">✓</div>
-      <div class="feedback-success-title">Спасибо!</div>
-      <div class="feedback-success-text">Ваш коментарий отправлен — обязательно посмотрим</div>
-    </div>
-  `;
-  setTimeout(function() {
-    modal.classList.add('hidden');
-    form.style.display = '';
-    messageBox.innerHTML = '';
-    form.reset();
-  }, 2500);
-}))
-    .catch(err => {
-      messageBox.textContent = "Ошибка отправки. Попробуйте позже.";
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.ok) {
+          form.style.display = 'none';
+          var messageBox = document.getElementById('feedbackMessage');
+          messageBox.innerHTML = `
+            <div class="feedback-success">
+              <div class="feedback-success-icon">✓</div>
+              <div class="feedback-success-title">Спасибо!</div>
+              <div class="feedback-success-text">Твой отзыв отправлен — обязательно посмотрим</div>
+            </div>
+          `;
+          setTimeout(function() {
+            var modal = document.getElementById('feedbackModal');
+            modal.classList.add('hidden');
+            form.style.display = '';
+            messageBox.innerHTML = '';
+            form.reset();
+          }, 2500);
+        } else {
+          submitBtn.textContent = 'Отправить';
+          submitBtn.disabled = false;
+          var messageBox = document.getElementById('feedbackMessage');
+          messageBox.textContent = data.error || 'Похоже вы робот. Попробуйте позже.';
+        }
+      })
+      .catch(function() {
+        submitBtn.textContent = 'Отправить';
+        submitBtn.disabled = false;
+      });
     });
   });
-
 });
+  });

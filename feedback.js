@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', function(){
 
-  const modal = document.getElementById('feedbackModal');
-  const closeBtn = document.getElementById('feedbackClose');
-  const form = document.getElementById('feedbackForm');
-  const messageBox = document.getElementById('feedbackMessage');
+  var modal      = document.getElementById('feedbackModal');
+  var closeBtn   = document.getElementById('feedbackClose');
+  var form       = document.getElementById('feedbackForm');
+  var messageBox = document.getElementById('feedbackMessage');
+
+  if (!modal || !closeBtn || !form) return;
 
   window.openFeedbackForm = function(){
     modal.classList.remove('hidden');
@@ -14,64 +16,55 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 
   modal.addEventListener('click', function(e){
-    if(e.target === modal){
-      modal.classList.add('hidden');
-    }
+    if (e.target === modal) modal.classList.add('hidden');
   });
 
- form.addEventListener('submit', function(e){
-  e.preventDefault();
-  var comment = document.getElementById('feedbackComment').value.trim();
-  var contact = document.getElementById('feedbackContact').value.trim();
-  if (!comment) return;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
 
-  var submitBtn = form.querySelector('.feedback-submit');
-  submitBtn.textContent = 'Проверка...';
-  submitBtn.disabled = true;
+    var comment = document.getElementById('feedbackComment').value.trim();
+    var contact = document.getElementById('feedbackContact').value.trim();
+    if (!comment) return;
 
-  grecaptcha.ready(function() {
-    grecaptcha.execute('ВАШ_SITE_KEY', { action: 'feedback' }).then(function(token) {
-      fetch('https://feedback-service-ykt7.onrender.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          comment: comment,
-          contact: contact,
-          url: window.location.href,
-          recaptcha_token: token
-        })
+    var submitBtn = form.querySelector('.feedback-submit');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Отправляем...';
+
+    fetch('https://feedback-service-ykt7.onrender.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        comment: comment,
+        contact: contact,
+        url: window.location.href
       })
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        if (data.ok) {
-          form.style.display = 'none';
-          var messageBox = document.getElementById('feedbackMessage');
-          messageBox.innerHTML = `
-            <div class="feedback-success">
-              <div class="feedback-success-icon">✓</div>
-              <div class="feedback-success-title">Спасибо!</div>
-              <div class="feedback-success-text">Твой отзыв отправлен — обязательно посмотрим</div>
-            </div>
-          `;
-          setTimeout(function() {
-            var modal = document.getElementById('feedbackModal');
-            modal.classList.add('hidden');
-            form.style.display = '';
-            messageBox.innerHTML = '';
-            form.reset();
-          }, 2500);
-        } else {
-          submitBtn.textContent = 'Отправить';
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      form.style.display = 'none';
+      messageBox.innerHTML =
+        '<div class="feedback-success">' +
+          '<div class="feedback-success-icon">✓</div>' +
+          '<div class="feedback-success-title">Спасибо!</div>' +
+          '<div class="feedback-success-text">Ваш коментарий отправлен — обязательно посмотрим</div>' +
+        '</div>';
+
+      setTimeout(function() {
+        modal.classList.add('hidden');
+        setTimeout(function() {
+          form.style.display = '';
+          messageBox.innerHTML = '';
+          form.reset();
           submitBtn.disabled = false;
-          var messageBox = document.getElementById('feedbackMessage');
-          messageBox.textContent = data.error || 'Похоже вы робот. Попробуйте позже.';
-        }
-      })
-      .catch(function() {
-        submitBtn.textContent = 'Отправить';
-        submitBtn.disabled = false;
-      });
+          submitBtn.textContent = 'Отправить';
+        }, 300);
+      }, 2500);
+    })
+    .catch(function() {
+      messageBox.textContent = 'Ошибка отправки. Попробуйте позже.';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Отправить';
     });
   });
+
 });
-  });

@@ -1,83 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Закавычник</title>
-    <meta name="description" content="Закавычник строк во фразовое или точное соответствие. Не меняет регистра букв. Просто и удобно. Попробуйте!"/>
+    <meta name="description"
+        content="Закавычник строк во фразовое или точное соответствие. Не меняет регистра букв. Просто и удобно. Попробуйте!" />
     <script src="script.js" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="quote.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
 </head>
-<body>
-    <div class="topnav">
-        <a class="active" href="index.html">Закавычник</a>
-        <a href="capiralizator.html">Капитализатор</a>
-        <a href="undublicator.html">Дубликаты</a>
-        <a href="minusator.html">Минусатор</a>
-        <a href="decline.html">Склонятор</a>
-    </div>
 
-    <div class="content">
-        <h1>Закавычник</h1>
-        <textarea id="input" placeholder="Введите текст"></textarea>
-        <div>
-            <select id="mode">
-                <option value="phrase">Фразовое</option>
-                <option value="exact">Точное</option>
-            </select>
-            <button id="button-quote">Закавычить</button>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Закавычник</span>
+            <div class="nav-links">
+                <a href="index.html" class="active">Закавычник</a>
+                <a href="capiralizator.html">Капитализатор</a>
+                <a href="undublicator.html">Дубликаты</a>
+                <a href="minusator.html">Минусатор</a>
+                <a href="decline.html">Склонятор</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Сменить тему">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Тёмная</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
         </div>
-        <textarea id="result" readonly></textarea>
-        <div>
-            <button id="copy">Копировать</button>
-            <button id="clear">Очистить</button>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html" class="active">Закавычник</a>
+            <a href="capiralizator.html">Капитализатор</a>
+            <a href="undублicator.html">Дубликаты</a>
+            <a href="minusator.html">Минусатор</a>
+            <a href="decline.html">Склонятор</a>
         </div>
-    </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Закавычник
+            </h1>
+            <p class="page-subtitle">Оборачивает строки в фразовое или точное соответствие</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Исходный текст</div>
+            <textarea id="input" placeholder="Введите текст, каждая строка — отдельная фраза"></textarea>
+
+            <div class="toolbar">
+                <select id="mode">
+                    <option value="phrase">Фразовое соответствие</option>
+                    <option value="exact">Точное соответствие</option>
+                </select>
+                <button class="btn btn-primary" id="button-quote">✦ Закавычить</button>
+                <span class="counter" id="counter">0 строк</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field-label">Результат</div>
+            <textarea id="result" readonly placeholder="Результат появится здесь..."></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Копировать</button>
+                <button class="btn btn-ghost" id="clear">✕ Очистить</button>
+            </div>
+        </div>
+
+        <!-- Форма обратной связи -->
+        <div id="feedbackModal" class="feedback-modal hidden">
+            <div class="feedback-content">
+                <button class="feedback-close" id="feedbackClose">✕</button>
+                <h3>Предложить улучшение</h3>
+                <form id="feedbackForm">
+                    <textarea id="feedbackComment" name="comment" placeholder="Ваш комментарий" required></textarea>
+                    <input type="text" id="feedbackContact" name="contact"
+                        placeholder="Контакт для обратной связи (необязательно)" />
+                    <button type="submit" class="feedback-submit">Отправить</button>
+                </form>
+                <div id="feedbackMessage" class="feedback-message"></div>
+            </div>
+        </div>
+    </main>
+
     <footer>
         <p>2025 - Tools for PPС daily routine. Made for fun. AI power.</p>
     </footer>
-   <div id="feedbackModal" class="feedback-modal hidden">
-      <div class="feedback-content">
-        <button class="feedback-close" id="feedbackClose">✕</button>
-    
-        <h3>Предложить улучшения</h3>
-    
-        <form id="feedbackForm">
-        <textarea id="feedbackComment" 
-            name="comment" 
-            placeholder="Ваш комментарий" 
-            required>
-        </textarea>
-    
-          <input 
-            type="text" 
-            id="feedbackContact" 
-            name="contact" 
-            placeholder="Контакт для обратной связи (необязательно)">
-          </input>
-    
-          <button type="submit" class="feedback-submit">
-            Отправить
-          </button>
-        </form>
-    
-        <div id="feedbackMessage" class="feedback-message"></div>
-      </div>
-    </div>
-    
+
 </body>
+
 </html>
-
-
-
-
-
-
-
-
-
-
-
-

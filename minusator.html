@@ -1,46 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Минусатор</title>
-    <meta name="description" content="Сбор минус слов онлайн. Просто кликай на слово или отмечай строку. Попробуйте!"/>
+    <meta name="description" content="Сбор минус слов онлайн. Просто кликай на слово или отмечай строку. Попробуйте!" />
     <script src="script.js" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="quote.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
-    <div class="topnav">
-        <a href="index.html">Закавычник</a>
-        <a href="capiralizator.html">Капитализатор</a>
-        <a href="undublicator.html">Дубликаты</a>
-        <a class="active" href="munisator.html">Минусатор</a>
-        <a href="decline.html">Склонятор</a>
-    </div>
-
-    <div class="content">
-        <h1>Минусатор</h1>
-        <div class="minus">
-            <textarea id="input" placeholder="Введите текст"></textarea>
-            <textarea id="result" readonly></textarea>
-            <div>
-                <button id="start-minus">Минусовать</button>
-                <button id="clear">Очистить</button>
-                
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Минусатор</span>
+            <div class="nav-links">
+                <a href="index.html">Закавычник</a>
+                <a href="capiralizator.html">Капитализатор</a>
+                <a href="undublicator.html">Дубликаты</a>
+                <a href="minusator.html" class="active">Минусатор</a>
+                <a href="decline.html">Склонятор</a>
             </div>
-            <div>
-                <button id="get-minus-words">Получить список</button>
-                <button id="get-white-list">Невыделенные</button>
-                <button id="copy">Копировать</button>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Сменить тему">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Тёмная</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Закавычник</a>
+            <a href="capiralizator.html">Капитализатор</a>
+            <a href="undublicator.html">Дубликаты</a>
+            <a href="minusator.html" class="active">Минусатор</a>
+            <a href="decline.html">Склонятор</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Минусатор
+            </h1>
+            <p class="page-subtitle">Кликай на слова или отмечай строки чтобы собрать минус-слова. Можно загрузить
+                CSV-файл прямо из планировщика ключевых слов, без редактирования.</p>
+        </div>
+
+        <div class="card">
+            <div class="minus-grid">
+                <div class="minus-col">
+                    <div class="field-label">Исходный текст</div>
+                    <textarea id="input" placeholder="Введите текст"></textarea>
+                </div>
+                <div class="minus-col">
+                    <div class="field-label">Результат</div>
+                    <textarea id="result" readonly placeholder="Результат появится здесь..."></textarea>
+                </div>
             </div>
 
-         </div>
-         <label>Кликай на слова или отмечай строки ↓</label>
-        <fieldset id="fieldset"></fieldset>
-    </div>
+            <div class="minus-toolbar">
+                <div class="minus-toolbar-left">
+                    <label class="btn btn-ghost btn-upload" for="csvUpload">⇪ Загрузить CSV</label>
+                    <input type="file" id="csvUpload" accept=".csv" style="display:none">
+                    <button class="btn btn-primary" id="start-minus">✦ Минусовать</button>
+                    <button class="btn btn-ghost" id="get-minus-words">Минус-слова</button>
+                    <button class="btn btn-ghost" id="get-white-list">Белый список</button>
+                </div>
+                <div class="minus-toolbar-right">
+                    <button class="btn btn-ghost" id="copy">⎘ Копировать</button>
+                    <button class="btn btn-ghost" id="export-csv">↓ Экспорт CSV</button>
+                    <button class="btn btn-ghost" id="clear">✕ Очистить</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="minus-hint">Кликай на слова или отмечай строки ↓</div>
+        <div class="minus-fieldset" id="fieldset"></div>
+
+    </main>
+
+    <button class="scroll-top" id="scrollTop" aria-label="Наверх">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3,12 9,6 15,12" />
+        </svg>
+    </button>
+
     <footer>
         <p>2025 - Tools for PPС daily routine. Made for fun. AI power.</p>
     </footer>
 </body>
+
 </html>

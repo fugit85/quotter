@@ -1,42 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Склонятор</title>
-    <meta name="description" content="Склонение слов по падежам, родам онлайн. Просто и удобно. Попробуйте!"/>
+    <meta name="description" content="Склонение слов по падежам, родам онлайн. Просто и удобно. Попробуйте!" />
     <script src="script.js" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="quote.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
 </head>
-<body>
-    <div class="topnav">
-        <a href="index.html">Закавычник</a>
-        <a href="capiralizator.html">Капитализатор</a>
-        <a href="undublicator.html">Дубликаты</a>
-        <a href="minusator.html">Минусатор</a>
-        <a class="active" href="decline.html">Склонятор</a>
-    </div>
 
-    <div class="content">
-        <h1>Склонятор</h1>
-        <textarea id="input" placeholder="Введите текст"></textarea>
-        <div class="decline-option">
-            <label><input type="checkbox" id="byAll" checked onchange="toggleOptions(this)"> Все</label>
-            <label><input type="checkbox" id="byGender" onchange="toggleOptions()"> Рода</label>
-            <label><input type="checkbox" id="byNumber" onchange="toggleOptions()"> Числа</label>
-            <label><input type="checkbox" id="byCase" onchange="toggleOptions()"> Падежи</label>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Склонятор</span>
+            <div class="nav-links">
+                <a href="index.html">Закавычник</a>
+                <a href="capiralizator.html">Капитализатор</a>
+                <a href="undublicator.html">Дубликаты</a>
+                <a href="minusator.html">Минусатор</a>
+                <a href="decline.html" class="active">Склонятор</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Сменить тему">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Тёмная</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
         </div>
-        <button id="button-inflect">Склонять</button>
-        <textarea id="result" readonly></textarea>
-        <div>
-            <button id="copy">Копировать</button>
-            <button id="clear">Очистить</button>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Закавычник</a>
+            <a href="capiralizator.html">Капитализатор</a>
+            <a href="undublicator.html">Дубликаты</a>
+            <a href="minusator.html">Минусатор</a>
+            <a href="decline.html" class="active">Склонятор</a>
         </div>
-    </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Склонятор
+            </h1>
+            <p class="page-subtitle">Склонение слов по падежам, родам и числам</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Исходный текст</div>
+            <textarea id="input" placeholder="Введите слово или фразу"></textarea>
+
+            <div class="toolbar" style="margin-top: 16px;">
+                <div class="decline-options">
+                    <label class="decline-label">
+                        <input type="checkbox" id="byAll" checked onchange="toggleOptions(this)">
+                        <span>Все</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byGender" onchange="toggleOptions()">
+                        <span>Рода</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byNumber" onchange="toggleOptions()">
+                        <span>Числа</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byCase" onchange="toggleOptions()">
+                        <span>Падежи</span>
+                    </label>
+                </div>
+                <button class="btn btn-primary" id="button-inflect">✦ Склонять</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field-label">Результат</div>
+            <textarea id="result" readonly placeholder="Результат появится здесь..."></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Копировать</button>
+                <button class="btn btn-ghost" id="clear">✕ Очистить</button>
+            </div>
+        </div>
+    </main>
     <footer>
         <p>2025 - Tools for PPС daily routine. Made for fun. AI power.</p>
     </footer>
 </body>
+
 </html>

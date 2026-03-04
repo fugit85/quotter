@@ -1,3 +1,48 @@
+var html = document.documentElement;
+var themeIcon = document.getElementById('themeIcon');
+var themeLabel = document.getElementById('themeLabel');
+
+var saved = localStorage.getItem('theme') || 'light';
+applyTheme(saved);
+
+document.getElementById('themeToggle').onclick = function () {
+    applyTheme(html.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+};
+
+function applyTheme(theme) {
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+    themeLabel.textContent = theme === 'dark' ? 'Светлая' : 'Тёмная';
+}
+
+var counter = document.getElementById('counter');
+if (counter) {
+    document.getElementById('input').addEventListener('input', function () {
+        var n = this.value.split('\n').filter(function (l) { return l.trim(); }).length;
+        counter.textContent = n + (
+            n % 10 === 1 && n !== 11 ? ' строка' :
+                n % 10 >= 2 && n % 10 <= 4 && (n < 10 || n > 20) ? ' строки' : ' строк'
+        );
+    });
+}
+
+var scrollBtn = document.getElementById('scrollTop');
+if (scrollBtn) {
+    window.addEventListener('scroll', function () {
+        if (window.scrollY > window.innerHeight * 0.5) {
+            scrollBtn.classList.add('visible');
+        } else {
+            scrollBtn.classList.remove('visible');
+        }
+    });
+
+    scrollBtn.onclick = function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+}
+
+
 function setButtonClickHandler() {
     let modeElement = document.getElementById('mode');
     let buttonQuote = document.getElementById('button-quote');
@@ -6,7 +51,7 @@ function setButtonClickHandler() {
 
     if (modeElement && buttonQuote && inputElement && resultElement) {
         let mode = modeElement.value;
-        buttonQuote.onclick = function() {
+        buttonQuote.onclick = function () {
             let text = inputElement.value.trimEnd();
             text = text.split('\n').map(line => line.trimStart().replace(/\s+/g, ' ')).join('\n');
             let lines = text.split('\n');
@@ -33,7 +78,7 @@ function setCapitalButtonClickHandler() {
     let typeElement = document.getElementById('type');
 
     if (buttonCapital && inputElement && resultElement && typeElement) {
-        buttonCapital.onclick = function() {
+        buttonCapital.onclick = function () {
             let text = inputElement.value;
             let type = typeElement.value;
 
@@ -45,7 +90,7 @@ function setCapitalButtonClickHandler() {
             } else if (type === 'all-letters') {
                 capitalizedText = text.split(' ').map(word => word.toUpperCase()).join(' ');
             } else {
-                capitalizedText = text; 
+                capitalizedText = text;
             }
 
             resultElement.textContent = capitalizedText;
@@ -60,7 +105,7 @@ function setClearButtonClickHandler() {
     let fieldsetElement = document.getElementById('fieldset');
 
     if (buttonClear && inputElement && resultElement) {
-        buttonClear.onclick = function() {
+        buttonClear.onclick = function () {
             inputElement.value = '';
             resultElement.textContent = '';
             if (fieldsetElement) {
@@ -81,11 +126,19 @@ setButtonClickHandler();
 
 let copyButton = document.getElementById('copy');
 if (copyButton) {
-    copyButton.onclick = function() {
+    copyButton.onclick = function () {
         let result = document.getElementById('result');
-        if (result) {
+        if (result && result.value) {
             result.select();
             document.execCommand('copy');
+            copyButton.textContent = '✓ Скопировано';
+            copyButton.classList.add('copied');
+            result.classList.add('flash');
+            setTimeout(function () {
+                copyButton.textContent = '⎘ Копировать';
+                copyButton.classList.remove('copied');
+                result.classList.remove('flash');
+            }, 1800);
         }
     }
 }
@@ -97,7 +150,7 @@ function setDuplicateButtonClickHandler() {
     let typeElement = document.getElementById('type');
 
     if (buttonDuplicate && inputElement && resultElement && typeElement) {
-        buttonDuplicate.onclick = function() {
+        buttonDuplicate.onclick = function () {
             let text = inputElement.value.trim();
             let type = typeElement.value;
             let result;
@@ -127,8 +180,8 @@ function setStartMinusButtonClickHandler() {
     let fieldsetElement = document.getElementById('fieldset');
 
     if (buttonStartMinus && buttonGetMinusWords && inputElement && resultElement && fieldsetElement) {
-        buttonStartMinus.onclick = function() {
-            fieldsetElement.innerHTML = ''; // Clear previous content
+        buttonStartMinus.onclick = function () {
+            fieldsetElement.innerHTML = '';
             let text = inputElement.value.trim();
             let lines = text.split('\n');
 
@@ -148,7 +201,7 @@ function setStartMinusButtonClickHandler() {
                         span.textContent = word + ' ';
                         span.style.cursor = 'pointer';
 
-                        span.onclick = function() {
+                        span.onclick = function () {
                             let allSpans = fieldsetElement.querySelectorAll('span');
                             allSpans.forEach(s => {
                                 if (s.textContent.trim() === word) {
@@ -169,7 +222,7 @@ function setStartMinusButtonClickHandler() {
 
                 div.style.margin = '5px 0';
 
-                checkbox.onchange = function() {
+                checkbox.onchange = function () {
                     if (checkbox.checked) {
                         div.classList.add('highlighted');
                     } else {
@@ -181,7 +234,7 @@ function setStartMinusButtonClickHandler() {
             });
         };
 
-        buttonGetMinusWords.onclick = function() {
+        buttonGetMinusWords.onclick = function () {
             let checkedLines = Array.from(fieldsetElement.querySelectorAll('input[type="checkbox"]:checked'))
                 .map(checkedBox => {
                     let line = Array.from(checkedBox.parentElement.querySelectorAll('span'))
@@ -207,7 +260,7 @@ function setGetWhiteListButtonClickHandler() {
     let resultElement = document.getElementById('result');
 
     if (buttonGetWhiteList && fieldsetElement && resultElement) {
-        buttonGetWhiteList.onclick = function() {
+        buttonGetWhiteList.onclick = function () {
             let lines = Array.from(fieldsetElement.children);
             let whiteList = lines.filter(div => {
                 let hasChecked = div.querySelector('input[type="checkbox"]:checked');
@@ -227,39 +280,37 @@ function setGetWhiteListButtonClickHandler() {
 setGetWhiteListButtonClickHandler();
 
 function toggleOptions(allCheckbox) {
-    const byAll = document.getElementById('byAll');
-    const byGender = document.getElementById('byGender');
-    const byNumber = document.getElementById('byNumber');
-    const byCase = document.getElementById('byCase');
+    var byAll = document.getElementById('byAll');
+    var byGender = document.getElementById('byGender');
+    var byNumber = document.getElementById('byNumber');
+    var byCase = document.getElementById('byCase');
+
+    if (!byAll || !byGender || !byNumber || !byCase) return;
 
     if (allCheckbox && allCheckbox.id === 'byAll') {
-        const isChecked = byAll.checked;
-        byGender.disabled = isChecked;
-        byNumber.disabled = isChecked;
-        byCase.disabled = isChecked;
-        if (isChecked) {
-        byGender.checked = false;
-        byNumber.checked = false;
-        byCase.checked = false;
+        if (byAll.checked) {
+            byGender.checked = false;
+            byNumber.checked = false;
+            byCase.checked = false;
         }
     } else {
-        if (byGender.checked || byNumber.checked || byCase.checked) {
-        byAll.checked = false;
-        byAll.disabled = false;
+        var allThreeChecked = byGender.checked && byNumber.checked && byCase.checked;
+        if (allThreeChecked) {
+            byAll.checked = true;
+            byGender.checked = false;
+            byNumber.checked = false;
+            byCase.checked = false;
+        } else if (byGender.checked || byNumber.checked || byCase.checked) {
+            byAll.checked = false;
         } else {
-        byAll.checked = true;
-        byAll.disabled = false;
-        toggleOptions(byAll);
+            byAll.checked = true;
         }
     }
-    }
+}
 
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
     toggleOptions(document.getElementById('byAll'));
-    });
-
-toggleOptions();
-
+});
 
 
 function setInflectButtonClickHandler() {
@@ -283,7 +334,7 @@ function setInflectButtonClickHandler() {
             const byAll = byAllCheckbox.checked;
             byGender = byAll || document.getElementById('byGender')?.checked;
             byNumber = byAll || document.getElementById('byNumber')?.checked;
-            byCase   = byAll || document.getElementById('byCase')?.checked;
+            byCase = byAll || document.getElementById('byCase')?.checked;
         }
 
         try {
@@ -316,3 +367,135 @@ function setInflectButtonClickHandler() {
     };
 }
 setInflectButtonClickHandler();
+
+var csvUpload = document.getElementById('csvUpload');
+if (csvUpload) {
+    csvUpload.onchange = function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+            var raw = ev.target.result;
+
+            var text;
+            if (raw instanceof ArrayBuffer) {
+                var bytes = new Uint8Array(raw);
+                if (bytes[0] === 0xFF && bytes[1] === 0xFE) {
+                    text = new TextDecoder('utf-16le').decode(raw);
+                } else {
+                    text = new TextDecoder('utf-8').decode(raw);
+                }
+            } else {
+                text = raw;
+            }
+
+            var lines = text.split('\n');
+            var keywords = [];
+            var headerFound = false;
+            var kwIndex = 0;
+
+            for (var i = 0; i < lines.length; i++) {
+                var cols = lines[i].split('\t');
+
+                if (!headerFound) {
+                    for (var c = 0; c < cols.length; c++) {
+                        if (cols[c].trim().toLowerCase() === 'keyword') {
+                            kwIndex = c;
+                            headerFound = true;
+                            break;
+                        }
+                    }
+                    continue;
+                }
+
+                var kw = cols[kwIndex] ? cols[kwIndex].trim() : '';
+                if (kw && kw !== '') {
+                    keywords.push(kw);
+                }
+            }
+
+            if (keywords.length > 0) {
+                document.getElementById('input').value = keywords.join('\n');
+            } else {
+                alert('Не удалось найти ключевые слова. Убедитесь что файл выгружен из Планировщика Google.');
+            }
+            csvUpload.value = '';
+        };
+
+        reader.readAsArrayBuffer(file);
+    };
+}
+
+var exportBtn = document.getElementById('export-csv');
+if (exportBtn) {
+    exportBtn.onclick = function () {
+        var result = document.getElementById('result');
+        if (!result || !result.value.trim()) return;
+
+        var lines = result.value.trim().split('\n');
+        var csvContent = 'Keyword\n' + lines.map(function (l) {
+            if (l.indexOf(',') !== -1 || l.indexOf('"') !== -1) {
+                return '"' + l.replace(/"/g, '""') + '"';
+            }
+            return l;
+        }).join('\n');
+
+        var blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'minus_words.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+
+        exportBtn.textContent = '✓ Сохранено';
+        setTimeout(function () { exportBtn.textContent = '↓ Экспорт CSV'; }, 1800);
+    };
+}
+
+var navMenuBtn = document.getElementById('navMenuBtn');
+var navDropdown = document.getElementById('navDropdown');
+if (navMenuBtn && navDropdown) {
+    navMenuBtn.onclick = function () {
+        navDropdown.classList.toggle('open');
+        navMenuBtn.textContent = navDropdown.classList.contains('open') ? '✕' : '≡';
+    };
+    document.addEventListener('click', function (e) {
+        if (!navMenuBtn.contains(e.target) && !navDropdown.contains(e.target)) {
+            navDropdown.classList.remove('open');
+            navMenuBtn.textContent = '≡';
+        }
+    });
+}
+
+var navLogo = document.querySelector('.nav-logo');
+if (navLogo) {
+    navLogo.onclick = function () {
+        var base = ['[ ]', '" "', 'keyword', 'ppc', 'ads', 'search', 'minus', 'cpc', 'ctr'];
+        var particles = base.concat(base);
+        var rect = navLogo.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top + rect.height / 2;
+
+        particles.forEach(function (text, i) {
+            var el = document.createElement('span');
+            el.className = 'logo-particle';
+            el.textContent = text;
+
+            var angle = Math.random() * 360;
+            var dist = 300 + Math.random() * 1200;
+            var tx = Math.cos(angle * Math.PI / 180) * dist;
+            var ty = Math.sin(angle * Math.PI / 180) * dist;
+
+            el.style.left = cx + 'px';
+            el.style.top = cy + 'px';
+            el.style.setProperty('--tx', tx + 'px');
+            el.style.setProperty('--ty', ty + 'px');
+            el.style.animationDelay = (Math.random() * 80) + 'ms';
+
+            document.body.appendChild(el);
+            setTimeout(function () { el.remove(); }, 2200);
+        });
+    };
+}

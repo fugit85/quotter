@@ -36,9 +36,21 @@ document.addEventListener('DOMContentLoaded', function(){
     })
     .then(res => res.json())
     .then(data => {
-      messageBox.textContent = "Спасибо! Ваше сообщение отправлено.";
-      form.reset();
-    })
+  form.style.display = 'none';
+  messageBox.innerHTML = `
+    <div class="feedback-success">
+      <div class="feedback-success-icon">✓</div>
+      <div class="feedback-success-title">Спасибо!</div>
+      <div class="feedback-success-text">Ваш коментарий отправлен — обязательно посмотрим</div>
+    </div>
+  `;
+  setTimeout(function() {
+    modal.classList.add('hidden');
+    form.style.display = '';
+    messageBox.innerHTML = '';
+    form.reset();
+  }, 2500);
+}))
     .catch(err => {
       messageBox.textContent = "Ошибка отправки. Попробуйте позже.";
     });

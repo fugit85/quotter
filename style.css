@@ -893,6 +893,45 @@ footer {
   color: var(--text-muted);
   text-align: center;
 }
+.feedback-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 8px;
+  gap: 8px;
+  text-align: center;
+}
+
+.feedback-success-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-mid), var(--accent2));
+  color: #fff;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(14,165,233,0.3);
+  animation: successPop 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+}
+
+@keyframes successPop {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.feedback-success-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+
+.feedback-success-text {
+  font-size: 13px;
+  color: var(--text-muted);
+}
 
 .nav-logo {
   cursor: pointer;
@@ -923,3 +962,4 @@ footer {
   }
 
 }
+

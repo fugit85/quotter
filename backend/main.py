@@ -4,7 +4,6 @@ from flask_cors import CORS
 import pymorphy3
 import requests
 
-
 app = Flask(__name__)
 CORS(app)
 
@@ -21,9 +20,11 @@ def submit():
 
     if not comment:
         return jsonify({"ok": False}), 400
- secret = os.environ.get("RECAPTCHA_SECRET")
-    if secret:
-        r = req.post("https://www.google.com/recaptcha/api/siteverify", data={
+
+    # Проверка reCAPTCHA
+    secret = os.environ.get("RECAPTCHA_SECRET")
+    if secret and token:
+        r = requests.post("https://www.google.com/recaptcha/api/siteverify", data={
             "secret": secret,
             "response": token
         })
@@ -31,7 +32,7 @@ def submit():
         score = result.get("score", 0)
         if not result.get("success") or score < 0.5:
             return jsonify({"ok": False, "error": "Проверка не пройдена"}), 400
-    
+
     text = f"""
 Новый отзыв:
 
@@ -55,6 +56,7 @@ def submit():
 
     return jsonify({"ok": True})
 
+
 morph = pymorphy3.MorphAnalyzer()
 
 CASES   = ['nomn', 'gent', 'datv', 'accs', 'ablt', 'loct']
@@ -68,7 +70,6 @@ def decline_api():
     if not text:
         return jsonify({}), 200
 
-    # Получаем настройки пользователя с фронтенда (по умолчанию True)
     by_gender = data.get('byGender', True)
     by_number = data.get('byNumber', True)
     by_case   = data.get('byCase', True)
@@ -78,13 +79,12 @@ def decline_api():
 
     for token in tokens:
         parsed = morph.parse(token)[0]
-        key = parsed.normal_form  # ключ — начальная форма слова
+        key = parsed.normal_form
 
         forms = {}
 
         if by_case:
             for case in CASES:
-                # Если разрешено склонять по числам
                 if by_number:
                     for number in NUMBERS:
                         tagset = {case, number}
@@ -92,13 +92,11 @@ def decline_api():
                         label = f"{case}_{number}"
                         forms[label] = inf.word if inf else None
                 else:
-                    # Только по падежам без учета числа
                     tagset = {case}
                     inf = parsed.inflect(tagset)
                     label = f"{case}"
                     forms[label] = inf.word if inf else None
 
-                # Если это прилагательное и разрешено склонять по родам
                 if ('ADJF' in parsed.tag or 'ADJS' in parsed.tag) and by_gender:
                     for gender in GENDERS:
                         if by_number:
@@ -110,7 +108,6 @@ def decline_api():
                         inf = parsed.inflect(tagset)
                         forms[label] = inf.word if inf else None
 
-                    # Множественное число при включенном числе
                     if by_number:
                         tagset = {case, 'plur'}
                         label = f"{case}_plur"
@@ -120,6 +117,8 @@ def decline_api():
         result[key] = forms
 
     return jsonify(result), 200
+
+
 @app.route('/', methods=['GET', 'HEAD'])
 def root():
     return 'Service is up', 200

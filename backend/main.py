@@ -17,10 +17,21 @@ def submit():
     comment = data.get("comment", "")
     contact = data.get("contact", "")
     url = data.get("url", "")
+    token = data.get("recaptcha_token", "")
 
     if not comment:
         return jsonify({"ok": False}), 400
-
+ secret = os.environ.get("RECAPTCHA_SECRET")
+    if secret:
+        r = req.post("https://www.google.com/recaptcha/api/siteverify", data={
+            "secret": secret,
+            "response": token
+        })
+        result = r.json()
+        score = result.get("score", 0)
+        if not result.get("success") or score < 0.5:
+            return jsonify({"ok": False, "error": "Проверка не пройдена"}), 400
+    
     text = f"""
 Новый отзыв:
 

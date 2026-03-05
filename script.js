@@ -546,7 +546,7 @@ if (feedbackModal && feedbackClose && feedbackForm) {
                 '<div class="feedback-success">' +
                     '<div class="feedback-success-icon">✓</div>' +
                     '<div class="feedback-success-title">Спасибо!</div>' +
-                    '<div class="feedback-success-text">Твой отзыв отправлен — обязательно посмотрим</div>' +
+                    '<div class="feedback-success-text">Ваш коментарий отправлен — обязательно посмотрим</div>' +
                 '</div>';
 
             setTimeout(function() {
@@ -567,3 +567,4 @@ if (feedbackModal && feedbackClose && feedbackForm) {
         });
     });
 }
+

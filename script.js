@@ -131,6 +131,10 @@ if (copyButton) {
         if (result && result.value) {
             result.select();
             document.execCommand('copy');
+            
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({ event: 'copy_success' });
+
             copyButton.textContent = '✓ Скопировано';
             copyButton.classList.add('copied');
             result.classList.add('flash');
@@ -567,4 +571,5 @@ if (feedbackModal && feedbackClose && feedbackForm) {
         });
     });
 }
+
 

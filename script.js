@@ -498,4 +498,72 @@ if (navLogo) {
             setTimeout(function () { el.remove(); }, 2200);
         });
     };
+
+}
+
+var feedbackModal   = document.getElementById('feedbackModal');
+var feedbackClose   = document.getElementById('feedbackClose');
+var feedbackForm    = document.getElementById('feedbackForm');
+var feedbackMsgBox  = document.getElementById('feedbackMessage');
+
+if (feedbackModal && feedbackClose && feedbackForm) {
+    window.openFeedbackForm = function() {
+        feedbackModal.classList.remove('hidden');
+    };
+
+    feedbackClose.addEventListener('click', function() {
+        feedbackModal.classList.add('hidden');
+    });
+
+    feedbackModal.addEventListener('click', function(e) {
+        if (e.target === feedbackModal) feedbackModal.classList.add('hidden');
+    });
+
+    feedbackForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var comment = document.getElementById('feedbackComment').value.trim();
+        var contact = document.getElementById('feedbackContact').value.trim();
+        if (!comment) return;
+
+        var submitBtn = feedbackForm.querySelector('.feedback-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Отправляем...';
+
+        fetch('https://feedback-service-ykt7.onrender.com/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                comment: comment,
+                contact: contact,
+                url: window.location.href
+            })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            feedbackForm.style.display = 'none';
+            feedbackMsgBox.innerHTML =
+                '<div class="feedback-success">' +
+                    '<div class="feedback-success-icon">✓</div>' +
+                    '<div class="feedback-success-title">Спасибо!</div>' +
+                    '<div class="feedback-success-text">Твой отзыв отправлен — обязательно посмотрим</div>' +
+                '</div>';
+
+            setTimeout(function() {
+                feedbackModal.classList.add('hidden');
+                setTimeout(function() {
+                    feedbackForm.style.display = '';
+                    feedbackMsgBox.innerHTML = '';
+                    feedbackForm.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Отправить';
+                }, 300);
+            }, 2500);
+        })
+        .catch(function() {
+            feedbackMsgBox.textContent = 'Ошибка отправки. Попробуйте позже.';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Отправить';
+        });
+    });
 }

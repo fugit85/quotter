@@ -95,7 +95,19 @@
             <polyline points="3,12 9,6 15,12" />
         </svg>
     </button>
-
+    <div id="feedbackModal" class="feedback-modal hidden">
+            <div class="feedback-content">
+                <button class="feedback-close" id="feedbackClose">✕</button>
+                <p>Если что-то не так удобно или очень нужна другая фича - пишите! 😉</p></p>
+                <form id="feedbackForm" method="post">
+                    <textarea id="feedbackComment" name="comment" placeholder="Ваш комментарий" required></textarea>
+                    <input type="text" id="feedbackContact" name="contact"
+                        placeholder="Контакт для обратной связи (необязательно)" />
+                    <button type="submit" class="feedback-submit">Отправить</button>
+                </form>
+                <div id="feedbackMessage" class="feedback-message"></div>
+            </div>
+        </div>
     <footer>
         <p>2025 - Tools for PPС daily routine. Made for fun. AI power.</p>
         <p style="font-size:11px;margin-top:4px;">Сайт защищён reCAPTCHA · <a href="https://policies.google.com/privacy" target="_blank" style="color:inherit">Конфиденциальность</a> · <a href="https://policies.google.com/terms" target="_blank" style="color:inherit">Условия</a></p>

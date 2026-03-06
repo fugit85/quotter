@@ -533,6 +533,9 @@ if (feedbackModal && feedbackClose && feedbackForm) {
         var contact = document.getElementById('feedbackContact').value.trim();
         if (!comment) return;
 
+        var hint = document.getElementById('gtm-bottom-right-hint');
+        if (hint) hint.remove();
+        
         var submitBtn = feedbackForm.querySelector('.feedback-submit');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Отправляем...';
@@ -576,6 +579,7 @@ if (feedbackModal && feedbackClose && feedbackForm) {
         });
     });
 }
+
 
 
 

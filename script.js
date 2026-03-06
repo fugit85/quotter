@@ -558,6 +558,8 @@ if (feedbackModal && feedbackClose && feedbackForm) {
 
             setTimeout(function() {
                 feedbackModal.classList.add('hidden');
+                var hint = document.getElementById('gtm-bottom-right-hint');
+                if (hint) hint.remove();
                 setTimeout(function() {
                     feedbackForm.style.display = '';
                     feedbackMsgBox.innerHTML = '';
@@ -574,6 +576,7 @@ if (feedbackModal && feedbackClose && feedbackForm) {
         });
     });
 }
+
 
 
 

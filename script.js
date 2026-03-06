@@ -2,7 +2,10 @@ var html = document.documentElement;
 var themeIcon = document.getElementById('themeIcon');
 var themeLabel = document.getElementById('themeLabel');
 
-var saved = localStorage.getItem('theme') || 'light';
+var saved = localStorage.getItem('theme');
+if (!saved) {
+    saved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
 applyTheme(saved);
 
 document.getElementById('themeToggle').onclick = function () {
@@ -571,5 +574,6 @@ if (feedbackModal && feedbackClose && feedbackForm) {
         });
     });
 }
+
 
 

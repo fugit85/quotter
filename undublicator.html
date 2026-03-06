@@ -52,7 +52,7 @@
                 <span class="page-title-dot"></span>
                 Удалить дубликаты
             </h1>
-            <p class="page-subtitle">Убирает одинаковые строки или слова</p>
+            <p class="page-subtitle">Убирает повторяющиеся строки или слова. Если порядок слов не важен, например, "ключевое слово" и "слово ключевое" считаются дубликатами — отмечайте галочку ниже.</p>
         </div>
 
         <div class="card">
@@ -61,14 +61,19 @@
 
             <div class="toolbar">
                 <select id="type">
-                    <option value="string">Строки</option>
-                    <option value="words">Слова</option>
+                    <option value="string">Уникальные строки</option>
+                    <option value="words">Уникальные слова</option>
                 </select>
                 <button class="btn btn-primary" id="button-dublicate">✦ Очистить</button>
+                <label class="decline-label" id="ignoreOrderWrap">
+                    <input type="checkbox" id="ignoreOrder">
+                    <span>Порядок слов не важен</span>
+                </label>
                 <span class="counter" id="counter">0 строк</span>
             </div>
 
             <div class="divider"></div>
+
 
             <div class="field-label">Результат</div>
             <textarea id="result" readonly placeholder="Результат появится здесь..."></textarea>
@@ -76,25 +81,29 @@
             <div class="toolbar">
                 <button class="btn btn-ghost" id="copy">⎘ Копировать</button>
                 <button class="btn btn-ghost" id="clear">✕ Очистить</button>
+                <span class="counter" id="counter-result">0 строк</span>
             </div>
         </div>
     </main>
     <div id="feedbackModal" class="feedback-modal hidden">
-            <div class="feedback-content">
-                <button class="feedback-close" id="feedbackClose">✕</button>
-                <p>Если что-то не так удобно или очень нужна другая фича - пишите! 😉</p></p>
-                <form id="feedbackForm" method="post">
-                    <textarea id="feedbackComment" name="comment" placeholder="Ваш комментарий" required></textarea>
-                    <input type="text" id="feedbackContact" name="contact"
-                        placeholder="Контакт для обратной связи (необязательно)" />
-                    <button type="submit" class="feedback-submit">Отправить</button>
-                </form>
-                <div id="feedbackMessage" class="feedback-message"></div>
-            </div>
+        <div class="feedback-content">
+            <button class="feedback-close" id="feedbackClose">✕</button>
+            <p>Если что-то не так удобно или очень нужна другая фича - пишите! 😉</p>
+            </p>
+            <form id="feedbackForm" method="post">
+                <textarea id="feedbackComment" name="comment" placeholder="Ваш комментарий" required></textarea>
+                <input type="text" id="feedbackContact" name="contact"
+                    placeholder="Контакт для обратной связи (необязательно)" />
+                <button type="submit" class="feedback-submit">Отправить</button>
+            </form>
+            <div id="feedbackMessage" class="feedback-message"></div>
         </div>
+    </div>
     <footer>
         <p>2025 - Tools for PPС daily routine. Made for fun. AI power.</p>
-        <p style="font-size:11px;margin-top:4px;">Сайт защищён reCAPTCHA · <a href="https://policies.google.com/privacy" target="_blank" style="color:inherit">Конфиденциальность</a> · <a href="https://policies.google.com/terms" target="_blank" style="color:inherit">Условия</a></p>
+        <p style="font-size:11px;margin-top:4px;">Сайт защищён reCAPTCHA · <a href="https://policies.google.com/privacy"
+                target="_blank" style="color:inherit">Конфиденциальность</a> · <a
+                href="https://policies.google.com/terms" target="_blank" style="color:inherit">Условия</a></p>
     </footer>
 </body>
 

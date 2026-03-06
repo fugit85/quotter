@@ -53,7 +53,9 @@
                 <span class="page-title-dot"></span>
                 Закавычник
             </h1>
-            <p class="page-subtitle">Оборачивает строки в фразовое или точное соответствие</p>
+            <p class="page-subtitle">Оборачивает строки в фразовое или точное соответствие. Можно загрузить
+                CSV-файл прямо из планировщика ключевых слов, без редактирования. Инструмент для простой механической
+                работы с ключевыми словами</p>
         </div>
 
         <div class="card">
@@ -61,14 +63,69 @@
             <textarea id="input" placeholder="Введите текст, каждая строка — отдельная фраза"></textarea>
 
             <div class="toolbar">
+                <label class="btn btn-ghost btn-upload" for="csvUploadQuote"
+                    title="Загрузить выгрузку из Планировщика Google Ads (CSV)">⇪ Загрузить CSV</label>
+                <input type="file" id="csvUploadQuote" accept=".csv" style="display:none">
                 <select id="mode">
                     <option value="phrase">Фразовое соответствие</option>
                     <option value="exact">Точное соответствие</option>
+                    <option value="custom">Свой символ</option>
                 </select>
+                <div class="custom-wrap" id="customWrap" style="display:none">
+                    <input class="custom-symbol-input" id="customOpen" maxlength="5" placeholder="[" value="[">
+                    <span style="color:var(--text-muted);font-size:13px">текст</span>
+                    <input class="custom-symbol-input" id="customClose" maxlength="5" placeholder="]" value="]">
+                </div>
                 <button class="btn btn-primary" id="button-quote">✦ Закавычить</button>
                 <span class="counter" id="counter">0 строк</span>
             </div>
+            <div class="quote-options">
+                <button class="options-toggle" id="optionsToggle">
+                    Дополнительные параметры
+                    <svg class="options-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="2,5 7,10 12,5" />
+                    </svg>
+                </button>
 
+                <div class="options-body" id="optionsBody">
+                    <div class="option-group">
+                        <div class="field-label">Регистр</div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="caseMode" value="original" checked>
+                                Исходный</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="lower"> все
+                                маленькие</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="upper"> ВСЕ
+                                БОЛЬШИЕ</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="first"> Первое
+                                слово</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="each"> Каждое
+                                Слово</label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Спецсимволы <span
+                                style="font-weight:400;text-transform:none;letter-spacing:0">(!, ?, @, #, % и
+                                др.)</span></div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="cleanMode" value="keep" checked> Не
+                                убирать</label>
+                            <label class="decline-label"><input type="radio" name="cleanMode" value="clean">
+                                Убрать</label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Дубликаты строк</div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="dedupMode" value="keep" checked> Не
+                                убирать</label>
+                            <label class="decline-label"><input type="radio" name="dedupMode" value="remove">
+                                Убрать</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="divider"></div>
 
             <div class="field-label">Результат</div>
@@ -76,41 +133,35 @@
 
             <div class="toolbar">
                 <button class="btn btn-ghost" id="copy">⎘ Копировать</button>
+                <button class="btn btn-ghost" id="export-csv-quote">↓ Экспорт CSV</button>
                 <button class="btn btn-ghost" id="clear">✕ Очистить</button>
+                <span class="counter" id="counter-result">0 строк</span>
             </div>
-        </div>
 
-        <div id="feedbackModal" class="feedback-modal hidden">
-            <div class="feedback-content">
-                <button class="feedback-close" id="feedbackClose">✕</button>
-                <p>Если что-то не так удобно или очень нужна другая фича - пишите! 😉</p></p>
-                <form id="feedbackForm" method="post">
-                    <textarea id="feedbackComment" name="comment" placeholder="Ваш комментарий" required></textarea>
-                    <input type="text" id="feedbackContact" name="contact"
-                        placeholder="Контакт для обратной связи (необязательно)" />
-                    <button type="submit" class="feedback-submit">Отправить</button>
-                </form>
-                <div id="feedbackMessage" class="feedback-message"></div>
+            <div id="feedbackModal" class="feedback-modal hidden">
+                <div class="feedback-content">
+                    <button class="feedback-close" id="feedbackClose">✕</button>
+                    <p>Если что-то не так удобно или очень нужна другая фича - пишите! 😉</p>
+                    </p>
+                    <form id="feedbackForm" method="post">
+                        <textarea id="feedbackComment" name="comment" placeholder="Ваш комментарий" required></textarea>
+                        <input type="text" id="feedbackContact" name="contact"
+                            placeholder="Контакт для обратной связи (необязательно)" />
+                        <button type="submit" class="feedback-submit">Отправить</button>
+                    </form>
+                    <div id="feedbackMessage" class="feedback-message"></div>
+                </div>
             </div>
-        </div>
     </main>
 
     <footer>
         <p>2025 - Tools for PPС daily routine. Made for fun. AI power.</p>
-        <p style="font-size:11px;margin-top:4px;">Сайт защищён reCAPTCHA · <a href="https://policies.google.com/privacy" target="_blank" style="color:inherit">Конфиденциальность</a> · <a href="https://policies.google.com/terms" target="_blank" style="color:inherit">Условия</a></p>
+        <p style="font-size:11px;margin-top:4px;">Сайт защищён reCAPTCHA · <a href="https://policies.google.com/privacy"
+                target="_blank" style="color:inherit">Конфиденциальность</a> · <a
+                href="https://policies.google.com/terms" target="_blank" style="color:inherit">Условия</a></p>
     </footer>
 
 </body>
 
 
 </html>
-
-
-
-
-
-
-
-
-
-

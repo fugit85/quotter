@@ -47,32 +47,95 @@ if (scrollBtn) {
 
 
 function setButtonClickHandler() {
-    let modeElement = document.getElementById('mode');
-    let buttonQuote = document.getElementById('button-quote');
-    let inputElement = document.getElementById('input');
-    let resultElement = document.getElementById('result');
+    var modeElement = document.getElementById('mode');
+    var buttonQuote = document.getElementById('button-quote');
+    var inputElement = document.getElementById('input');
+    var resultElement = document.getElementById('result');
+    var customWrap = document.getElementById('customWrap');
+
+    if (modeElement && customWrap) {
+        modeElement.onchange = function () {
+            customWrap.style.display = modeElement.value === 'custom' ? 'flex' : 'none';
+        };
+    }
 
     if (modeElement && buttonQuote && inputElement && resultElement) {
-        let mode = modeElement.value;
         buttonQuote.onclick = function () {
-            let text = inputElement.value.trimEnd();
-            text = text.split('\n').map(line => line.trimStart().replace(/\s+/g, ' ')).join('\n');
-            let lines = text.split('\n');
-            let quotedLines = lines.map(line => {
-                if (mode === 'phrase') {
-                    return `"${line}"`;
-                } else if (mode === 'exact') {
-                    return `[${line}]`;
-                } else {
-                    return line;
+            var mode = modeElement.value;
+
+            var caseMode = document.querySelector('input[name="caseMode"]:checked');
+            caseMode = caseMode ? caseMode.value : 'original';
+            var cleanMode = document.querySelector('input[name="cleanMode"]:checked');
+            cleanMode = cleanMode ? cleanMode.value : 'keep';
+            var dedupMode = document.querySelector('input[name="dedupMode"]:checked');
+            dedupMode = dedupMode ? dedupMode.value : 'keep';
+
+            var openSym = (document.getElementById('customOpen') || {}).value || '[';
+            var closeSym = (document.getElementById('customClose') || {}).value || ']';
+
+            var text = inputElement.value.trimEnd();
+            var lines = text.split('\n').map(function (line) {
+                return line.trim().replace(/\s+/g, ' ');
+            }).filter(function (line) { return line !== ''; });
+
+            if (dedupMode === 'remove') {
+                var seen = {};
+                lines = lines.filter(function (line) {
+                    var key = line.toLowerCase().split(' ').sort().join(' ');
+                    if (seen[key]) return false;
+                    seen[key] = true;
+                    return true;
+                });
+            }
+
+            var result = lines.map(function (line) {
+                if (cleanMode === 'clean') {
+                    line = line.replace(/[^\wа-яёА-ЯЁ\s\d]/g, '').replace(/\s+/g, ' ').trim();
                 }
-            });
-            let result = quotedLines.filter(line => line !== '""' && line !== '[]' && line.trim() !== '').join('\n');
+
+                if (caseMode === 'lower') {
+                    line = line.toLowerCase();
+                } else if (caseMode === 'upper') {
+                    line = line.toUpperCase();
+                } else if (caseMode === 'first') {
+                    line = line.charAt(0).toUpperCase() + line.slice(1).toLowerCase();
+                } else if (caseMode === 'each') {
+                    line = line.split(' ').map(function (w) {
+                        return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                    }).join(' ');
+                }
+
+                if (mode === 'phrase') return '"' + line + '"';
+                else if (mode === 'exact') return '[' + line + ']';
+                else if (mode === 'custom') return openSym + line + closeSym;
+                return line;
+            }).filter(function (line) {
+                return line.trim() !== '' && line !== '""' && line !== '[]';
+            }).join('\n');
+
             resultElement.textContent = result;
-        }
+
+            var counterResult = document.getElementById('counter-result');
+            if (counterResult) {
+                var n = result ? result.split('\n').filter(function (l) { return l.trim(); }).length : 0;
+                counterResult.textContent = n + (
+                    n % 10 === 1 && n !== 11 ? ' строка' :
+                        n % 10 >= 2 && n % 10 <= 4 && (n < 10 || n > 20) ? ' строки' : ' строк'
+                );
+            }
+
+        };
     }
 }
 
+var optionsToggle = document.getElementById('optionsToggle');
+var optionsBody = document.getElementById('optionsBody');
+if (optionsToggle && optionsBody) {
+    optionsToggle.onclick = function () {
+        optionsToggle.classList.toggle('open');
+        optionsBody.classList.toggle('open');
+    };
+}
 
 function setCapitalButtonClickHandler() {
     let buttonCapital = document.getElementById('button-capital');
@@ -134,7 +197,7 @@ if (copyButton) {
         if (result && result.value) {
             result.select();
             document.execCommand('copy');
-            
+
             window.dataLayer = window.dataLayer || [];
             window.dataLayer.push({ event: 'copy_success' });
 
@@ -151,29 +214,48 @@ if (copyButton) {
 }
 
 function setDuplicateButtonClickHandler() {
-    let buttonDuplicate = document.getElementById('button-dublicate');
-    let inputElement = document.getElementById('input');
-    let resultElement = document.getElementById('result');
-    let typeElement = document.getElementById('type');
+    var buttonDuplicate = document.getElementById('button-dublicate');
+    var inputElement = document.getElementById('input');
+    var resultElement = document.getElementById('result');
+    var typeElement = document.getElementById('type');
 
     if (buttonDuplicate && inputElement && resultElement && typeElement) {
         buttonDuplicate.onclick = function () {
-            let text = inputElement.value.trim();
-            let type = typeElement.value;
-            let result;
+            var text = inputElement.value.trim();
+            var type = typeElement.value;
+            var ignoreOrder = document.getElementById('ignoreOrder');
+            ignoreOrder = ignoreOrder ? ignoreOrder.checked : false;
+            var result;
 
             if (type === 'string') {
-                let lines = text.split('\n').map(line => line.trim());
-                let uniqueLines = [...new Set(lines)];
+                var lines = text.split('\n').map(function (l) { return l.trim(); }).filter(function (l) { return l; });
+                var seen = {};
+                var uniqueLines = lines.filter(function (line) {
+                    var key = ignoreOrder
+                        ? line.toLowerCase().split(' ').sort().join(' ')
+                        : line.toLowerCase();
+                    if (seen[key]) return false;
+                    seen[key] = true;
+                    return true;
+                });
                 result = uniqueLines.join('\n');
             } else if (type === 'words') {
-                let words = text.split(/\s+/);
-                let uniqueWords = [...new Set(words)];
+                var words = text.split(/\s+/).filter(function (w) { return w; });
+                var uniqueWords = [...new Set(words.map(function (w) { return w.toLowerCase(); }))];
                 result = uniqueWords.join('\n');
             }
 
             resultElement.textContent = result;
-        }
+
+            var counterResult = document.getElementById('counter-result');
+            if (counterResult) {
+                var n = result ? result.split('\n').filter(function (l) { return l.trim(); }).length : 0;
+                counterResult.textContent = n + (
+                    n % 10 === 1 && n !== 11 ? ' строка' :
+                        n % 10 >= 2 && n % 10 <= 4 && (n < 10 || n > 20) ? ' строки' : ' строк'
+                );
+            }
+        };
     }
 }
 
@@ -508,25 +590,25 @@ if (navLogo) {
 
 }
 
-var feedbackModal   = document.getElementById('feedbackModal');
-var feedbackClose   = document.getElementById('feedbackClose');
-var feedbackForm    = document.getElementById('feedbackForm');
-var feedbackMsgBox  = document.getElementById('feedbackMessage');
+var feedbackModal = document.getElementById('feedbackModal');
+var feedbackClose = document.getElementById('feedbackClose');
+var feedbackForm = document.getElementById('feedbackForm');
+var feedbackMsgBox = document.getElementById('feedbackMessage');
 
 if (feedbackModal && feedbackClose && feedbackForm) {
-    window.openFeedbackForm = function() {
+    window.openFeedbackForm = function () {
         feedbackModal.classList.remove('hidden');
     };
 
-    feedbackClose.addEventListener('click', function() {
+    feedbackClose.addEventListener('click', function () {
         feedbackModal.classList.add('hidden');
     });
 
-    feedbackModal.addEventListener('click', function(e) {
+    feedbackModal.addEventListener('click', function (e) {
         if (e.target === feedbackModal) feedbackModal.classList.add('hidden');
     });
 
-    feedbackForm.addEventListener('submit', function(e) {
+    feedbackForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
         var comment = document.getElementById('feedbackComment').value.trim();
@@ -535,7 +617,7 @@ if (feedbackModal && feedbackClose && feedbackForm) {
 
         var hint = document.getElementById('gtm-bottom-right-hint');
         if (hint) hint.remove();
-        
+
         var submitBtn = feedbackForm.querySelector('.feedback-submit');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Отправляем...';
@@ -549,38 +631,101 @@ if (feedbackModal && feedbackClose && feedbackForm) {
                 url: window.location.href
             })
         })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            feedbackForm.style.display = 'none';
-            feedbackMsgBox.innerHTML =
-                '<div class="feedback-success">' +
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                feedbackForm.style.display = 'none';
+                feedbackMsgBox.innerHTML =
+                    '<div class="feedback-success">' +
                     '<div class="feedback-success-icon">✓</div>' +
                     '<div class="feedback-success-title">Спасибо!</div>' +
                     '<div class="feedback-success-text">Ваш коментарий отправлен — обязательно посмотрим</div>' +
-                '</div>';
+                    '</div>';
 
-            setTimeout(function() {
-                feedbackModal.classList.add('hidden');
-                var hint = document.getElementById('gtm-bottom-right-hint');
-                if (hint) hint.remove();
-                setTimeout(function() {
-                    feedbackForm.style.display = '';
-                    feedbackMsgBox.innerHTML = '';
-                    feedbackForm.reset();
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Отправить';
-                }, 300);
-            }, 2500);
-        })
-        .catch(function() {
-            feedbackMsgBox.textContent = 'Ошибка отправки. Попробуйте позже.';
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Отправить';
-        });
+                setTimeout(function () {
+                    feedbackModal.classList.add('hidden');
+                    var hint = document.getElementById('gtm-bottom-right-hint');
+                    if (hint) hint.remove();
+                    setTimeout(function () {
+                        feedbackForm.style.display = '';
+                        feedbackMsgBox.innerHTML = '';
+                        feedbackForm.reset();
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Отправить';
+                    }, 300);
+                }, 2500);
+            })
+            .catch(function () {
+                feedbackMsgBox.textContent = 'Ошибка отправки. Попробуйте позже.';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Отправить';
+            });
     });
 }
 
+var csvUploadQuote = document.getElementById('csvUploadQuote');
+if (csvUploadQuote) {
+    csvUploadQuote.onchange = function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+            var raw = ev.target.result;
+            var text;
+            if (raw instanceof ArrayBuffer) {
+                var bytes = new Uint8Array(raw);
+                text = (bytes[0] === 0xFF && bytes[1] === 0xFE)
+                    ? new TextDecoder('utf-16le').decode(raw)
+                    : new TextDecoder('utf-8').decode(raw);
+            } else {
+                text = raw;
+            }
+            var lines = text.split('\n');
+            var keywords = [];
+            var headerFound = false;
+            var kwIndex = 0;
+            for (var i = 0; i < lines.length; i++) {
+                var cols = lines[i].split('\t');
+                if (!headerFound) {
+                    for (var c = 0; c < cols.length; c++) {
+                        if (cols[c].trim().toLowerCase() === 'keyword') {
+                            kwIndex = c; headerFound = true; break;
+                        }
+                    }
+                    continue;
+                }
+                var kw = cols[kwIndex] ? cols[kwIndex].trim() : '';
+                if (kw) keywords.push(kw);
+            }
+            if (keywords.length > 0) {
+                document.getElementById('input').value = keywords.join('\n');
+            } else {
+                alert('Не удалось найти ключевые слова.');
+            }
+            csvUploadQuote.value = '';
+        };
+        reader.readAsArrayBuffer(file);
+    };
+}
 
+var exportCsvQuote = document.getElementById('export-csv-quote');
+if (exportCsvQuote) {
+    exportCsvQuote.onclick = function () {
+        var result = document.getElementById('result');
+        if (!result || !result.value.trim()) return;
+        var lines = result.value.trim().split('\n');
+        var csvContent = 'Keyword\n' + lines.map(function (l) {
+            return (l.indexOf(',') !== -1 || l.indexOf('"') !== -1)
+                ? '"' + l.replace(/"/g, '""') + '"' : l;
+        }).join('\n');
+        var blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = 'keywords.csv'; a.click();
+        URL.revokeObjectURL(url);
+        exportCsvQuote.textContent = '✓ Сохранено';
+        setTimeout(function () { exportCsvQuote.textContent = '↓ Экспорт CSV'; }, 1800);
+    };
+}
 
 
 

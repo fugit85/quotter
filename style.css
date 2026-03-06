@@ -47,7 +47,9 @@
   --spot3: rgba(14, 165, 233, 0.03);
 }
 
-.grecaptcha-badge { visibility: hidden !important; }
+.grecaptcha-badge {
+  visibility: hidden !important;
+}
 
 body {
   font-family: 'Geologica', sans-serif;
@@ -293,6 +295,113 @@ select {
 
 select:focus {
   border-color: var(--accent);
+}
+
+.quote-options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.decline-label input[type="radio"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--blue-mid);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.decline-label:has(input[type="radio"]:checked) {
+  border-color: var(--blue-mid);
+  background: var(--blue-pale);
+  color: var(--blue-mid);
+}
+
+.custom-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.custom-symbol-input {
+  width: 48px;
+  padding: 7px 10px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border-soft);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.custom-symbol-input:focus {
+  border-color: var(--accent);
+}
+
+.options-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Geologica', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.options-toggle:hover {
+  color: var(--blue-mid);
+}
+
+.options-arrow {
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.options-toggle.open .options-arrow {
+  transform: rotate(180deg);
+}
+
+.options-body {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-soft);
+  animation: fadeIn 0.2s ease;
+}
+
+.options-body.open {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .btn {
@@ -751,6 +860,7 @@ footer {
 .hidden {
   display: none !important;
 }
+
 .hidden {
   display: none !important;
 }
@@ -758,7 +868,7 @@ footer {
 .feedback-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
@@ -776,13 +886,20 @@ footer {
   width: 100%;
   max-width: 420px;
   position: relative;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
   animation: feedbackIn 0.25s ease;
 }
 
 @keyframes feedbackIn {
-  from { opacity: 0; transform: translateY(12px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .feedback-content h3 {
@@ -861,7 +978,7 @@ footer {
 #feedbackComment:focus,
 #feedbackContact:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
   background: var(--surface);
 }
 
@@ -880,13 +997,13 @@ footer {
   font-family: 'Geologica', sans-serif;
   font-size: 13.5px;
   font-weight: 600;
-  box-shadow: 0 4px 14px rgba(14,165,233,0.3);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
   transition: all 0.2s;
 }
 
 .feedback-submit:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(14,165,233,0.45);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
 }
 
 .feedback-message {
@@ -895,6 +1012,7 @@ footer {
   color: var(--text-muted);
   text-align: center;
 }
+
 .feedback-success {
   display: flex;
   flex-direction: column;
@@ -914,13 +1032,20 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(14,165,233,0.3);
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3);
   animation: successPop 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.2);
 }
 
 @keyframes successPop {
-  from { transform: scale(0); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .feedback-success-title {
@@ -964,5 +1089,3 @@ footer {
   }
 
 }
-
-

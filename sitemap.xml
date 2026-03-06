@@ -4,13 +4,24 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<url>
-  <loc>https://fugit85.github.io/quotter/</loc>
-  <loc>https://fugit85.github.io/quotter/capiralizator.html</loc>
-  <loc>https://fugit85.github.io/quotter/undublicator.html</loc>
-  <loc>https://fugit85.github.io/quotter/minusator.html</loc> 
-  <loc>https://fugit85.github.io/quotter/decline.html</loc> 
-  <lastmod>2025-05-04T15:23:25+00:00</lastmod>
-</url>
-
-</urlset>
+  <url>
+    <loc>https://qoutter.cloud/</loc>
+    <lastmod>2026-03-06</lastmod>
+  </url>
+  <url>
+    <loc>https://qoutter.cloud/capiralizator.html</loc>
+    <lastmod>2026-03-06</lastmod>
+  </url>
+  <url>
+    <loc>https://qoutter.cloud/undublicator.html</loc>
+    <lastmod>2026-03-06</lastmod>
+  </url>
+  <url>
+    <loc>https://qoutter.cloud/minusator.html</loc>
+    <lastmod>2026-03-06</lastmod>
+  </url>
+  <url>
+    <loc>https://qoutter.cloud/decline.html</loc>
+    <lastmod>2026-03-06</lastmod>
+  </url>
+</urlset>>

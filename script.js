@@ -608,29 +608,33 @@ if (feedbackModal && feedbackClose && feedbackForm) {
         if (e.target === feedbackModal) feedbackModal.classList.add('hidden');
     });
 
-    feedbackForm.addEventListener('submit', function (e) {
-        e.preventDefault();
+feedbackForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var comment = document.getElementById('feedbackComment').value.trim();
+    var contact = document.getElementById('feedbackContact').value.trim();
+    if (!comment) return;
 
-        var comment = document.getElementById('feedbackComment').value.trim();
-        var contact = document.getElementById('feedbackContact').value.trim();
-        if (!comment) return;
+    var hint = document.getElementById('gtm-bottom-right-hint');
+    if (hint) hint.remove();
 
-        var hint = document.getElementById('gtm-bottom-right-hint');
-        if (hint) hint.remove();
+    var submitBtn = feedbackForm.querySelector('.feedback-submit');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Проверка...';
 
-        var submitBtn = feedbackForm.querySelector('.feedback-submit');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Отправляем...';
-
-        fetch('https://feedback-service-ykt7.onrender.com/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                comment: comment,
-                contact: contact,
-                url: window.location.href
+    grecaptcha.ready(function () {
+        grecaptcha.execute('6Lch7H8sAAAAAK9ayTdPK7pwgOcCnm3DJLoI15Mk', { action: 'feedback' })
+        .then(function (token) {
+            submitBtn.textContent = 'Отправляем...';
+            fetch('https://feedback-service-ykt7.onrender.com/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    comment: comment,
+                    contact: contact,
+                    url: window.location.href,
+                    recaptcha_token: token
+                })
             })
-        })
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 feedbackForm.style.display = 'none';
@@ -638,13 +642,10 @@ if (feedbackModal && feedbackClose && feedbackForm) {
                     '<div class="feedback-success">' +
                     '<div class="feedback-success-icon">✓</div>' +
                     '<div class="feedback-success-title">Спасибо!</div>' +
-                    '<div class="feedback-success-text">Ваш коментарий отправлен — обязательно посмотрим</div>' +
+                    '<div class="feedback-success-text">Ваш комментарий отправлен — обязательно посмотрим</div>' +
                     '</div>';
-
                 setTimeout(function () {
                     feedbackModal.classList.add('hidden');
-                    var hint = document.getElementById('gtm-bottom-right-hint');
-                    if (hint) hint.remove();
                     setTimeout(function () {
                         feedbackForm.style.display = '';
                         feedbackMsgBox.innerHTML = '';
@@ -659,7 +660,9 @@ if (feedbackModal && feedbackClose && feedbackForm) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Отправить';
             });
+        });
     });
+});
 }
 
 var csvUploadQuote = document.getElementById('csvUploadQuote');

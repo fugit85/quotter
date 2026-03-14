@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Match Type Tool Online — Google Ads Phrase & Exact Match</title>
+    <meta name="description"
+        content="Wrap keywords in phrase match &quot; &quot; or exact match [ ] for Google Ads online. Upload CSV from Google Keyword Planner — no editing required. Free tool for PPC specialists." />
+    <script src="/script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/en/">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/">
+<link rel="stylesheet" href="/style.css">
+<link rel="icon" href="/quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lch7H8sAAAAAK9ayTdPK7pwgOcCnm3DJLoI15Mk"></script>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Match Type Tool</span>
+            <div class="nav-links">
+                <a href="/en/" class="active">Match Types</a>
+                <a href="/en/capitalizer/">Capitalizer</a>
+                <a href="/en/deduplicator/">Deduplicator</a>
+                <a href="/en/negative-keywords/">Negatives</a>
+            </div>
+            <div class="nav-actions">
+                <a href="/" class="lang-toggle">RU</a>
+                <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Dark</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="/en/" class="active">Match Types</a>
+            <a href="/en/capitalizer/">Capitalizer</a>
+            <a href="/en/deduplicator/">Deduplicator</a>
+            <a href="/en/negative-keywords/">Negatives</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Keyword Match Type Tool
+            </h1>
+            <p class="page-subtitle">Wrap keywords in phrase " ", exact [ ] or any other match type for Google Ads. 
+                An online tool for simple, automated work with keywords.
+                Upload CSV directly from Google Keyword Planner — no editing required.</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Input</div>
+            <textarea id="input" placeholder="Enter keywords, one per line"></textarea>
+
+            <div class="toolbar">
+                <label class="btn btn-ghost btn-upload" for="csvUploadQuote"
+                    title="Upload CSV from Google Keyword Planner">⇪ Upload CSV</label>
+                <input type="file" id="csvUploadQuote" accept=".csv" style="display:none">
+                <select id="mode">
+                    <option value="phrase">Phrase match</option>
+                    <option value="exact">Exact match</option>
+                    <option value="custom">Custom symbol</option>
+                </select>
+                <div class="custom-wrap" id="customWrap" style="display:none">
+                    <input class="custom-symbol-input" id="customOpen" maxlength="5" placeholder="[" value="[">
+                    <span style="color:var(--text-muted);font-size:13px">text</span>
+                    <input class="custom-symbol-input" id="customClose" maxlength="5" placeholder="]" value="]">
+                </div>
+                <button class="btn btn-primary" id="button-quote">✦ Wrap</button>
+                <span class="counter" id="counter">0 lines</span>
+            </div>
+
+            <div class="quote-options">
+                <button class="options-toggle" id="optionsToggle">
+                    <span class="options-toggle-text">Advanced options</span>
+                    <svg class="options-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="2,5 7,10 12,5" />
+                    </svg>
+                </button>
+
+                <div class="options-body" id="optionsBody">
+                    <div class="option-group">
+                        <div class="field-label">Process by</div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="splitMode" value="lines" checked>
+                                Line by line</label>
+                            <label class="decline-label"><input type="radio" name="splitMode" value="words"> Each
+                                word</label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Case</div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="caseMode" value="original" checked>
+                                Original</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="lower"> all
+                                lowercase</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="upper"> ALL
+                                UPPERCASE</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="first"> First
+                                word</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="each"> Each
+                                Word</label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Special characters <span
+                                style="font-weight:400;text-transform:none;letter-spacing:0">(!, ?, @, #, % etc.)</span>
+                        </div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="cleanMode" value="keep" checked>
+                                Keep</label>
+                            <label class="decline-label"><input type="radio" name="cleanMode" value="clean">
+                                Remove</label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Duplicates</div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="dedupMode" value="keep" checked>
+                                Keep</label>
+                            <label class="decline-label"><input type="radio" name="dedupMode" value="remove">
+                                Remove</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field-label">Result</div>
+            <textarea id="result" readonly placeholder="Result will appear here..."></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Copy</button>
+                <button class="btn btn-ghost" id="export-csv-quote">↓ Export CSV</button>
+                <button class="btn btn-ghost" id="clear">✕ Clear</button>
+                <span class="counter" id="counter-result">0 lines</span>
+            </div>
+
+            <section class="faq">
+                <h2>FAQ</h2>
+
+                <details class="faq-item">
+                    <summary>Can I upload a file from Google Keyword Planner?</summary>
+                    <p>Yes — the tool accepts CSV directly from Google Keyword Planner without any editing. Keywords are
+                        extracted automatically from the Keyword column.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Does it handle large keyword lists?</summary>
+                    <p>No limits — paste 10,000+ lines, processing is instant and happens entirely in the browser
+                        without sending data to a server.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Will the keyword case be preserved?</summary>
+                    <p>Yes, by default the case is not changed. In Advanced options you can convert to any case — for
+                        example Title Case for ad headlines.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I wrap each word separately?</summary>
+                    <p>Yes — in Advanced options select "Each word". The tool will split the entire text into individual
+                        words and wrap each one. Useful for preparing single-word negative keywords or exact match
+                        terms.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I remove duplicates before wrapping?</summary>
+                    <p>Yes — in Advanced options enable "Remove duplicates". The tool also treats lines with the same
+                        words in different order as duplicates — "buy sofa" and "sofa buy" will be considered the same
+                        keyword.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What does "Remove special characters" do?</summary>
+                    <p>It removes punctuation and special characters (!, ?, @, #, % etc.) from each line before
+                        wrapping. Numbers and letters are kept. Useful when your list was copied from a spreadsheet or
+                        document with extra symbols.</p>
+                </details>
+
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">Protected by reCAPTCHA · <a href="https://policies.google.com/privacy"
+                target="_blank" style="color:inherit">Privacy</a> · <a href="https://policies.google.com/terms"
+                target="_blank" style="color:inherit">Terms</a></p>
+    </footer>
+
+</body>
+
+</html>

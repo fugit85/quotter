@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удалить дубликаты</title>
+    <meta name="description" content="Удаление одинаковых строк онлайн. Просто и удобно. Попробуйте!" />
+    <script src="script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/undublicator.html">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Дубликаты</span>
+            <div class="nav-links">
+                <a href="index.html">Закавычник</a>
+                <a href="capiralizator.html">Капитализатор</a>
+                <a href="undublicator.html" class="active">Дубликаты</a>
+                <a href="minusator.html">Минусатор</a>
+                <a href="decline.html">Склонятор</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Сменить тему">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Тёмная</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Закавычник</a>
+            <a href="capiralizator.html">Капитализатор</a>
+            <a href="undublicator.html" class="active">Дубликаты</a>
+            <a href="minusator.html">Минусатор</a>
+            <a href="decline.html">Склонятор</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Удалить дубликаты
+            </h1>
+            <p class="page-subtitle">Убирает повторяющиеся строки или слова. Если порядок слов не важен, например, "ключевое слово" и "слово ключевое" считаются дубликатами — отмечайте галочку ниже.</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Исходный текст</div>
+            <textarea id="input" placeholder="Введите текст"></textarea>
+
+            <div class="toolbar">
+                <select id="type">
+                    <option value="string">Уникальные строки</option>
+                    <option value="words">Уникальные слова</option>
+                </select>
+                <button class="btn btn-primary" id="button-dublicate">✦ Очистить</button>
+                <label class="decline-label" id="ignoreOrderWrap">
+                    <input type="checkbox" id="ignoreOrder">
+                    <span>Порядок слов не важен</span>
+                </label>
+                <span class="counter" id="counter">0 строк</span>
+            </div>
+
+            <div class="divider"></div>
+
+
+            <div class="field-label">Результат</div>
+            <textarea id="result" readonly placeholder="Результат появится здесь..."></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Копировать</button>
+                <button class="btn btn-ghost" id="clear">✕ Очистить</button>
+                <span class="counter" id="counter-result">0 строк</span>
+            </div>
+        </div>
+    </main>
+    <div id="feedbackModal" class="feedback-modal hidden">
+        <div class="feedback-content">
+            <button class="feedback-close" id="feedbackClose">✕</button>
+            <p>Если что-то не так удобно или очень нужна другая фича - пишите! 😉</p>
+            </p>
+            <form id="feedbackForm" method="post">
+                <textarea id="feedbackComment" name="comment" placeholder="Ваш комментарий" required></textarea>
+                <input type="text" id="feedbackContact" name="contact"
+                    placeholder="Контакт для обратной связи (необязательно)" />
+                <button type="submit" class="feedback-submit">Отправить</button>
+            </form>
+            <div id="feedbackMessage" class="feedback-message"></div>
+        </div>
+    </div>
+    <footer>
+        <p>2025 - Tools for PPС daily routine. Made for fun. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">Сайт защищён reCAPTCHA · <a href="https://policies.google.com/privacy"
+                target="_blank" style="color:inherit">Конфиденциальность</a> · <a
+                href="https://policies.google.com/terms" target="_blank" style="color:inherit">Условия</a></p>
+    </footer>
+</body>
+
+</html>

@@ -596,7 +596,23 @@ var feedbackForm = document.getElementById('feedbackForm');
 var feedbackMsgBox = document.getElementById('feedbackMessage');
 
 if (feedbackModal && feedbackClose && feedbackForm) {
-    window.openFeedbackForm = function () {
+
+    var recaptchaLoaded = false;
+
+    function loadRecaptcha() {
+        if (recaptchaLoaded) return;
+        recaptchaLoaded = true;
+        var script = document.createElement('script');
+        script.src = 'https://www.google.com/recaptcha/api.js?render=6Lch7H8sAAAAAK9ayTdPK7pwgOcCnm3DJLoI15Mk';
+        document.head.appendChild(script);
+    }
+
+    feedbackForm.addEventListener('focusin', loadRecaptcha, { once: true });
+
+    var origOpen = window.openFeedbackForm;
+    window.openFeedbackForm = function() {
+        loadRecaptcha();
+        if (origOpen) origOpen();
         feedbackModal.classList.remove('hidden');
     };
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 
 <head>
     <meta charset="UTF-8">
@@ -31,6 +31,7 @@
                 <a href="decline.html" class="active">Склонятор</a>
             </div>
             <div class="nav-actions">
+                <a href="en/index.html" class="lang-toggle">EN</a>
                 <button class="theme-toggle" id="themeToggle" aria-label="Сменить тему">
                     <span id="themeIcon">🌙</span>
                     <span class="theme-toggle-label" id="themeLabel">Тёмная</span>
@@ -60,22 +61,22 @@
             <div class="field-label">Исходный текст</div>
             <textarea id="input" placeholder="Введите слово или фразу"></textarea>
 
-            <div class="toolbar" style="margin-top: 16px;">
+            <div class="toolbar">
                 <div class="decline-options">
                     <label class="decline-label">
-                        <input type="checkbox" id="byAll" checked onchange="toggleOptions(this)">
+                        <input type="checkbox" id="byAll" checked>
                         <span>Все</span>
                     </label>
                     <label class="decline-label">
-                        <input type="checkbox" id="byGender" onchange="toggleOptions()">
+                        <input type="checkbox" id="byGender">
                         <span>Рода</span>
                     </label>
                     <label class="decline-label">
-                        <input type="checkbox" id="byNumber" onchange="toggleOptions()">
+                        <input type="checkbox" id="byNumber">
                         <span>Числа</span>
                     </label>
                     <label class="decline-label">
-                        <input type="checkbox" id="byCase" onchange="toggleOptions()">
+                        <input type="checkbox" id="byCase">
                         <span>Падежи</span>
                     </label>
                 </div>
@@ -96,7 +97,7 @@
     <div id="feedbackModal" class="feedback-modal hidden">
             <div class="feedback-content">
                 <button class="feedback-close" id="feedbackClose">✕</button>
-                <p>Если что-то не так удобно или очень нужна другая фича - пишите! 😉</p></p>
+                <p>Если что-то не так удобно или очень нужна другая фича — пишите! 😉</p>
                 <form id="feedbackForm" method="post">
                     <textarea id="feedbackComment" name="comment" placeholder="Ваш комментарий" required></textarea>
                     <input type="text" id="feedbackContact" name="contact"

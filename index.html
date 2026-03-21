@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Закавычник</title>
+    <title>Закавычить ключевые слова онлайн — инструмент для Google Ads</title>
     <meta name="description"
-        content="Закавычник строк во фразовое или точное соответствие. Не меняет регистра букв. Просто и удобно. Попробуйте!" />
+        content="Закавычить ключевые слова онлайн для Google Ads — во фразовое &quot; &quot; или в точное [ ] соответствие. Просто и удобно. Попробуйте!" />
     <script src="script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="quote.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,6 +34,7 @@
                 <a href="decline.html">Склонятор</a>
             </div>
             <div class="nav-actions">
+                <a href="en/index.html" class="lang-toggle">EN</a>
                 <button class="theme-toggle" id="themeToggle" aria-label="Сменить тему">
                     <span id="themeIcon">🌙</span>
                     <span class="theme-toggle-label" id="themeLabel">Тёмная</span>
@@ -52,11 +55,11 @@
         <div class="page-header">
             <h1 class="page-title">
                 <span class="page-title-dot"></span>
-                Закавычник
+                Закавычить ключевые слова
             </h1>
-            <p class="page-subtitle">Оборачивает строки в фразовое или точное соответствие. Можно загрузить
-                CSV-файл прямо из планировщика ключевых слов, без редактирования. Инструмент для простой механической
-                работы с ключевыми словами</p>
+            <p class="page-subtitle"> Оборачивает строки во фразовое, точное соответствие или в любой другой символ.
+                Онлайн инструмент для простой механической работы с ключевыми словами Google Ads.
+                Поддерживает загрузку CSV прямо из Планировщика ключевых слов. </p>
         </div>
 
         <div class="card">
@@ -106,6 +109,17 @@
                         </div>
                     </div>
                     <div class="option-group">
+                        <div class="field-label">Единица обработки</div>
+                        <div class="decline-options">
+                            <label class="decline-label">
+                                <input type="radio" name="splitMode" value="lines" checked> Построчно
+                            </label>
+                            <label class="decline-label">
+                                <input type="radio" name="splitMode" value="words"> Каждое слово
+                            </label>
+                        </div>
+                    </div>
+                    <div class="option-group">
                         <div class="field-label">Спецсимволы <span
                                 style="font-weight:400;text-transform:none;letter-spacing:0">(!, ?, @, #, % и
                                 др.)</span></div>
@@ -139,11 +153,55 @@
                 <span class="counter" id="counter-result">0 строк</span>
             </div>
 
+
+            <section class="faq">
+                <h2>Вопросы и ответы</h2>
+
+                <details class="faq-item">
+                    <summary>Можно ли загрузить готовый файл из Планировщика ключевых слов?</summary>
+                    <p>Да — инструмент принимает CSV прямо из Google Keyword Planner без редактирования. Ключевые слова
+                        извлекаются автоматически из колонки Keyword.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Обрабатывает ли инструмент большие списки?</summary>
+                    <p>Без ограничений — вставляйте хоть 10 000 строк, обработка мгновенная прямо в браузере без
+                        отправки на сервер.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Сохраняется ли регистр букв при закавычивании?</summary>
+                    <p>По умолчанию регистр не меняется. В дополнительных параметрах можно привести все слова к нужному
+                        регистру — например «Каждое Слово С Большой» для заголовков объявлений.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Можно ли закавычить каждое слово отдельно?</summary>
+                    <p>Да — в дополнительных параметрах выберите «Каждое слово». Инструмент разобьёт весь текст на
+                        отдельные слова и закавычит каждое. Удобно когда нужно быстро подготовить список отдельных
+                        минус-слов или однословных ключей в нужном операторе соответствия.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Можно ли убрать дубликаты перед закавычиванием?</summary>
+                    <p>Да — в дополнительных параметрах включите опцию «Убрать дубликаты». Инструмент также считает
+                        дубликатами строки с одинаковыми словами в разном порядке — «купить диван» и «диван купить»
+                        будут считаться одним ключом.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Что делает опция «Убрать спецсимволы»?</summary>
+                    <p>Удаляет знаки препинания и спецсимволы (!, ?, @, #, % и др.) из каждой строки перед
+                        закавычиванием. Цифры и буквы остаются. Полезно когда список скопирован из таблицы или документа
+                        с лишними символами.</p>
+                </details>
+            </section>
+
+
             <div id="feedbackModal" class="feedback-modal hidden">
                 <div class="feedback-content">
                     <button class="feedback-close" id="feedbackClose">✕</button>
-                    <p>Если что-то не так удобно или очень нужна другая фича - пишите! 😉</p>
-                    </p>
+                    <p>Если что-то не так удобно или очень нужна другая фича — пишите! 😉</p>
                     <form id="feedbackForm" method="post">
                         <textarea id="feedbackComment" name="comment" placeholder="Ваш комментарий" required></textarea>
                         <input type="text" id="feedbackContact" name="contact"
@@ -156,7 +214,7 @@
     </main>
 
     <footer>
-        <p>2025 - Tools for PPС daily routine. Made for fun. AI power.</p>
+        <p>2025-2026 — Tools for PPС daily routine. Made for fun. AI power.</p>
         <p style="font-size:11px;margin-top:4px;">Сайт защищён reCAPTCHA · <a href="https://policies.google.com/privacy"
                 target="_blank" style="color:inherit">Конфиденциальность</a> · <a
                 href="https://policies.google.com/terms" target="_blank" style="color:inherit">Условия</a></p>

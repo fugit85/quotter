@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capitalizer — title case &amp; uppercase online</title>
+    <meta name="description"
+        content="Capitalize words online: first letter or whole word. Quick helper for ads and lists." />
+    <script src="../script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/en/capiralizator.html">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/capiralizator.html">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/capiralizator.html">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Capitalizer</span>
+            <div class="nav-links">
+                <a href="index.html">Match types</a>
+                <a href="capiralizator.html" class="active">Capitalizer</a>
+                <a href="undublicator.html">Deduplicator</a>
+                <a href="minusator.html">Negatives</a>
+            </div>
+            <div class="nav-actions">
+                <a href="../capiralizator.html" class="lang-toggle">RU</a>
+                <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Dark</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Match types</a>
+            <a href="capiralizator.html" class="active">Capitalizer</a>
+            <a href="undublicator.html">Deduplicator</a>
+            <a href="minusator.html">Negatives</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Capitalizer
+            </h1>
+            <p class="page-subtitle">Makes letters uppercase or title case (space‑separated words).</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Source text</div>
+            <textarea id="input" placeholder="Enter text"></textarea>
+
+            <div class="toolbar">
+                <select id="type">
+                    <option value="first-letters">First letter of each word</option>
+                    <option value="all-letters">Every letter uppercase</option>
+                </select>
+                <button class="btn btn-primary" id="button-capital">✦ Apply</button>
+                <span class="counter" id="counter">0 lines</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field-label">Result</div>
+            <textarea id="result" readonly placeholder="The result will appear here…"></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Copy</button>
+                <button class="btn btn-ghost" id="clear">✕ Clear</button>
+            </div>
+        </div>
+    </main>
+    <div id="feedbackModal" class="feedback-modal hidden">
+        <div class="feedback-content">
+            <button class="feedback-close" id="feedbackClose" type="button" aria-label="Close">✕</button>
+            <p>If something is awkward or you need a feature — tell us.</p>
+            <form id="feedbackForm" method="post">
+                <textarea id="feedbackComment" name="comment" placeholder="Your message" required></textarea>
+                <input type="text" id="feedbackContact" name="contact" placeholder="Contact (optional)" />
+                <button type="submit" class="feedback-submit">Send</button>
+            </form>
+            <div id="feedbackMessage" class="feedback-message"></div>
+        </div>
+    </div>
+    <footer>
+        <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">This site is protected by reCAPTCHA · <a
+                href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
+                style="color:inherit">Privacy</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer" style="color:inherit">Terms</a></p>
+    </footer>
+</body>
+
+</html>

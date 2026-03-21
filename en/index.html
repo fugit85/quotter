@@ -1,1 +1,220 @@
-1
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Match Type Tool Online — Google Ads Phrase &amp; Exact Match</title>
+    <meta name="description"
+        content="Wrap keywords in phrase match &quot; &quot; or exact match [ ] for Google Ads online. Upload CSV from Google Keyword Planner — no editing required. Free tool for PPC specialists." />
+    <script src="../script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/en/">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Match types</span>
+            <div class="nav-links">
+                <a href="index.html" class="active">Match types</a>
+                <a href="capiralizator.html">Capitalizer</a>
+                <a href="undublicator.html">Deduplicator</a>
+                <a href="minusator.html">Negatives</a>
+            </div>
+            <div class="nav-actions">
+                <a href="../index.html" class="lang-toggle">RU</a>
+                <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Dark</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html" class="active">Match types</a>
+            <a href="capiralizator.html">Capitalizer</a>
+            <a href="undublicator.html">Deduplicator</a>
+            <a href="minusator.html">Negatives</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Wrap keywords (match types)
+            </h1>
+            <p class="page-subtitle">Wrap lines in phrase match, exact match, or custom brackets for Google Ads.
+                A simple online tool for mechanical keyword work.
+                Supports CSV uploads straight from Keyword Planner.</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Source text</div>
+            <textarea id="input" placeholder="Enter text — one phrase per line"></textarea>
+
+            <div class="toolbar">
+                <label class="btn btn-ghost btn-upload" for="csvUploadQuote"
+                    title="Upload a CSV export from Google Keyword Planner">⇪ Upload CSV</label>
+                <input type="file" id="csvUploadQuote" accept=".csv" style="display:none">
+                <select id="mode">
+                    <option value="phrase">Phrase match</option>
+                    <option value="exact">Exact match</option>
+                    <option value="custom">Custom symbols</option>
+                </select>
+                <div class="custom-wrap" id="customWrap" style="display:none">
+                    <input class="custom-symbol-input" id="customOpen" maxlength="5" placeholder="[" value="[">
+                    <span style="color:var(--text-muted);font-size:13px">text</span>
+                    <input class="custom-symbol-input" id="customClose" maxlength="5" placeholder="]" value="]">
+                </div>
+                <button class="btn btn-primary" id="button-quote">✦ Wrap</button>
+                <span class="counter" id="counter">0 lines</span>
+            </div>
+            <div class="quote-options">
+                <button class="options-toggle" id="optionsToggle">
+                    <span class="options-toggle-text">Advanced options</span>
+                    <svg class="options-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="2,5 7,10 12,5" />
+                    </svg>
+                </button>
+
+                <div class="options-body" id="optionsBody">
+                    <div class="option-group">
+                        <div class="field-label">Case</div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="caseMode" value="original" checked>
+                                Original</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="lower"> all
+                                lowercase</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="upper"> ALL
+                                UPPERCASE</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="first"> First
+                                word only</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="each"> Title
+                                Case</label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Split into</div>
+                        <div class="decline-options">
+                            <label class="decline-label">
+                                <input type="radio" name="splitMode" value="lines" checked> Lines
+                            </label>
+                            <label class="decline-label">
+                                <input type="radio" name="splitMode" value="words"> Words
+                            </label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Special characters <span
+                                style="font-weight:400;text-transform:none;letter-spacing:0">(!, ?, @, #, %, …)</span>
+                        </div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="cleanMode" value="keep" checked>
+                                Keep</label>
+                            <label class="decline-label"><input type="radio" name="cleanMode" value="clean">
+                                Strip</label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Duplicate lines</div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="dedupMode" value="keep" checked>
+                                Keep</label>
+                            <label class="decline-label"><input type="radio" name="dedupMode" value="remove">
+                                Remove</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="field-label">Result</div>
+            <textarea id="result" readonly placeholder="The result will appear here…"></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Copy</button>
+                <button class="btn btn-ghost" id="export-csv-quote">↓ Export CSV</button>
+                <button class="btn btn-ghost" id="clear">✕ Clear</button>
+                <span class="counter" id="counter-result">0 lines</span>
+            </div>
+
+            <section class="faq">
+                <h2>FAQ</h2>
+
+                <details class="faq-item">
+                    <summary>Can I upload a file from Keyword Planner?</summary>
+                    <p>Yes — the tool accepts CSV exports from Google Keyword Planner as-is. Keywords are read
+                        automatically from the Keyword column.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Does it handle large lists?</summary>
+                    <p>No hard limit — paste 10,000+ lines; processing runs in your browser and is not sent to our
+                        servers.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is letter case preserved?</summary>
+                    <p>By default, case is unchanged. Under Advanced options you can normalize case — for example Title
+                        Case for ad headlines.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I wrap each word separately?</summary>
+                    <p>Yes — under Advanced options choose Words. The text is split into tokens and each is wrapped.
+                        Handy for single-word negatives or exact-match terms.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I remove duplicates before wrapping?</summary>
+                    <p>Yes — enable Remove under Duplicate lines. Lines with the same words in different order count as
+                        duplicates (e.g. “buy sofa” and “sofa buy”).</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What does “Strip” special characters do?</summary>
+                    <p>It removes punctuation and symbols from each unit before wrapping. Letters and digits stay.
+                        Useful when the list was copied from a spreadsheet with extra characters.</p>
+                </details>
+            </section>
+
+            <div id="feedbackModal" class="feedback-modal hidden">
+                <div class="feedback-content">
+                    <button class="feedback-close" id="feedbackClose" type="button" aria-label="Close">✕</button>
+                    <p>If something is awkward or you need a feature — tell us.</p>
+                    <form id="feedbackForm" method="post">
+                        <textarea id="feedbackComment" name="comment" placeholder="Your message" required></textarea>
+                        <input type="text" id="feedbackContact" name="contact"
+                            placeholder="Contact (optional)" />
+                        <button type="submit" class="feedback-submit">Send</button>
+                    </form>
+                    <div id="feedbackMessage" class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">This site is protected by reCAPTCHA · <a
+                href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
+                style="color:inherit">Privacy</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer" style="color:inherit">Terms</a></p>
+    </footer>
+
+</body>
+
+</html>

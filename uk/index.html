@@ -1,1 +1,237 @@
+<!DOCTYPE html>
+<html lang="uk">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обгорнути ключові слова</title>
+    <meta name="description"
+        content="Обгорніть ключові слова у фразову відповідність &quot; &quot; або точну [ ] для Google Ads. CSV з Планувальника без редагування." />
+    <script src="../script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/uk/">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Типи відповідності</span>
+            <div class="nav-links">
+                <a href="index.html" class="active">Типи відповідності</a>
+                <a href="capiralizator.html">Капіталізація</a>
+                <a href="undublicator.html">Дублікати</a>
+                <a href="minusator.html">Мінус-слова</a>
+            </div>
+            <div class="nav-actions">
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Мова">
+                        <span class="lang-picker-code">UK</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../index.html" class="lang-picker-item" role="option">RU</a>
+                        <a href="../kz/index.html" class="lang-picker-item" role="option">KZ</a>
+                        <a href="../en/index.html" class="lang-picker-item" role="option">EN</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">UK</span>
+                        <a href="../be/index.html" class="lang-picker-item" role="option">BE</a>
+                        <a href="../pl/index.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Змінити тему">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Темна</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html" class="active">Типи відповідності</a>
+            <a href="capiralizator.html">Капіталізація</a>
+            <a href="undublicator.html">Дублікати</a>
+            <a href="minusator.html">Мінус-слова</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Обгорнути ключові слова (типи відповідності)
+            </h1>
+            <p class="page-subtitle">Обгортає рядки у фразову, точну відповідність або власні дужки для Google Ads.
+                Простий онлайн-інструмент для механічної роботи з ключовими словами.
+                Підтримує CSV з Планувальника ключових слів.</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Вихідний текст</div>
+            <textarea id="input" placeholder="Введіть текст — одна фраза на рядок"></textarea>
+
+            <div class="toolbar">
+                <label class="btn btn-ghost btn-upload" for="csvUploadQuote"
+                    title="Завантажити CSV з Планувальника Google">⇪ Завантажити CSV</label>
+                <input type="file" id="csvUploadQuote" accept=".csv" style="display:none">
+                <select id="mode">
+                    <option value="phrase">Фразова відповідність</option>
+                    <option value="exact">Точна відповідність</option>
+                    <option value="custom">Власний символ</option>
+                </select>
+                <div class="custom-wrap" id="customWrap" style="display:none">
+                    <input class="custom-symbol-input" id="customOpen" maxlength="5" placeholder="[" value="[">
+                    <span style="color:var(--text-muted);font-size:13px">текст</span>
+                    <input class="custom-symbol-input" id="customClose" maxlength="5" placeholder="]" value="]">
+                </div>
+                <button class="btn btn-primary" id="button-quote">✦ Обгорнути</button>
+                <span class="counter" id="counter">0 рядків</span>
+            </div>
+            <div class="quote-options">
+                <button class="options-toggle" id="optionsToggle">
+                    <span class="options-toggle-text">Додаткові параметри</span>
+                    <svg class="options-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="2,5 7,10 12,5" />
+                    </svg>
+                </button>
+
+                <div class="options-body" id="optionsBody">
+                    <div class="option-group">
+                        <div class="field-label">Регістр</div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="caseMode" value="original" checked>
+                                Як у тексті</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="lower"> усі
+                                малі</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="upper"> УСІ
+                                ВЕЛИКІ</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="first"> Перше
+                                слово</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="each"> Кожне
+                                слово</label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Одиниця обробки</div>
+                        <div class="decline-options">
+                            <label class="decline-label">
+                                <input type="radio" name="splitMode" value="lines" checked> Порядково
+                            </label>
+                            <label class="decline-label">
+                                <input type="radio" name="splitMode" value="words"> Кожне слово
+                            </label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Спецсимволи <span
+                                style="font-weight:400;text-transform:none;letter-spacing:0">(!, ?, @, #, % тощо)</span>
+                        </div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="cleanMode" value="keep" checked> Не
+                                прибирати</label>
+                            <label class="decline-label"><input type="radio" name="cleanMode" value="clean">
+                                Прибрати</label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Дублікати рядків</div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="dedupMode" value="keep" checked> Не
+                                прибирати</label>
+                            <label class="decline-label"><input type="radio" name="dedupMode" value="remove">
+                                Прибрати</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="field-label">Результат</div>
+            <textarea id="result" readonly placeholder="Результат з’явиться тут…"></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Копіювати</button>
+                <button class="btn btn-ghost" id="export-csv-quote">↓ Експорт CSV</button>
+                <button class="btn btn-ghost" id="clear">✕ Очистити</button>
+                <span class="counter" id="counter-result">0 рядків</span>
+            </div>
+
+            <section class="faq">
+                <h2>Питання й відповіді</h2>
+
+                <details class="faq-item">
+                    <summary>Чи можна завантажити файл з Планувальника?</summary>
+                    <p>Так — інструмент приймає CSV без змін. Ключові слова зчитуються з колонки Keyword.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Чи підтримує великі списки?</summary>
+                    <p>Так — вставляйте десятки тисяч рядків; обробка в браузері, без відправки на сервер.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Чи зберігається регістр?</summary>
+                    <p>За замовчуванням так. У додаткових параметрах можна нормалізувати регістр для заголовків оголошень.
+                    </p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Чи можна закавычити кожне слово окремо?</summary>
+                    <p>Так — оберіть «Кожне слово» в параметрах.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Чи можна прибрати дублікати перед закавычуванням?</summary>
+                    <p>Так — увімкніть «Прибрати» для дублікатів рядків. Рядки з тими самими словами в іншому порядку
+                        вважаються дублікатами.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Що робить «Прибрати» спецсимволи?</summary>
+                    <p>Видаляє розділові знаки та символи перед закавычуванням. Літери й цифри лишаються.</p>
+                </details>
+            </section>
+
+            <div id="feedbackModal" class="feedback-modal hidden">
+                <div class="feedback-content">
+                    <button class="feedback-close" id="feedbackClose" type="button" aria-label="Закрити">✕</button>
+                    <p>Якщо щось незручно або потрібна функція — напишіть.</p>
+                    <form id="feedbackForm" method="post">
+                        <textarea id="feedbackComment" name="comment" placeholder="Ваш коментар" required></textarea>
+                        <input type="text" id="feedbackContact" name="contact"
+                            placeholder="Контакт (необов’язково)" />
+                        <button type="submit" class="feedback-submit">Надіслати</button>
+                    </form>
+                    <div id="feedbackMessage" class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>2025–2026 — Інструменти для щоденної роботи в PPC. Для задоволення. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">Сайт захищено reCAPTCHA · <a
+                href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
+                style="color:inherit">Конфіденційність</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer" style="color:inherit">Умови</a></p>
+    </footer>
+
+</body>
+
+</html>

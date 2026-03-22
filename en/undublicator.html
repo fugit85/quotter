@@ -4,15 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remove duplicate lines or words online</title>
+    <title>Remove duplicates</title>
     <meta name="description"
         content="Deduplicate lines or words in a list. Optional: treat different word order as the same line." />
     <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/en/undublicator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/undublicator.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/undublicator.html">
     <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/undublicator.html">
-    <link rel="stylesheet" href="../style.css">
-    <link rel="icon" href="../quote.png">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/undublicator.html">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/undublicator.html">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/undublicator.html">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -33,7 +36,25 @@
                 <a href="minusator.html">Negatives</a>
             </div>
             <div class="nav-actions">
-                <a href="../undublicator.html" class="lang-toggle">RU</a>
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Language">
+                        <span class="lang-picker-code">EN</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../undublicator.html" class="lang-picker-item" role="option">RU</a>
+                        <a href="../kz/undublicator.html" class="lang-picker-item" role="option">KZ</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">EN</span>
+                        <a href="../uk/undublicator.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="../be/undublicator.html" class="lang-picker-item" role="option">BE</a>
+                        <a href="../pl/undublicator.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
                 <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">
                     <span id="themeIcon">🌙</span>
                     <span class="theme-toggle-label" id="themeLabel">Dark</span>
@@ -86,6 +107,39 @@
                 <button class="btn btn-ghost" id="clear">✕ Clear</button>
                 <span class="counter" id="counter-result">0 lines</span>
             </div>
+
+            <section class="faq">
+                <h2>FAQ</h2>
+
+                <details class="faq-item">
+                    <summary>How do I remove duplicate lines?</summary>
+                    <p>Paste one item per line and click <strong>Deduplicate</strong>. Repeating lines are removed
+                        instantly.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Are “buy sofa” and “sofa buy” treated as duplicates?</summary>
+                    <p>Not by default. Enable <strong>Ignore word order (lines)</strong> to treat same words in any
+                        order as one line.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Does it work with large lists?</summary>
+                    <p>Yes — processing stays in the browser; nothing is uploaded. There is no line limit.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I deduplicate words instead of lines?</summary>
+                    <p>Yes — choose <strong>Unique words</strong>. The text is split into tokens and only unique words
+                        remain.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is original line order kept?</summary>
+                    <p>Yes — the first occurrence in each duplicate group is kept; order of the remaining lines is
+                        unchanged.</p>
+                </details>
+            </section>
         </div>
     </main>
     <div id="feedbackModal" class="feedback-modal hidden">

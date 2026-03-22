@@ -4,15 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Negative keyword picker — click words or lines</title>
+    <title>Collect minus words</title>
     <meta name="description"
         content="Build negative keyword lists by clicking words or selecting lines. Import CSV from Keyword Planner." />
     <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/en/minusator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/minusator.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/minusator.html">
     <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/minusator.html">
-    <link rel="stylesheet" href="../style.css">
-    <link rel="icon" href="../quote.png">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/minusator.html">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/minusator.html">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/minusator.html">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -33,7 +36,25 @@
                 <a href="minusator.html" class="active">Negatives</a>
             </div>
             <div class="nav-actions">
-                <a href="../minusator.html" class="lang-toggle">RU</a>
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Language">
+                        <span class="lang-picker-code">EN</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../minusator.html" class="lang-picker-item" role="option">RU</a>
+                        <a href="../kz/minusator.html" class="lang-picker-item" role="option">KZ</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">EN</span>
+                        <a href="../uk/minusator.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="../be/minusator.html" class="lang-picker-item" role="option">BE</a>
+                        <a href="../pl/minusator.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
                 <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">
                     <span id="themeIcon">🌙</span>
                     <span class="theme-toggle-label" id="themeLabel">Dark</span>
@@ -89,6 +110,43 @@
 
         <div class="minus-hint">Click words or select lines below ↓</div>
         <div class="minus-fieldset" id="fieldset"></div>
+        <br><br>
+        <div class="card">
+            <section class="faq">
+                <h2>FAQ</h2>
+
+                <details class="faq-item">
+                    <summary>How do I use the tool?</summary>
+                    <p>Upload a Keyword Planner CSV or paste a list → click <strong>Build interactive list</strong> →
+                        click words or tick whole lines → <strong>To negatives</strong> → export CSV for Google Ads
+                        Editor or copy into the UI.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What does selecting a whole line do?</summary>
+                    <p>The row checkbox adds the full phrase as an exact-match negative <code>[phrase]</code>. Clicking a
+                        single word adds it as a broad negative that applies wherever that token appears.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>“To negatives” vs “Keep list (whitelist)”?</summary>
+                    <p><strong>To negatives</strong> collects everything you marked (words and lines).
+                        <strong>Keep list (whitelist)</strong> collects lines you did <em>not</em> touch — handy when
+                        only a few rows are irrelevant.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I import Keyword Planner CSV?</summary>
+                    <p>Yes — use the export as-is. Keywords are read automatically; extra columns are ignored.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do I push results to Google Ads?</summary>
+                    <p>Use <strong>Export CSV</strong> for Google Ads Editor, or <strong>Copy</strong> and paste into the
+                        interface.</p>
+                </details>
+            </section>
+        </div>
 
     </main>
 

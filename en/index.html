@@ -4,15 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keyword Match Type Tool Online — Google Ads Phrase &amp; Exact Match</title>
+    <title>Wrap keywords</title>
     <meta name="description"
         content="Wrap keywords in phrase match &quot; &quot; or exact match [ ] for Google Ads online. Upload CSV from Google Keyword Planner — no editing required. Free tool for PPC specialists." />
     <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/en/">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/">
     <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/">
-    <link rel="stylesheet" href="../style.css">
-    <link rel="icon" href="../quote.png">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -33,7 +36,25 @@
                 <a href="minusator.html">Negatives</a>
             </div>
             <div class="nav-actions">
-                <a href="../index.html" class="lang-toggle">RU</a>
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Language">
+                        <span class="lang-picker-code">EN</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../index.html" class="lang-picker-item" role="option">RU</a>
+                        <a href="../kz/index.html" class="lang-picker-item" role="option">KZ</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">EN</span>
+                        <a href="../uk/index.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="../be/index.html" class="lang-picker-item" role="option">BE</a>
+                        <a href="../pl/index.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
                 <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">
                     <span id="themeIcon">🌙</span>
                     <span class="theme-toggle-label" id="themeLabel">Dark</span>

@@ -4,15 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Capitalizer — title case &amp; uppercase online</title>
+    <title>Make letters uppercase</title>
     <meta name="description"
         content="Capitalize words online: first letter or whole word. Quick helper for ads and lists." />
     <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/en/capiralizator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/capiralizator.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/capiralizator.html">
     <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/capiralizator.html">
-    <link rel="stylesheet" href="../style.css">
-    <link rel="icon" href="../quote.png">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/capiralizator.html">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/capiralizator.html">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/capiralizator.html">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -33,7 +36,25 @@
                 <a href="minusator.html">Negatives</a>
             </div>
             <div class="nav-actions">
-                <a href="../capiralizator.html" class="lang-toggle">RU</a>
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Language">
+                        <span class="lang-picker-code">EN</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../capiralizator.html" class="lang-picker-item" role="option">RU</a>
+                        <a href="../kz/capiralizator.html" class="lang-picker-item" role="option">KZ</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">EN</span>
+                        <a href="../uk/capiralizator.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="../be/capiralizator.html" class="lang-picker-item" role="option">BE</a>
+                        <a href="../pl/capiralizator.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
                 <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">
                     <span id="themeIcon">🌙</span>
                     <span class="theme-toggle-label" id="themeLabel">Dark</span>
@@ -80,6 +101,32 @@
                 <button class="btn btn-ghost" id="copy">⎘ Copy</button>
                 <button class="btn btn-ghost" id="clear">✕ Clear</button>
             </div>
+
+            <section class="faq">
+                <h2>FAQ</h2>
+
+                <details class="faq-item">
+                    <summary>What is the difference between “First letter” and “Every letter”?</summary>
+                    <p><strong>First letter of each word</strong> — title case per token: “buy a red sofa” → “Buy A Red
+                        Sofa”. <strong>Every letter uppercase</strong> — ALL CAPS: “buy sofa” → “BUY SOFA”.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Why use this for Google Ads?</summary>
+                    <p>Title case in headlines is a common CTR pattern. This tool normalizes long lists without manual
+                        editing.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Does it handle large lists?</summary>
+                    <p>Yes — paste as many lines as you need; everything runs in the browser.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is line structure preserved?</summary>
+                    <p>Yes. Only letter case changes; line breaks stay in place.</p>
+                </details>
+            </section>
         </div>
     </main>
     <div id="feedbackModal" class="feedback-modal hidden">

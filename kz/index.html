@@ -1,1 +1,240 @@
+<!DOCTYPE html>
+<html lang="kk">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кілт сөздерді жақшалау</title>
+    <meta name="description"
+        content="Google Ads үшін кілт сөздерді фразалық « » немесе дәл [ ] сәйкестікке ораңыз. Google сөз жоспарлаушысынан CSV жүктеңіз — өңдеу қажет емес. PPC мамандарына тегін құрал." />
+    <script src="../script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/kz/">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Сәйкестік түрлері</span>
+            <div class="nav-links">
+                <a href="index.html" class="active">Сәйкестік түрлері</a>
+                <a href="capiralizator.html">Бас әріптер</a>
+                <a href="undublicator.html">Қайталанбастар</a>
+                <a href="minusator.html">Теріс сөздер</a>
+            </div>
+            <div class="nav-actions">
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Тіл">
+                        <span class="lang-picker-code">KZ</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../index.html" class="lang-picker-item" role="option">RU</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">KZ</span>
+                        <a href="../en/index.html" class="lang-picker-item" role="option">EN</a>
+                        <a href="../uk/index.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="../be/index.html" class="lang-picker-item" role="option">BE</a>
+                        <a href="../pl/index.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Тақырыпты ауыстыру">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Қараңғы</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html" class="active">Сәйкестік түрлері</a>
+            <a href="capiralizator.html">Бас әріптер</a>
+            <a href="undublicator.html">Қайталанбастар</a>
+            <a href="minusator.html">Теріс сөздер</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Кілт сөздерді сәйкестік түрлеріне орау
+            </h1>
+            <p class="page-subtitle">Жолдарды фразалық, дәл сәйкестік немесе өз жақшаларыңызбен Google Ads үшін орайды.
+                Кілт сөздермен механикалық жұмысқа арналған қарапайым онлайн құрал.
+                Сөз жоспарлаушысынан CSV тікелей жүктеуді қолдайды.</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Бастапқы мәтін</div>
+            <textarea id="input" placeholder="Мәтінді енгізіңіз — әр жолда бір фраза"></textarea>
+
+            <div class="toolbar">
+                <label class="btn btn-ghost btn-upload" for="csvUploadQuote"
+                    title="Google сөз жоспарлаушысынан CSV экспортын жүктеңіз">⇪ CSV жүктеу</label>
+                <input type="file" id="csvUploadQuote" accept=".csv" style="display:none">
+                <select id="mode">
+                    <option value="phrase">Фразалық сәйкестік</option>
+                    <option value="exact">Дәл сәйкестік</option>
+                    <option value="custom">Өз таңбаларыңыз</option>
+                </select>
+                <div class="custom-wrap" id="customWrap" style="display:none">
+                    <input class="custom-symbol-input" id="customOpen" maxlength="5" placeholder="[" value="[">
+                    <span style="color:var(--text-muted);font-size:13px">мәтін</span>
+                    <input class="custom-symbol-input" id="customClose" maxlength="5" placeholder="]" value="]">
+                </div>
+                <button class="btn btn-primary" id="button-quote">✦ Орау</button>
+                <span class="counter" id="counter">0 жол</span>
+            </div>
+            <div class="quote-options">
+                <button class="options-toggle" id="optionsToggle">
+                    <span class="options-toggle-text">Қосымша баптаулар</span>
+                    <svg class="options-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="2,5 7,10 12,5" />
+                    </svg>
+                </button>
+
+                <div class="options-body" id="optionsBody">
+                    <div class="option-group">
+                        <div class="field-label">Регистр</div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="caseMode" value="original" checked>
+                                Бастапқы</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="lower"> барлығы
+                                кіші</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="upper"> БАРЛЫҒЫ
+                                ҮЛКЕН</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="first"> Бірінші
+                                сөз</label>
+                            <label class="decline-label"><input type="radio" name="caseMode" value="each"> Әр
+                                сөз</label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Өңдеу бірлігі</div>
+                        <div class="decline-options">
+                            <label class="decline-label">
+                                <input type="radio" name="splitMode" value="lines" checked> Жол бойынша
+                            </label>
+                            <label class="decline-label">
+                                <input type="radio" name="splitMode" value="words"> Әр сөз
+                            </label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Арнайы таңбалар <span
+                                style="font-weight:400;text-transform:none;letter-spacing:0">(!, ?, @, #, % және
+                                т.б.)</span></div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="cleanMode" value="keep" checked> Қалдыру
+                            </label>
+                            <label class="decline-label"><input type="radio" name="cleanMode" value="clean">
+                                Жою</label>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <div class="field-label">Жолдардың қайталануы</div>
+                        <div class="decline-options">
+                            <label class="decline-label"><input type="radio" name="dedupMode" value="keep" checked> Қалдыру
+                            </label>
+                            <label class="decline-label"><input type="radio" name="dedupMode" value="remove">
+                                Жою</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="field-label">Нәтиже</div>
+            <textarea id="result" readonly placeholder="Нәтиже осында пайда болады…"></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Көшіру</button>
+                <button class="btn btn-ghost" id="export-csv-quote">↓ CSV экспорт</button>
+                <button class="btn btn-ghost" id="clear">✕ Тазалау</button>
+                <span class="counter" id="counter-result">0 жол</span>
+            </div>
+
+            <section class="faq">
+                <h2>Сұрақ-жауап</h2>
+
+                <details class="faq-item">
+                    <summary>Сөз жоспарлаушысынан дайын файл жүктей аламын ба?</summary>
+                    <p>Иә — құрал Google Keyword Planner CSV файлын өңдемей қабылдайды. Кілт сөздер Keyword бағанынан
+                        автоматты алынады.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Ұзын тізімдерді өңдей ме?</summary>
+                    <p>Шектеу жоқ — 10 000 жолдан астам қойыңыз, өңдеу браузерде жүріп, серверге жіберілмейді.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Әріп регистрі сақтала ма?</summary>
+                    <p>Әдепкі бойынша өзгермейді. Қосымша баптауларда жарнама тақырыптары сияқты регистрді қалыпқа
+                        келтіруге болады.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Әр сөзді бөлек орауға бола ма?</summary>
+                    <p>Иә — қосымша баптауларда «Әр сөз» таңдаңыз. Мәтін бөліктерге бөлініп, әрқайсысы оралады. Бір сөзді
+                        теріс сөздер немесе дәл сәйкестік үшін ыңғайлы.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Ораудан бұрын дубликаттарды жоя аламын ба?</summary>
+                    <p>Иә — «Жолдардың қайталануы» бөлімінде жоюды қосыңыз. Сөздер реті әртүрлі бірдей жолдар да
+                        қайталану саналады — «диван сатып алу» және «сатып алу диван» бір кілт ретінде.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>«Арнайы таңбаларды жою» не істейді?</summary>
+                    <p>Ораудан бұрын әр жолдан пунктуация мен арнайы таңбаларды (!, ?, @, #, % және т.б.) алып тастайды.
+                        Цифрлар мен әріптер қалады. Кестеден көшірілген тізімдер үшін пайдалы.</p>
+                </details>
+            </section>
+
+            <div id="feedbackModal" class="feedback-modal hidden">
+                <div class="feedback-content">
+                    <button class="feedback-close" id="feedbackClose" type="button" aria-label="Жабу">✕</button>
+                    <p>Бірдеңе ыңғайсыз болса немесе мүмкіндік керек болса — жазыңыз.</p>
+                    <form id="feedbackForm" method="post">
+                        <textarea id="feedbackComment" name="comment" placeholder="Хабарламаңыз" required></textarea>
+                        <input type="text" id="feedbackContact" name="contact"
+                            placeholder="Байланыс (міндетті емес)" />
+                        <button type="submit" class="feedback-submit">Жіберу</button>
+                    </form>
+                    <div id="feedbackMessage" class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">Сайт reCAPTCHA қорғауында · <a
+                href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
+                style="color:inherit">Құпиялылық</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer" style="color:inherit">Шарттар</a></p>
+    </footer>
+
+</body>
+
+</html>

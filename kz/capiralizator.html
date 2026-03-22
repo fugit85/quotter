@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="kk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Әріптерді бас әріпке жасау</title>
+    <meta name="description"
+        content="Мәтінді онлайн үлкен әріпке түрлендіріңіз: әр сөздің бірінші әрпі немесе барлық әріптер. Жарнама және тізімдер үшін жылдам көмек." />
+    <script src="../script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/kz/capiralizator.html">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/capiralizator.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/capiralizator.html">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/capiralizator.html">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/capiralizator.html">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/capiralizator.html">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/capiralizator.html">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Бас әріптер</span>
+            <div class="nav-links">
+                <a href="index.html">Сәйкестік түрлері</a>
+                <a href="capiralizator.html" class="active">Бас әріптер</a>
+                <a href="undublicator.html">Қайталанбастар</a>
+                <a href="minusator.html">Теріс сөздер</a>
+            </div>
+            <div class="nav-actions">
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Тіл">
+                        <span class="lang-picker-code">KZ</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../capiralizator.html" class="lang-picker-item" role="option">RU</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">KZ</span>
+                        <a href="../en/capiralizator.html" class="lang-picker-item" role="option">EN</a>
+                        <a href="../uk/capiralizator.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="../be/capiralizator.html" class="lang-picker-item" role="option">BE</a>
+                        <a href="../pl/capiralizator.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Тақырыпты ауыстыру">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Қараңғы</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Сәйкестік түрлері</a>
+            <a href="capiralizator.html" class="active">Бас әріптер</a>
+            <a href="undublicator.html">Қайталанбастар</a>
+            <a href="minusator.html">Теріс сөздер</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Бас әріптер
+            </h1>
+            <p class="page-subtitle">Әріптерді үлкен әріпке немесе әр сөздің бірінші әрпін үлкен етіп өзгертеді (бос орынмен бөлінген сөздер).</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Бастапқы мәтін</div>
+            <textarea id="input" placeholder="Мәтінді енгізіңіз"></textarea>
+
+            <div class="toolbar">
+                <select id="type">
+                    <option value="first-letters">Әр сөздің бірінші әрпі</option>
+                    <option value="all-letters">Барлық әріптер үлкен</option>
+                </select>
+                <button class="btn btn-primary" id="button-capital">✦ Қолдану</button>
+                <span class="counter" id="counter">0 жол</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field-label">Нәтиже</div>
+            <textarea id="result" readonly placeholder="Нәтиже осында пайда болады…"></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Көшіру</button>
+                <button class="btn btn-ghost" id="clear">✕ Тазалау</button>
+            </div>
+
+            <section class="faq">
+                <h2>Сұрақ-жауап</h2>
+
+                <details class="faq-item">
+                    <summary>«Бірінші әріп» пен «Барлық әріптер» арасындағы айырмашылық не?</summary>
+                    <p><strong>Әр сөздің бірінші әрпі</strong> — әр токен үшін бас әріп: «диван сатып алу» → «Диван Сатып Алу».
+                        <strong>Барлық әріптер үлкен</strong> — бүкіл мәтін ҮЛКЕН: «диван сатып алу» → «ДИВАН САТЫП АЛУ».</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Google Ads үшін неге керек?</summary>
+                    <p>Тақырыптарда әр сөзді бас әріптен жазу CTR үшін кең тараған үлгі. Бұл құрал ұзын тізімдерді қолмен
+                        өңдемей қалыпқа келтіреді.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Ұзын тізімдерді өңдей ме?</summary>
+                    <p>Иә — қажетті жол санын қойыңыз; барлығы браузерде орындалады.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Жол құрылымы сақтала ма?</summary>
+                    <p>Иә. Тек әріп регистрі өзгереді; жол бөліністері орнында қалады.</p>
+                </details>
+            </section>
+        </div>
+    </main>
+    <div id="feedbackModal" class="feedback-modal hidden">
+        <div class="feedback-content">
+            <button class="feedback-close" id="feedbackClose" type="button" aria-label="Жабу">✕</button>
+            <p>Бірдеңе ыңғайсыз болса немесе мүмкіндік керек болса — жазыңыз.</p>
+            <form id="feedbackForm" method="post">
+                <textarea id="feedbackComment" name="comment" placeholder="Хабарламаңыз" required></textarea>
+                <input type="text" id="feedbackContact" name="contact" placeholder="Байланыс (міндетті емес)" />
+                <button type="submit" class="feedback-submit">Жіберу</button>
+            </form>
+            <div id="feedbackMessage" class="feedback-message"></div>
+        </div>
+    </div>
+    <footer>
+        <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">Сайт reCAPTCHA қорғауында · <a
+                href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
+                style="color:inherit">Құпиялылық</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer" style="color:inherit">Шарттар</a></p>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="kk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Қайталанбастарды жою</title>
+    <meta name="description"
+        content="Тізімдегі қайталанған жолдарды немесе сөздерді алып тастаңыз. Қосымша: сөз реті әртүрлі бірдей жолды бір деп есептеу." />
+    <script src="../script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/kz/undublicator.html">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/undublicator.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/undublicator.html">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/undublicator.html">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/undublicator.html">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/undublicator.html">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/undublicator.html">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Қайталанбастар</span>
+            <div class="nav-links">
+                <a href="index.html">Сәйкестік түрлері</a>
+                <a href="capiralizator.html">Бас әріптер</a>
+                <a href="undublicator.html" class="active">Қайталанбастар</a>
+                <a href="minusator.html">Теріс сөздер</a>
+            </div>
+            <div class="nav-actions">
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Тіл">
+                        <span class="lang-picker-code">KZ</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../undublicator.html" class="lang-picker-item" role="option">RU</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">KZ</span>
+                        <a href="../en/undublicator.html" class="lang-picker-item" role="option">EN</a>
+                        <a href="../uk/undublicator.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="../be/undublicator.html" class="lang-picker-item" role="option">BE</a>
+                        <a href="../pl/undublicator.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Тақырыпты ауыстыру">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Қараңғы</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Сәйкестік түрлері</a>
+            <a href="capiralizator.html">Бас әріптер</a>
+            <a href="undublicator.html" class="active">Қайталанбастар</a>
+            <a href="minusator.html">Теріс сөздер</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Қайталанбастарды жою
+            </h1>
+            <p class="page-subtitle">Қайталанған жолдарды немесе сөздерді алып тастайды. Сөз реті маңызды емес болса,
+                «кілт сөз зерттеу» мен «зерттеу кілт сөз» бір жол деп саналуы мүмкін — төмендегі құсбелгіні қосыңыз.</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Бастапқы мәтін</div>
+            <textarea id="input" placeholder="Мәтінді енгізіңіз"></textarea>
+
+            <div class="toolbar">
+                <select id="type">
+                    <option value="string">Бірегей жолдар</option>
+                    <option value="words">Бірегей сөздер</option>
+                </select>
+                <button class="btn btn-primary" id="button-dublicate">✦ Тазалау</button>
+                <label class="decline-label" id="ignoreOrderWrap">
+                    <input type="checkbox" id="ignoreOrder">
+                    <span>Сөз ретін елемеу (жолдар)</span>
+                </label>
+                <span class="counter" id="counter">0 жол</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field-label">Нәтиже</div>
+            <textarea id="result" readonly placeholder="Нәтиже осында пайда болады…"></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Көшіру</button>
+                <button class="btn btn-ghost" id="clear">✕ Тазалау</button>
+                <span class="counter" id="counter-result">0 жол</span>
+            </div>
+
+            <section class="faq">
+                <h2>Сұрақ-жауап</h2>
+
+                <details class="faq-item">
+                    <summary>Қайталанған жолдарды қалай жоямын?</summary>
+                    <p>Әр жолға бір элементті қойыңыз да <strong>Тазалау</strong> батырмасын басыңыз. Қайталанған жолдар
+                        дереу алынып тасталады.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>«диван сатып алу» мен «сатып алу диван» дубликат па?</summary>
+                    <p>Әдепкі бойынша жоқ. <strong>Сөз ретін елемеу (жолдар)</strong> опциясын қосыңыз — бірдей сөздер
+                        кез келген ретпен бір жол деп саналады.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Ұзын тізімдермен жұмыс істей ме?</summary>
+                    <p>Иә — өңдеу браузерде, ештеңе жүктелмейді. Жол саны шектелмеген.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Жолдардың орнына сөздерді тазалай аламын ба?</summary>
+                    <p>Иә — <strong>Бірегей сөздер</strong> таңдаңыз. Мәтін токендерге бөлініп, тек бірегей сөздер
+                        қалады.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Бастапқы жол реті сақтала ма?</summary>
+                    <p>Иә — әр топтан бірінші кездесу қалдырылады; қалған жолдардың реті өзгермейді.</p>
+                </details>
+            </section>
+        </div>
+    </main>
+    <div id="feedbackModal" class="feedback-modal hidden">
+        <div class="feedback-content">
+            <button class="feedback-close" id="feedbackClose" type="button" aria-label="Жабу">✕</button>
+            <p>Бірдеңе ыңғайсыз болса немесе мүмкіндік керек болса — жазыңыз.</p>
+            <form id="feedbackForm" method="post">
+                <textarea id="feedbackComment" name="comment" placeholder="Хабарламаңыз" required></textarea>
+                <input type="text" id="feedbackContact" name="contact" placeholder="Байланыс (міндетті емес)" />
+                <button type="submit" class="feedback-submit">Жіберу</button>
+            </form>
+            <div id="feedbackMessage" class="feedback-message"></div>
+        </div>
+    </div>
+    <footer>
+        <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">Сайт reCAPTCHA қорғауында · <a
+                href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
+                style="color:inherit">Құпиялылық</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer" style="color:inherit">Шарттар</a></p>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="be">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выдаліць дублікаты</title>
+    <meta name="description"
+        content="Выдаленне паўторных радкоў або слоў. Опцыя: аднолькавыя словы ў розным парадку = адзін радок." />
+    <script src="../script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/be/undublicator.html">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/undublicator.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/undublicator.html">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/undublicator.html">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/undublicator.html">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/undublicator.html">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/undublicator.html">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Дублікаты</span>
+            <div class="nav-links">
+                <a href="index.html">Тыпы супадзенняў</a>
+                <a href="capiralizator.html">Капіталізацыя</a>
+                <a href="undublicator.html" class="active">Дублікаты</a>
+                <a href="minusator.html">Мінус-словы</a>
+            </div>
+            <div class="nav-actions">
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Мова">
+                        <span class="lang-picker-code">BE</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../undublicator.html" class="lang-picker-item" role="option">RU</a>
+                        <a href="../kz/undublicator.html" class="lang-picker-item" role="option">KZ</a>
+                        <a href="../en/undublicator.html" class="lang-picker-item" role="option">EN</a>
+                        <a href="../uk/undublicator.html" class="lang-picker-item" role="option">UK</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">BE</span>
+                        <a href="../pl/undublicator.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Змяніць тэму">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Цёмная</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Тыпы супадзенняў</a>
+            <a href="capiralizator.html">Капіталізацыя</a>
+            <a href="undublicator.html" class="active">Дублікаты</a>
+            <a href="minusator.html">Мінус-словы</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Прыбраць дублікаты радкоў
+            </h1>
+            <p class="page-subtitle">Прыбірае паўторныя радкі або словы. Калі парадак слоў не важны — уключыце галачку
+                ніжэй.</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Зыходны тэкст</div>
+            <textarea id="input" placeholder="Увядзіце тэкст"></textarea>
+
+            <div class="toolbar">
+                <select id="type">
+                    <option value="string">Унікальныя радкі</option>
+                    <option value="words">Унікальныя словы</option>
+                </select>
+                <button class="btn btn-primary" id="button-dublicate">✦ Ачысціць</button>
+                <label class="decline-label" id="ignoreOrderWrap">
+                    <input type="checkbox" id="ignoreOrder">
+                    <span>Парадак слоў не важны</span>
+                </label>
+                <span class="counter" id="counter">0 радкоў</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field-label">Вынік</div>
+            <textarea id="result" readonly placeholder="Вынік з’явіцца тут…"></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Капіяваць</button>
+                <button class="btn btn-ghost" id="clear">✕ Ачысціць</button>
+                <span class="counter" id="counter-result">0 радкоў</span>
+            </div>
+
+            <section class="faq">
+                <h2>Пытанні і адказы</h2>
+
+                <details class="faq-item">
+                    <summary>Як прыбраць дублікаты радкоў?</summary>
+                    <p>Устаўце спіс — кожны радок асобна — і націсніце «Ачысціць». Паўторы знікнуць адразу.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Ці лічацца «купіць канапу» і «канапу купіць» дублікатам?</summary>
+                    <p>Па змаўчанні не. Уключыце «Парадак слоў не важны».</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Вялікія спісы?</summary>
+                    <p>Так — апрацоўка ў браўзеры, без адпраўкі на сервер.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Дублікаты слоў, не радкоў?</summary>
+                    <p>Абярыце рэжым «Унікальныя словы».</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Ці захоўваецца парадак радкоў?</summary>
+                    <p>Так — застаецца першае ўваходжанне з кожнай групы дублікатаў.</p>
+                </details>
+            </section>
+        </div>
+    </main>
+    <div id="feedbackModal" class="feedback-modal hidden">
+        <div class="feedback-content">
+            <button class="feedback-close" id="feedbackClose" type="button" aria-label="Зачыніць">✕</button>
+            <p>Калі нешта незручна або патрэбна функцыя — напішыце.</p>
+            <form id="feedbackForm" method="post">
+                <textarea id="feedbackComment" name="comment" placeholder="Ваш каментар" required></textarea>
+                <input type="text" id="feedbackContact" name="contact" placeholder="Кантакт (неабавязкова)" />
+                <button type="submit" class="feedback-submit">Адправіць</button>
+            </form>
+            <div id="feedbackMessage" class="feedback-message"></div>
+        </div>
+    </div>
+    <footer>
+        <p>2025–2026 — Інструменты для штодзённай працы ў PPC. Для задавальнення. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">Сайт абаронены reCAPTCHA · <a
+                href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
+                style="color:inherit">Канфідэнцыяльнасць</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer" style="color:inherit">Умовы</a></p>
+    </footer>
+</body>
+
+</html>

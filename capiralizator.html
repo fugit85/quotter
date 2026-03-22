@@ -4,12 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Капитализатор</title>
-    <meta name="description" content="Капитализация всех слов онлайн. Просто и удобно. Попробуйте!" />
+    <title>Сделать буквы заглавными</title>
+    <meta name="description" content="Сделать все буквы заглавными или каждое слово с большой буквы онлайн. Быстро меняет регистр текста — удобно для подготовки заголовков объявлений Google Ads. Попробуйте!" />
     <script src="script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/capiralizator.html">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="quote.png">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/capiralizator.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/capiralizator.html">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/capiralizator.html">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/capiralizator.html">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/capiralizator.html">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/capiralizator.html">
+    <link rel="stylesheet" href="style.css"><link rel="icon" href="quote.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -31,7 +36,25 @@
                 <a href="decline.html">Склонятор</a>
             </div>
             <div class="nav-actions">
-                <a href="en/capiralizator.html" class="lang-toggle">EN</a>
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Мова / Language">
+                        <span class="lang-picker-code">RU</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">RU</span>
+                        <a href="kz/capiralizator.html" class="lang-picker-item" role="option">KZ</a>
+                        <a href="en/capiralizator.html" class="lang-picker-item" role="option">EN</a>
+                        <a href="uk/capiralizator.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="be/capiralizator.html" class="lang-picker-item" role="option">BE</a>
+                        <a href="pl/capiralizator.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
                 <button class="theme-toggle" id="themeToggle" aria-label="Сменить тему">
                     <span id="themeIcon">🌙</span>
                     <span class="theme-toggle-label" id="themeLabel">Тёмная</span>
@@ -52,9 +75,9 @@
         <div class="page-header">
             <h1 class="page-title">
                 <span class="page-title-dot"></span>
-                Капитализатор
+                Сделать буквы заглавными
             </h1>
-            <p class="page-subtitle">Делает буквы заглавными</p>
+            <p class="page-subtitle">Меняет регистр текста онлайн — все буквы заглавные или каждое слово с большой буквы. Удобно для подготовки заголовков объявлений Google Ads.</p>
         </div>
 
         <div class="card">
@@ -79,8 +102,30 @@
                 <button class="btn btn-ghost" id="copy">⎘ Копировать</button>
                 <button class="btn btn-ghost" id="clear">✕ Очистить</button>
             </div>
-        </div>
-    </main>
+        <section class="faq">
+            <h2>Вопросы и ответы</h2>
+          
+            <details class="faq-item">
+              <summary>В чём разница между «Первые буквы» и «Все буквы»?</summary>
+              <p>«Первые буквы» — делает заглавной первую букву каждого слова: «купить красный диван» → «Купить Красный Диван». «Все буквы» — переводит весь текст в верхний регистр: «купить диван» → «КУПИТЬ ДИВАН».</p>
+            </details>
+          
+            <details class="faq-item">
+              <summary>Для чего это нужно в Google Ads?</summary>
+              <p>В заголовках объявлений Google Ads принято писать каждое слово с заглавной буквы — это увеличивает CTR. Инструмент позволяет быстро привести большой список заголовков к нужному виду без ручного редактирования.</p>
+            </details>
+          
+            <details class="faq-item">
+              <summary>Обрабатывает ли инструмент большие списки?</summary>
+              <p>Да — вставляйте любое количество строк, обработка мгновенная прямо в браузере.</p>
+            </details>
+          
+            <details class="faq-item">
+              <summary>Сохраняется ли форматирование текста?</summary>
+              <p>Структура текста сохраняется — каждая строка остаётся на своём месте. Меняется только регистр букв.</p>
+            </details>
+          </section>
+   
     <div id="feedbackModal" class="feedback-modal hidden">
             <div class="feedback-content">
                 <button class="feedback-close" id="feedbackClose">✕</button>
@@ -94,8 +139,10 @@
                 <div id="feedbackMessage" class="feedback-message"></div>
             </div>
         </div>
+    </div>
+    </main>
     <footer>
-        <p>2025 - Tools for PPС daily routine. Made for fun. AI power.</p>
+        <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
         <p style="font-size:11px;margin-top:4px;">Сайт защищён reCAPTCHA · <a href="https://policies.google.com/privacy" target="_blank" style="color:inherit">Конфиденциальность</a> · <a href="https://policies.google.com/terms" target="_blank" style="color:inherit">Условия</a></p>
     </footer>
 </body>

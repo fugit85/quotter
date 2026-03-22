@@ -8,52 +8,176 @@ var CONFIG = {
     recaptchaSiteKey: '6Lch7H8sAAAAAK9ayTdPK7pwgOcCnm3DJLoI15Mk'
 };
 
-var LANG_EN = /^en/i.test(document.documentElement.getAttribute('lang') || '');
+var DOC_LANG = (document.documentElement.getAttribute('lang') || 'ru').split('-')[0].toLowerCase();
 
-var L = LANG_EN ? {
-    themeLight: 'Light',
-    themeDark: 'Dark',
-    lineLabel: function (n) { return n + (n === 1 ? ' line' : ' lines'); },
-    copy: '⎘ Copy',
-    copied: '✓ Copied',
-    exportCsv: '↓ Export CSV',
-    exportSaved: '✓ Saved',
-    declineEmpty: 'Enter text to inflect',
-    serverError: function (s) { return 'Server error: ' + s; },
-    connectionError: 'Could not reach the server',
-    csvAlertMinus: 'Could not find keywords. Make sure the file is exported from Google Keyword Planner.',
-    csvAlertQuote: 'Could not find keywords.',
-    verify: 'Verifying…',
-    sending: 'Sending…',
-    thanks: 'Thanks!',
-    feedbackOk: 'Your message was sent — we will read it.',
-    feedbackErr: 'Could not send. Please try again later.',
-    submit: 'Send'
-} : {
-    themeLight: 'Светлая',
-    themeDark: 'Тёмная',
-    lineLabel: function (n) {
-        return n + (
-            n % 10 === 1 && n !== 11 ? ' строка' :
-                n % 10 >= 2 && n % 10 <= 4 && (n < 10 || n > 20) ? ' строки' : ' строк'
-        );
+var UI_STRINGS = {
+    en: {
+        themeLight: 'Light',
+        themeDark: 'Dark',
+        lineLabel: function (n) { return n + (n === 1 ? ' line' : ' lines'); },
+        copy: '⎘ Copy',
+        copied: '✓ Copied',
+        exportCsv: '↓ Export CSV',
+        exportSaved: '✓ Saved',
+        declineEmpty: 'Enter text to inflect',
+        serverError: function (s) { return 'Server error: ' + s; },
+        connectionError: 'Could not reach the server',
+        csvAlertMinus: 'Could not find keywords. Make sure the file is exported from Google Keyword Planner.',
+        csvAlertQuote: 'Could not find keywords.',
+        verify: 'Verifying…',
+        sending: 'Sending…',
+        thanks: 'Thanks!',
+        feedbackOk: 'Your message was sent — we will read it.',
+        feedbackErr: 'Could not send. Please try again later.',
+        submit: 'Send'
     },
-    copy: '⎘ Копировать',
-    copied: '✓ Скопировано',
-    exportCsv: '↓ Экспорт CSV',
-    exportSaved: '✓ Сохранено',
-    declineEmpty: 'Введите текст для склонения',
-    serverError: function (s) { return 'Ошибка сервера: ' + s; },
-    connectionError: 'Ошибка при соединении с сервером',
-    csvAlertMinus: 'Не удалось найти ключевые слова. Убедитесь что файл выгружен из Планировщика Google.',
-    csvAlertQuote: 'Не удалось найти ключевые слова.',
-    verify: 'Проверка...',
-    sending: 'Отправляем...',
-    thanks: 'Спасибо!',
-    feedbackOk: 'Ваш комментарий отправлен — обязательно посмотрим',
-    feedbackErr: 'Ошибка отправки. Попробуйте позже.',
-    submit: 'Отправить'
+    ru: {
+        themeLight: 'Светлая',
+        themeDark: 'Тёмная',
+        lineLabel: function (n) {
+            return n + (
+                n % 10 === 1 && n !== 11 ? ' строка' :
+                    n % 10 >= 2 && n % 10 <= 4 && (n < 10 || n > 20) ? ' строки' : ' строк'
+            );
+        },
+        copy: '⎘ Копировать',
+        copied: '✓ Скопировано',
+        exportCsv: '↓ Экспорт CSV',
+        exportSaved: '✓ Сохранено',
+        declineEmpty: 'Введите текст для склонения',
+        serverError: function (s) { return 'Ошибка сервера: ' + s; },
+        connectionError: 'Ошибка при соединении с сервером',
+        csvAlertMinus: 'Не удалось найти ключевые слова. Убедитесь что файл выгружен из Планировщика Google.',
+        csvAlertQuote: 'Не удалось найти ключевые слова.',
+        verify: 'Проверка...',
+        sending: 'Отправляем...',
+        thanks: 'Спасибо!',
+        feedbackOk: 'Ваш комментарий отправлен — обязательно посмотрим',
+        feedbackErr: 'Ошибка отправки. Попробуйте позже.',
+        submit: 'Отправить'
+    },
+    be: {
+        themeLight: 'Светлая',
+        themeDark: 'Цёмная',
+        lineLabel: function (n) {
+            var m = n % 10;
+            var m100 = n % 100;
+            if (m100 >= 11 && m100 <= 14) {
+                return n + ' радкоў';
+            }
+            if (m === 1) {
+                return n + ' радок';
+            }
+            if (m >= 2 && m <= 4) {
+                return n + ' радкі';
+            }
+            return n + ' радкоў';
+        },
+        copy: '⎘ Капіяваць',
+        copied: '✓ Скапіявана',
+        exportCsv: '↓ Экспарт CSV',
+        exportSaved: '✓ Захавана',
+        declineEmpty: 'Увядзіце тэкст для скланення',
+        serverError: function (s) { return 'Памылка сервера: ' + s; },
+        connectionError: 'Не атрымалася звязацца з серверам',
+        csvAlertMinus: 'Не знойдзены ключавыя словы. Пераканайцеся, што файл з Планіроўшчыка Google.',
+        csvAlertQuote: 'Не знойдзены ключавыя словы.',
+        verify: 'Праверка...',
+        sending: 'Адпраўляем...',
+        thanks: 'Дзякуй!',
+        feedbackOk: 'Ваш каментар адпраўлены — абавязкова праглядзім',
+        feedbackErr: 'Памылка адпраўкі. Паспрабуйце пазней.',
+        submit: 'Адправіць'
+    },
+    uk: {
+        themeLight: 'Світла',
+        themeDark: 'Темна',
+        lineLabel: function (n) {
+            var m = n % 10;
+            var m100 = n % 100;
+            if (m100 >= 11 && m100 <= 14) {
+                return n + ' рядків';
+            }
+            if (m === 1) {
+                return n + ' рядок';
+            }
+            if (m >= 2 && m <= 4) {
+                return n + ' рядки';
+            }
+            return n + ' рядків';
+        },
+        copy: '⎘ Копіювати',
+        copied: '✓ Скопійовано',
+        exportCsv: '↓ Експорт CSV',
+        exportSaved: '✓ Збережено',
+        declineEmpty: 'Введіть текст для відмінювання',
+        serverError: function (s) { return 'Помилка сервера: ' + s; },
+        connectionError: 'Не вдалося зв’язатися з сервером',
+        csvAlertMinus: 'Не знайдено ключові слова. Переконайтеся, що файл з Планувальника Google.',
+        csvAlertQuote: 'Не знайдено ключові слова.',
+        verify: 'Перевірка...',
+        sending: 'Надсилаємо...',
+        thanks: 'Дякуємо!',
+        feedbackOk: 'Ваш коментар надіслано — обов’язково переглянемо',
+        feedbackErr: 'Помилка надсилання. Спробуйте пізніше.',
+        submit: 'Надіслати'
+    },
+    pl: {
+        themeLight: 'Jasny',
+        themeDark: 'Ciemny',
+        lineLabel: function (n) {
+            if (n === 1) {
+                return '1 wiersz';
+            }
+            var m = n % 10;
+            var m100 = n % 100;
+            if (m100 >= 12 && m100 <= 14) {
+                return n + ' wierszy';
+            }
+            if (m >= 2 && m <= 4) {
+                return n + ' wiersze';
+            }
+            return n + ' wierszy';
+        },
+        copy: '⎘ Kopiuj',
+        copied: '✓ Skopiowano',
+        exportCsv: '↓ Eksport CSV',
+        exportSaved: '✓ Zapisano',
+        declineEmpty: 'Wpisz tekst do odmiany',
+        serverError: function (s) { return 'Błąd serwera: ' + s; },
+        connectionError: 'Nie udało się połączyć z serwerem',
+        csvAlertMinus: 'Nie znaleziono słów kluczowych. Upewnij się, że plik pochodzi z Planera słów kluczowych Google.',
+        csvAlertQuote: 'Nie znaleziono słów kluczowych.',
+        verify: 'Weryfikacja…',
+        sending: 'Wysyłanie…',
+        thanks: 'Dziękujemy!',
+        feedbackOk: 'Wiadomość wysłana — na pewno ją przeczytamy',
+        feedbackErr: 'Nie udało się wysłać. Spróbuj później.',
+        submit: 'Wyślij'
+    },
+    kk: {
+        themeLight: 'Жарық',
+        themeDark: 'Қараңғы',
+        lineLabel: function (n) { return n + ' жол'; },
+        copy: '⎘ Көшіру',
+        copied: '✓ Көшірілді',
+        exportCsv: '↓ CSV экспорт',
+        exportSaved: '✓ Сақталды',
+        declineEmpty: 'Септіру үшін мәтінді енгізіңіз',
+        serverError: function (s) { return 'Сервер қатесі: ' + s; },
+        connectionError: 'Серверге қосылу мүмкін болмады',
+        csvAlertMinus: 'Кілт сөздер табылмады. Файл Google сөз жоспарлаушысынан шығарылғанына көз жеткізіңіз.',
+        csvAlertQuote: 'Кілт сөздер табылмады.',
+        verify: 'Тексеру…',
+        sending: 'Жіберілуде…',
+        thanks: 'Рахмет!',
+        feedbackOk: 'Хабарлама жіберілді — міндетті түрде оқимыз',
+        feedbackErr: 'Жіберу сәтсіз аяқталды. Кейінірек қайталаңыз.',
+        submit: 'Жіберу'
+    }
 };
+
+var L = UI_STRINGS[DOC_LANG] || UI_STRINGS.ru;
 
 function setTextareaValue(el, value) {
     if (el && el.tagName === 'TEXTAREA') {
@@ -459,6 +583,7 @@ function wireMinusTool() {
         fieldsetElement.innerHTML = '';
         var text = inputElement.value.trim();
         var lines = text.split('\n');
+        lines = lines.filter(function (line) { return line.trim() !== ''; });
 
         lines.forEach(function (line) {
             var div = document.createElement('div');
@@ -535,7 +660,7 @@ function wireWhitelistButton() {
 }
 wireWhitelistButton();
 
-/* --- Russian declension (Render API) — UI only; backend unchanged --- */
+/* --- Russian declension API — ожидается ответ: массив строк --- */
 function syncDeclineCheckboxes(allCheckbox) {
     var byAll = document.getElementById('byAll');
     var byGender = document.getElementById('byGender');
@@ -584,6 +709,7 @@ function initDeclineCheckboxes() {
 }
 
 function wireInflect() {
+    fetch(CONFIG.declineApiUrl.replace('/decline', '/healthz')).catch(function(){});
     var button = document.getElementById('button-inflect');
     var inputEl = document.getElementById('input');
     var resultEl = document.getElementById('result');
@@ -626,15 +752,8 @@ function wireInflect() {
                 return res.json();
             })
             .then(function (data) {
-                var allForms = [];
-                Object.values(data).forEach(function (formsObj) {
-                    Object.values(formsObj).forEach(function (form) {
-                        if (form) {
-                            allForms.push(form);
-                        }
-                    });
-                });
-                var uniqueForms = Array.from(new Set(allForms));
+                var arr = Array.isArray(data) ? data : [];
+                var uniqueForms = Array.from(new Set(arr.filter(function (f) { return f; })));
                 setTextareaValue(resultEl, uniqueForms.join('\n'));
             })
             .catch(function (err) {
@@ -649,6 +768,59 @@ function wireInflect() {
 wireInflect();
 
 initDeclineCheckboxes();
+
+function initLangPicker() {
+    var root = document.querySelector('.lang-picker');
+    var btn = root && root.querySelector('.lang-picker-toggle');
+    var panel = root && root.querySelector('.lang-picker-panel');
+    if (!root || !btn || !panel) {
+        return;
+    }
+
+    function close() {
+        panel.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+    }
+
+    function open() {
+        panel.hidden = false;
+        btn.setAttribute('aria-expanded', 'true');
+    }
+
+    function toggle() {
+        if (panel.hidden) {
+            open();
+        } else {
+            close();
+        }
+    }
+
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggle();
+    });
+
+    document.addEventListener('click', function () {
+        close();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            close();
+        }
+    });
+
+    window.addEventListener(
+        'scroll',
+        function () {
+            if (!panel.hidden) {
+                close();
+            }
+        },
+        true
+    );
+}
+initLangPicker();
 
 /* --- CSV upload (minus + quote) --- */
 function wireCsvUpload(inputId, alertFn) {

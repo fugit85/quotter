@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuń duplikaty</title>
+    <meta name="description"
+        content="Usuwaj duplikaty wierszy lub słów. Opcja: ta sama treść w innej kolejności słów = jeden wiersz." />
+    <script src="../script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/pl/undublicator.html">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/undublicator.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/undublicator.html">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/undublicator.html">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/undublicator.html">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/undublicator.html">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/undublicator.html">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Duplikaty</span>
+            <div class="nav-links">
+                <a href="index.html">Typy dopasowań</a>
+                <a href="capiralizator.html">Kapitalizacja</a>
+                <a href="undublicator.html" class="active">Duplikaty</a>
+                <a href="minusator.html">Wykluczenia</a>
+            </div>
+            <div class="nav-actions">
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Język">
+                        <span class="lang-picker-code">PL</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../undublicator.html" class="lang-picker-item" role="option">RU</a>
+                        <a href="../kz/undublicator.html" class="lang-picker-item" role="option">KZ</a>
+                        <a href="../en/undublicator.html" class="lang-picker-item" role="option">EN</a>
+                        <a href="../uk/undublicator.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="../be/undublicator.html" class="lang-picker-item" role="option">BE</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">PL</span>
+                    </div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Zmień motyw">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Ciemny</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Typy dopasowań</a>
+            <a href="capiralizator.html">Kapitalizacja</a>
+            <a href="undublicator.html" class="active">Duplikaty</a>
+            <a href="minusator.html">Wykluczenia</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Usuń duplikaty
+            </h1>
+            <p class="page-subtitle">Usuwa powtarzające się wiersze lub słowa. Jeśli kolejność słów nie ma znaczenia,
+                „słowa kluczowe” i „kluczowe słowa” mogą być traktowane jak ten sam wiersz — zaznacz opcję poniżej.</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Tekst źródłowy</div>
+            <textarea id="input" placeholder="Wpisz tekst"></textarea>
+
+            <div class="toolbar">
+                <select id="type">
+                    <option value="string">Unikalne wiersze</option>
+                    <option value="words">Unikalne słowa</option>
+                </select>
+                <button class="btn btn-primary" id="button-dublicate">✦ Usuń duplikaty</button>
+                <label class="decline-label" id="ignoreOrderWrap">
+                    <input type="checkbox" id="ignoreOrder">
+                    <span>Ignoruj kolejność słów (wiersze)</span>
+                </label>
+                <span class="counter" id="counter">0 wierszy</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field-label">Wynik</div>
+            <textarea id="result" readonly placeholder="Tutaj pojawi się wynik…"></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Kopiuj</button>
+                <button class="btn btn-ghost" id="clear">✕ Wyczyść</button>
+                <span class="counter" id="counter-result">0 wierszy</span>
+            </div>
+
+            <section class="faq">
+                <h2>FAQ</h2>
+
+                <details class="faq-item">
+                    <summary>Jak usunąć zduplikowane wiersze?</summary>
+                    <p>Wklej po jednym elemencie na wiersz i kliknij <strong>Usuń duplikaty</strong>. Powtórzenia znikną
+                        od razu.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Czy „kup kanapę” i „kanapę kup” to duplikat?</summary>
+                    <p>Domyślnie nie. Włącz <strong>Ignoruj kolejność słów</strong>, żeby te same słowa w dowolnej
+                        kolejności liczyły się jako jeden wiersz.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Duże listy?</summary>
+                    <p>Tak — przetwarzanie w przeglądarce, nic nie jest wysyłane. Bez limitu wierszy.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Duplikaty słów zamiast wierszy?</summary>
+                    <p>Tak — wybierz <strong>Unikalne słowa</strong>. Tekst dzieli się na tokeny, zostają tylko
+                        unikalne.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Czy kolejność wierszy jest zachowana?</summary>
+                    <p>Tak — z każdej grupy duplikatów zostaje pierwsze wystąpienie; kolejność pozostałych wierszy bez
+                        zmian.</p>
+                </details>
+            </section>
+        </div>
+    </main>
+    <div id="feedbackModal" class="feedback-modal hidden">
+        <div class="feedback-content">
+            <button class="feedback-close" id="feedbackClose" type="button" aria-label="Zamknij">✕</button>
+            <p>Coś niewygodne albo brakuje funkcji — napisz.</p>
+            <form id="feedbackForm" method="post">
+                <textarea id="feedbackComment" name="comment" placeholder="Twoja wiadomość" required></textarea>
+                <input type="text" id="feedbackContact" name="contact" placeholder="Kontakt (opcjonalnie)" />
+                <button type="submit" class="feedback-submit">Wyślij</button>
+            </form>
+            <div id="feedbackMessage" class="feedback-message"></div>
+        </div>
+    </div>
+    <footer>
+        <p>2025–2026 — Narzędzia na co dzień w PPC. Dla zabawy. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">Strona chroniona przez reCAPTCHA · <a
+                href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
+                style="color:inherit">Prywatność</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer" style="color:inherit">Warunki</a></p>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zbierz słowa wykluczające</title>
+    <meta name="description"
+        content="Buduj listy wykluczeń, klikając słowa lub zaznaczając całe wiersze. Import CSV z Planera słów kluczowych." />
+    <script src="../script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/pl/minusator.html">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/minusator.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/minusator.html">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/minusator.html">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/minusator.html">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/minusator.html">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/minusator.html">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Wykluczenia</span>
+            <div class="nav-links">
+                <a href="index.html">Typy dopasowań</a>
+                <a href="capiralizator.html">Kapitalizacja</a>
+                <a href="undublicator.html">Duplikaty</a>
+                <a href="minusator.html" class="active">Wykluczenia</a>
+            </div>
+            <div class="nav-actions">
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Język">
+                        <span class="lang-picker-code">PL</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../minusator.html" class="lang-picker-item" role="option">RU</a>
+                        <a href="../kz/minusator.html" class="lang-picker-item" role="option">KZ</a>
+                        <a href="../en/minusator.html" class="lang-picker-item" role="option">EN</a>
+                        <a href="../uk/minusator.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="../be/minusator.html" class="lang-picker-item" role="option">BE</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">PL</span>
+                    </div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Zmień motyw">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Ciemny</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Typy dopasowań</a>
+            <a href="capiralizator.html">Kapitalizacja</a>
+            <a href="undublicator.html">Duplikaty</a>
+            <a href="minusator.html" class="active">Wykluczenia</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Słowa wykluczające — wybór interaktywny
+            </h1>
+            <p class="page-subtitle">Klikaj słowa lub zaznaczaj całe wiersze, aby zebrać wykluczenia. Możesz wgrać CSV
+                z Planera bez wcześniejszej edycji.</p>
+        </div>
+
+        <div class="card">
+            <div class="minus-grid">
+                <div class="minus-col">
+                    <div class="field-label">Tekst źródłowy</div>
+                    <textarea id="input" placeholder="Wpisz tekst"></textarea>
+                </div>
+                <div class="minus-col">
+                    <div class="field-label">Wynik</div>
+                    <textarea id="result" readonly placeholder="Tutaj pojawi się wynik…"></textarea>
+                </div>
+            </div>
+
+            <div class="minus-toolbar">
+                <div class="minus-toolbar-left">
+                    <label class="btn btn-ghost btn-upload" for="csvUpload">⇪ Wgraj CSV</label>
+                    <input type="file" id="csvUpload" accept=".csv" style="display:none">
+                    <button class="btn btn-primary" id="start-minus">✦ Zbuduj listę interaktywną</button>
+                    <button class="btn btn-ghost" id="get-minus-words">Do wykluczeń</button>
+                    <button class="btn btn-ghost" id="get-white-list">Biała lista</button>
+                </div>
+                <div class="minus-toolbar-right">
+                    <button class="btn btn-ghost" id="copy">⎘ Kopiuj</button>
+                    <button class="btn btn-ghost" id="export-csv">↓ Eksport CSV</button>
+                    <button class="btn btn-ghost" id="clear">✕ Wyczyść</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="minus-hint">Klikaj słowa lub zaznaczaj wiersze poniżej ↓</div>
+        <div class="minus-fieldset" id="fieldset"></div>
+        <br><br>
+        <div class="card">
+            <section class="faq">
+                <h2>FAQ</h2>
+
+                <details class="faq-item">
+                    <summary>Jak korzystać z narzędzia?</summary>
+                    <p>Wgraj CSV z Planera albo wklej listę → <strong>Zbuduj listę interaktywną</strong> → klikaj słowa
+                        lub zaznaczaj wiersze → <strong>Do wykluczeń</strong> → eksport CSV do Google Ads Editor lub
+                        kopiuj do interfejsu.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Co daje zaznaczenie całego wiersza?</summary>
+                    <p>Pole wyboru po lewej dodaje całą frazę jako wykluczenie dokładne <code>[fraza]</code>. Kliknięcie
+                        pojedynczego słowa dodaje je jako szerokie wykluczenie tam, gdzie występuje token.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>„Do wykluczeń” a „Biała lista”?</summary>
+                    <p><strong>Do wykluczeń</strong> zbiera wszystko, co zaznaczyłeś (słowa i wiersze).
+                        <strong>Biała lista</strong> zbiera wiersze, których nie dotykałeś — wygodne, gdy nierelacyjnych
+                        jest mało.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Import CSV z Planera?</summary>
+                    <p>Tak — użyj eksportu bez zmian. Słowa kluczowe są odczytywane automatycznie, dodatkowe kolumny są
+                        ignorowane.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Jak przenieść wynik do Google Ads?</summary>
+                    <p><strong>Eksport CSV</strong> do Edytora Google Ads albo <strong>Kopiuj</strong> i wklej w
+                        interfejsie.</p>
+                </details>
+            </section>
+        </div>
+
+    </main>
+
+    <button class="scroll-top" id="scrollTop" aria-label="Do góry">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3,12 9,6 15,12" />
+        </svg>
+    </button>
+    <div id="feedbackModal" class="feedback-modal hidden">
+        <div class="feedback-content">
+            <button class="feedback-close" id="feedbackClose" type="button" aria-label="Zamknij">✕</button>
+            <p>Coś niewygodne albo brakuje funkcji — napisz.</p>
+            <form id="feedbackForm" method="post">
+                <textarea id="feedbackComment" name="comment" placeholder="Twoja wiadomość" required></textarea>
+                <input type="text" id="feedbackContact" name="contact" placeholder="Kontakt (opcjonalnie)" />
+                <button type="submit" class="feedback-submit">Wyślij</button>
+            </form>
+            <div id="feedbackMessage" class="feedback-message"></div>
+        </div>
+    </div>
+    <footer>
+        <p>2025–2026 — Narzędzia na co dzień w PPC. Dla zabawy. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">Strona chroniona przez reCAPTCHA · <a
+                href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
+                style="color:inherit">Prywatność</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer" style="color:inherit">Warunki</a></p>
+    </footer>
+</body>
+
+</html>

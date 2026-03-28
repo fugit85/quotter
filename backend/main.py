@@ -77,15 +77,13 @@ def _append_unique(ordered, seen, value):
 
 
 def _collect_single_word_forms(token, parsed, by_gender, by_number, by_case):
-    """Та же схема меток/циклов, что в старом API, но плоский список строк."""
+    """Плоский список словоформ; без падежей перебирается только именительный."""
     out = []
     seen = set()
     is_adj = 'ADJF' in parsed.tag or 'ADJS' in parsed.tag
+    cases_iter = CASES if by_case else ['nomn']
 
-    if not by_case:
-        return out
-
-    for case in CASES:
+    for case in cases_iter:
         if by_number:
             for number in NUMBERS:
                 w = _inflect_surface(parsed, {case, number}, token)
@@ -110,12 +108,13 @@ def _collect_single_word_forms(token, parsed, by_gender, by_number, by_case):
     return out
 
 
-def _collect_phrase_forms(tokens, parsed_list, by_number, by_case):
-    """Склоняет всю фразу целиком: каждое слово в одном падеже (и числе)."""
+def _collect_phrase_forms(tokens, parsed_list, by_gender, by_number, by_case):
+    """Склоняет фразу целиком: одни и те же падеж/число/род на всех словах."""
     out = []
-    if not by_case:
-        return out
-    for case in CASES:
+    cases_iter = CASES if by_case else ['nomn']
+    has_adj = any('ADJF' in p.tag or 'ADJS' in p.tag for p in parsed_list)
+
+    for case in cases_iter:
         if by_number:
             for number in NUMBERS:
                 phrase_form = []
@@ -129,6 +128,27 @@ def _collect_phrase_forms(tokens, parsed_list, by_number, by_case):
                 inflected = parsed.inflect({case})
                 phrase_form.append(inflected.word if inflected else token)
             out.append(' '.join(phrase_form))
+
+        if has_adj and by_gender:
+            for gender in GENDERS:
+                if by_number:
+                    phrase_form = []
+                    for token, parsed in zip(tokens, parsed_list):
+                        inflected = parsed.inflect({case, 'sing', gender})
+                        phrase_form.append(inflected.word if inflected else token)
+                    out.append(' '.join(phrase_form))
+                else:
+                    phrase_form = []
+                    for token, parsed in zip(tokens, parsed_list):
+                        inflected = parsed.inflect({case, gender})
+                        phrase_form.append(inflected.word if inflected else token)
+                    out.append(' '.join(phrase_form))
+            if by_number:
+                phrase_form = []
+                for token, parsed in zip(tokens, parsed_list):
+                    inflected = parsed.inflect({case, 'plur'})
+                    phrase_form.append(inflected.word if inflected else token)
+                out.append(' '.join(phrase_form))
     return out
 
 
@@ -160,7 +180,9 @@ def decline_api():
                 tokens[0], parsed_list[0], by_gender, by_number, by_case
             )
         else:
-            chunk = _collect_phrase_forms(tokens, parsed_list, by_number, by_case)
+            chunk = _collect_phrase_forms(
+                tokens, parsed_list, by_gender, by_number, by_case
+            )
 
         for item in chunk:
             _append_unique(merged, seen, item)

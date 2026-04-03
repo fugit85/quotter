@@ -1,7 +1,5 @@
-/* global grecaptcha */
 'use strict';
 
-/** Endpoints and public keys (site key is safe to expose; secrets stay on the server). */
 var CONFIG = {
     declineApiUrl: 'https://declination-rus.onrender.com/decline',
     feedbackSubmitUrl: 'https://feedback-service-ykt7.onrender.com/submit',
@@ -179,8 +177,10 @@ var UI_STRINGS = {
 
 var L = UI_STRINGS[DOC_LANG] || UI_STRINGS.ru;
 
+var originalForms = [];
+
 function setTextareaValue(el, value) {
-    if (el && el.tagName === 'TEXTAREA') {
+    if (el && String(el.tagName).toUpperCase() === 'TEXTAREA') {
         el.value = value == null ? '' : value;
     }
 }
@@ -293,7 +293,6 @@ function flashCopyButton(button, resultEl) {
     }, 1800);
 }
 
-/* --- Theme --- */
 var html = document.documentElement;
 var themeIcon = document.getElementById('themeIcon');
 var themeLabel = document.getElementById('themeLabel');
@@ -322,7 +321,6 @@ if (themeToggleEl) {
     });
 }
 
-/* --- Line counter (quote / dedup pages) --- */
 var counterEl = document.getElementById('counter');
 var inputForCounter = document.getElementById('input');
 if (counterEl && inputForCounter) {
@@ -332,7 +330,6 @@ if (counterEl && inputForCounter) {
     });
 }
 
-/* --- Scroll to top --- */
 var scrollBtn = document.getElementById('scrollTop');
 if (scrollBtn) {
     window.addEventListener('scroll', function () {
@@ -343,7 +340,6 @@ if (scrollBtn) {
     });
 }
 
-/* --- Keyword wrap (match types) --- */
 function wireQuoteTool() {
     var modeElement = document.getElementById('mode');
     var buttonQuote = document.getElementById('button-quote');
@@ -451,7 +447,6 @@ if (optionsToggle && optionsBody) {
 
 wireQuoteTool();
 
-/* --- Capitalizer --- */
 function wireCapitalizer() {
     var buttonCapital = document.getElementById('button-capital');
     var inputElement = document.getElementById('input');
@@ -478,7 +473,6 @@ function wireCapitalizer() {
 }
 wireCapitalizer();
 
-/* --- Clear --- */
 function wireClear() {
     var buttonClear = document.getElementById('clear');
     var inputElement = document.getElementById('input');
@@ -490,6 +484,9 @@ function wireClear() {
     buttonClear.addEventListener('click', function () {
         inputElement.value = '';
         setTextareaValue(resultElement, '');
+        if (document.getElementById('addTranslit')) {
+            originalForms = [];
+        }
         if (fieldsetElement) {
             fieldsetElement.innerHTML = '';
         }
@@ -497,7 +494,6 @@ function wireClear() {
 }
 wireClear();
 
-/* --- Copy result --- */
 var copyButton = document.getElementById('copy');
 if (copyButton) {
     copyButton.addEventListener('click', function () {
@@ -520,7 +516,6 @@ if (copyButton) {
     });
 }
 
-/* --- Deduplicator --- */
 function wireDeduplicator() {
     var buttonDuplicate = document.getElementById('button-dublicate');
     var inputElement = document.getElementById('input');
@@ -567,7 +562,6 @@ function wireDeduplicator() {
 }
 wireDeduplicator();
 
-/* --- Negative keywords UI --- */
 function wireMinusTool() {
     var buttonStartMinus = document.getElementById('start-minus');
     var buttonGetMinusWords = document.getElementById('get-minus-words');
@@ -660,7 +654,112 @@ function wireWhitelistButton() {
 }
 wireWhitelistButton();
 
-/* --- Russian declension API — ожидается ответ: массив строк --- */
+function toTranslit(text) {
+    var s = text == null ? '' : String(text);
+    var map = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
+        'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'j', 'к': 'k', 'л': 'l', 'м': 'm',
+        'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+        'ф': 'f', 'х': 'kh', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
+        'ъ': '\'', 'ы': 'y', 'ь': '\'', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+        'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo',
+        'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'J', 'К': 'K', 'Л': 'L', 'М': 'M',
+        'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U',
+        'Ф': 'F', 'Х': 'Kh', 'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sch',
+        'Ъ': '\'', 'Ы': 'Y', 'Ь': '\'', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
+    };
+    return s.split('').map(function (c) { return map[c] || c; }).join('');
+}
+
+function toLayout(text) {
+    var s = text == null ? '' : String(text);
+    var map = {
+        'й': 'q', 'ц': 'w', 'у': 'e', 'к': 'r', 'е': 't', 'н': 'y', 'г': 'u',
+        'ш': 'i', 'щ': 'o', 'з': 'p', 'х': '[', 'ъ': ']', 'ф': 'a', 'ы': 's',
+        'в': 'd', 'а': 'f', 'п': 'g', 'р': 'h', 'о': 'j', 'л': 'k', 'д': 'l',
+        'ж': ';', 'э': '\'', 'я': 'z', 'ч': 'x', 'с': 'c', 'м': 'v', 'и': 'b',
+        'т': 'n', 'ь': 'm', 'б': ',', 'ю': '.',
+        'Й': 'Q', 'Ц': 'W', 'У': 'E', 'К': 'R', 'Е': 'T', 'Н': 'Y', 'Г': 'U',
+        'Ш': 'I', 'Щ': 'O', 'З': 'P', 'Х': '{', 'Ъ': '}', 'Ф': 'A', 'Ы': 'S',
+        'В': 'D', 'А': 'F', 'П': 'G', 'Р': 'H', 'О': 'J', 'Л': 'K', 'Д': 'L',
+        'Ж': ':', 'Э': '"', 'Я': 'Z', 'Ч': 'X', 'С': 'C', 'М': 'V', 'И': 'B',
+        'Т': 'N', 'Ь': 'M', 'Б': '<', 'Ю': '>'
+    };
+    return s.split('').map(function (c) { return map[c] || c; }).join('');
+}
+
+function normalizeDeclineResponseData(data) {
+    if (Array.isArray(data)) {
+        return data;
+    }
+    if (data && typeof data === 'object') {
+        if (Array.isArray(data.forms)) {
+            return data.forms;
+        }
+        if (Array.isArray(data.result)) {
+            return data.result;
+        }
+    }
+    return [];
+}
+
+function buildDeclineOutput(forms, wantTranslit, wantLayout) {
+    var linesOut = [];
+    forms.forEach(function (form) {
+        if (form == null || !String(form).trim()) {
+            return;
+        }
+        var group = [];
+        function pushUnique(x) {
+            if (x == null || !String(x).trim()) {
+                return;
+            }
+            var v = String(x);
+            if (group.indexOf(v) === -1) {
+                group.push(v);
+            }
+        }
+        pushUnique(form);
+        if (wantTranslit) {
+            pushUnique(toTranslit(form));
+        }
+        if (wantLayout) {
+            pushUnique(toLayout(form));
+        }
+        linesOut.push.apply(linesOut, group);
+    });
+    return linesOut.join('\n');
+}
+
+function declineTransformOptionChecked(id) {
+    var el = document.getElementById(id);
+    return !!(el && el.checked);
+}
+
+function applyTransforms() {
+    var resultEl = document.getElementById('result');
+    if (!resultEl) {
+        return;
+    }
+    if (!originalForms.length) {
+        return;
+    }
+    var wantTranslit = declineTransformOptionChecked('addTranslit');
+    var wantLayout = declineTransformOptionChecked('addLayout');
+    setTextareaValue(resultEl, buildDeclineOutput(originalForms, wantTranslit, wantLayout));
+}
+
+document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (!t || t.type !== 'checkbox') {
+        return;
+    }
+    if (t.id !== 'addTranslit' && t.id !== 'addLayout') {
+        return;
+    }
+    applyTransforms();
+});
+
 function syncDeclineCheckboxes(allCheckbox) {
     var byAll = document.getElementById('byAll');
     var byGender = document.getElementById('byGender');
@@ -720,6 +819,7 @@ function wireInflect() {
     button.addEventListener('click', function () {
         var text = inputEl.value.trim();
         if (!text) {
+            originalForms = [];
             setTextareaValue(resultEl, L.declineEmpty);
             return;
         }
@@ -746,20 +846,29 @@ function wireInflect() {
         })
             .then(function (res) {
                 if (!res.ok) {
+                    originalForms = [];
                     setTextareaValue(resultEl, L.serverError(res.status));
                     return Promise.reject(new Error('http'));
                 }
                 return res.json();
             })
             .then(function (data) {
-                var arr = Array.isArray(data) ? data : [];
+                var arr = normalizeDeclineResponseData(data);
                 var uniqueForms = Array.from(new Set(arr.filter(function (f) { return f; })));
-                setTextareaValue(resultEl, uniqueForms.join('\n'));
+                originalForms = uniqueForms.map(function (f) {
+                    return f == null ? '' : String(f);
+                });
+                if (!originalForms.length) {
+                    setTextareaValue(resultEl, '');
+                    return;
+                }
+                applyTransforms();
             })
             .catch(function (err) {
                 if (err && err.message === 'http') {
                     return;
                 }
+                originalForms = [];
                 console.error('Decline API error:', err);
                 setTextareaValue(resultEl, L.connectionError);
             });
@@ -822,7 +931,6 @@ function initLangPicker() {
 }
 initLangPicker();
 
-/* --- CSV upload (minus + quote) --- */
 function wireCsvUpload(inputId, alertFn) {
     var csvUpload = document.getElementById(inputId);
     if (!csvUpload) {
@@ -851,7 +959,6 @@ function wireCsvUpload(inputId, alertFn) {
 wireCsvUpload('csvUpload', function () { alert(L.csvAlertMinus); });
 wireCsvUpload('csvUploadQuote', function () { alert(L.csvAlertQuote); });
 
-/* --- Export CSV --- */
 var exportBtn = document.getElementById('export-csv');
 if (exportBtn) {
     exportBtn.addEventListener('click', function () {
@@ -882,7 +989,6 @@ if (exportCsvQuote) {
     });
 }
 
-/* --- Nav mobile --- */
 var navMenuBtn = document.getElementById('navMenuBtn');
 var navDropdown = document.getElementById('navDropdown');
 if (navMenuBtn && navDropdown) {
@@ -899,7 +1005,6 @@ if (navMenuBtn && navDropdown) {
     });
 }
 
-/* --- Logo particles --- */
 var navLogo = document.querySelector('.nav-logo');
 if (navLogo) {
     navLogo.addEventListener('click', function () {
@@ -928,7 +1033,6 @@ if (navLogo) {
     });
 }
 
-/* --- Feedback modal --- */
 var feedbackModal = document.getElementById('feedbackModal');
 var feedbackClose = document.getElementById('feedbackClose');
 var feedbackForm = document.getElementById('feedbackForm');

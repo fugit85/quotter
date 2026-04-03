@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Склонение минус-слов</title>
     <meta name="description" content="Склонение слов по падежам, родам онлайн. Соберите все словоформы минус-слов для Google Ads. Просто и удобно. Попробуйте!" />
-    <script src="script.js" defer></script>
+    <script src="script.js?v=2" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/decline.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/decline.html">
     <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/">
@@ -106,6 +106,20 @@
                 <button class="btn btn-primary" id="button-inflect">✦ Склонять</button>
             </div>
 
+            <div class="option-group" style="margin-top: 12px;">
+                <div class="field-label">Добавить написание</div>
+                <div class="decline-options">
+                    <label class="decline-label">
+                        <input type="checkbox" id="addTranslit">
+                        <span>Транслит</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="addLayout">
+                        <span>Раскладка</span>
+                    </label>
+                </div>
+            </div>
+
             <div class="divider"></div>
 
             <div class="field-label">Результат</div>
@@ -123,8 +137,13 @@
                 <summary>Что означают опции «Рода», «Числа», «Падежи»?</summary>
                 <p>«Падежи» — генерирует все 6 форм слова по падежам: именительный, родительный, дательный, винительный, творительный, предложный. «Числа» — для каждой формы добавляет единственное и множественное число. «Рода» — работает только для прилагательных: генерирует мужской, женский и средний род в единственном числе. Для существительных опция «Рода» не влияет на результат. Опция «Все» включает сразу падежи, числа и рода.</p>
               </details>
+            
+            <details class="faq-item">
+                <summary>Что такое "Транслит" и "Раскладка" и зачем они нужны?</summary>
+                <p>Транслит — это запись русского слова латинскими буквами по звучанию: «ключ» → «key». Раскладка — запись того же слова латинскими буквами по позиции клавиш на клавиатуре: «ключ» → «qjif» (как будто печатали по-русски но с включённой английской раскладкой). Оба варианта полезны для минус-слов — пользователи иногда вводят запросы латиницей или с неправильной раскладкой, и такие варианты тоже нужно минусовать.</p>
+              </details> 
 
-              <details class="faq-item">
+            <details class="faq-item">
                 <summary>Можно ли склонять несколько слов или фраз сразу?</summary>
                 <p>Да — вводите каждое слово или фразу с новой строки, инструмент обработает их по очереди. Одно слово в строке — получите все его словоформы. Фраза из нескольких слов — все слова будут согласованы между собой: «красивый диван» даст «красивого дивана», «красивому дивану» и т.д.</p>
               </details>

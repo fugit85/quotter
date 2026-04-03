@@ -715,11 +715,7 @@ function wireInflect() {
     var resultEl = document.getElementById('result');
     if (!(button && inputEl && resultEl)) {
         return;
-    }
-    
-    resultEl.addEventListener('click', function() {
-        this.select();
-    });
+    }  
     
     button.addEventListener('click', function () {
         var text = inputEl.value.trim();

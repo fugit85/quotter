@@ -1,12 +1,10 @@
 'use strict';
 
-// После деплоя в Cloud Run: вставьте URL сервиса из консоли (без слэша в конце).
-// Пример: https://quotter-api-abc123xyz-ew.a.run.app
-var API_BASE = 'https://quotter-api-923883205237.europe-west1.run.app'.replace(/\/$/, '');
-
+// Бэкенд Cloud Run (склонение + форма отзывов)
+var API_ORIGIN = 'https://quotter-api-923883205237.europe-west1.run.app';
 var CONFIG = {
-    declineApiUrl: API_BASE + '/decline',
-    feedbackSubmitUrl: API_BASE + '/submit',
+    declineApiUrl: API_ORIGIN + '/decline',
+    feedbackSubmitUrl: API_ORIGIN + '/submit',
     recaptchaSiteKey: '6Lch7H8sAAAAAK9ayTdPK7pwgOcCnm3DJLoI15Mk'
 };
 
@@ -23,7 +21,6 @@ var UI_STRINGS = {
         exportSaved: '✓ Saved',
         declineEmpty: 'Enter text to inflect',
         inflectLoading: 'Inflecting…',
-        inflectWaking: 'Waking server…',
         serverError: function (s) { return 'Server error: ' + s; },
         connectionError: 'Could not reach the server',
         csvAlertMinus: 'Could not find keywords. Make sure the file is exported from Google Keyword Planner.',
@@ -50,7 +47,6 @@ var UI_STRINGS = {
         exportSaved: '✓ Сохранено',
         declineEmpty: 'Введите текст для склонения',
         inflectLoading: 'Склоняем…',
-        inflectWaking: 'Подождите минутку, неполадки…',
         serverError: function (s) { return 'Ошибка сервера: ' + s; },
         connectionError: 'Ошибка при соединении с сервером',
         csvAlertMinus: 'Не удалось найти ключевые слова. Убедитесь что файл выгружен из Планировщика Google.',
@@ -85,7 +81,6 @@ var UI_STRINGS = {
         exportSaved: '✓ Захавана',
         declineEmpty: 'Увядзіце тэкст для скланення',
         inflectLoading: 'Склонім…',
-        inflectWaking: 'Будзім сервер…',
         serverError: function (s) { return 'Памылка сервера: ' + s; },
         connectionError: 'Не атрымалася звязацца з серверам',
         csvAlertMinus: 'Не знойдзены ключавыя словы. Пераканайцеся, што файл з Планіроўшчыка Google.',
@@ -120,7 +115,6 @@ var UI_STRINGS = {
         exportSaved: '✓ Збережено',
         declineEmpty: 'Введіть текст для відмінювання',
         inflectLoading: 'Відмінюємо…',
-        inflectWaking: 'Будимо сервер…',
         serverError: function (s) { return 'Помилка сервера: ' + s; },
         connectionError: 'Не вдалося зв’язатися з сервером',
         csvAlertMinus: 'Не знайдено ключові слова. Переконайтеся, що файл з Планувальника Google.',
@@ -155,7 +149,6 @@ var UI_STRINGS = {
         exportSaved: '✓ Zapisano',
         declineEmpty: 'Wpisz tekst do odmiany',
         inflectLoading: 'Odmieniamy…',
-        inflectWaking: 'Uruchamiamy serwer…',
         serverError: function (s) { return 'Błąd serwera: ' + s; },
         connectionError: 'Nie udało się połączyć z serwerem',
         csvAlertMinus: 'Nie znaleziono słów kluczowych. Upewnij się, że plik pochodzi z Planera słów kluczowych Google.',
@@ -177,7 +170,6 @@ var UI_STRINGS = {
         exportSaved: '✓ Сақталды',
         declineEmpty: 'Септіру үшін мәтінді енгізіңіз',
         inflectLoading: 'Септіреміз…',
-        inflectWaking: 'Серверді оятамыз…',
         serverError: function (s) { return 'Сервер қатесі: ' + s; },
         connectionError: 'Серверге қосылу мүмкін болмады',
         csvAlertMinus: 'Кілт сөздер табылмады. Файл Google сөз жоспарлаушысынан шығарылғанына көз жеткізіңіз.',
@@ -705,18 +697,7 @@ function toLayout(text) {
 }
 
 function normalizeDeclineResponseData(data) {
-    if (Array.isArray(data)) {
-        return data;
-    }
-    if (data && typeof data === 'object') {
-        if (Array.isArray(data.forms)) {
-            return data.forms;
-        }
-        if (Array.isArray(data.result)) {
-            return data.result;
-        }
-    }
-    return [];
+    return Array.isArray(data) ? data : [];
 }
 
 function buildDeclineOutput(forms, wantTranslit, wantLayout) {
@@ -823,8 +804,6 @@ function initDeclineCheckboxes() {
     syncDeclineCheckboxes(byAll);
 }
 
-var INFLECT_WAKE_HINT_MS = 10000;
-
 function setDeclineInflectBusy(button, busy, statusLabel) {
     if (!button) {
         return;
@@ -849,7 +828,6 @@ function setDeclineInflectBusy(button, busy, statusLabel) {
 }
 
 function wireInflect() {
-    fetch(CONFIG.declineApiUrl.replace('/decline', '/healthz')).catch(function () {});
     var button = document.getElementById('button-inflect');
     var inputEl = document.getElementById('input');
     var resultEl = document.getElementById('result');
@@ -885,15 +863,6 @@ function wireInflect() {
         }
 
         setDeclineInflectBusy(button, true, L.inflectLoading);
-        var wakeHintTimer = setTimeout(function () {
-            if (!button.classList.contains('is-loading') || !button.disabled) {
-                return;
-            }
-            var labelEl = button.querySelector('.btn-inflect-label');
-            if (labelEl) {
-                labelEl.textContent = L.inflectWaking;
-            }
-        }, INFLECT_WAKE_HINT_MS);
 
         fetch(CONFIG.declineApiUrl, {
             method: 'POST',
@@ -929,7 +898,6 @@ function wireInflect() {
                 setTextareaValue(resultEl, L.connectionError);
             })
             .finally(function () {
-                clearTimeout(wakeHintTimer);
                 setDeclineInflectBusy(button, false);
             });
     });

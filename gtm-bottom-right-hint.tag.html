@@ -1,0 +1,145 @@
+<script>
+/* Вставьте этот тег целиком в GTM → Теги → Пользовательский HTML. */
+(function(){
+  function initModal() {
+    var modal    = document.getElementById('feedbackModal');
+    var closeBtn = document.getElementById('feedbackClose');
+    if (!modal || !closeBtn || closeBtn._gtmInited) return;
+    closeBtn._gtmInited = true;
+    closeBtn.onclick = function(e){
+      e.stopPropagation();
+      modal.classList.add('hidden');
+      var hint = document.getElementById('gtm-bottom-right-hint');
+      if (hint) hint.remove();
+    };
+    modal.onclick = function(e){
+      if (e.target === modal) modal.classList.add('hidden');
+    };
+  }
+  initModal();
+  setTimeout(initModal, 500);
+
+  if (document.getElementById('gtm-bottom-right-hint')) return;
+
+  var path = window.location.pathname;
+  var lang = 'ru';
+  if (path.indexOf('/en/') !== -1) lang = 'en';
+  else if (path.indexOf('/uk/') !== -1) lang = 'uk';
+  else if (path.indexOf('/be/') !== -1) lang = 'be';
+  else if (path.indexOf('/pl/') !== -1) lang = 'pl';
+
+  var messages = {
+    ru: { msg: 'Привет! Спасибо, что выбрали нас',                   link: 'Оставить отзыв →',             close: 'Закрыть'    },
+    en: { msg: 'Hi! Thank you for choosing us',                     link: 'Leave a review →',             close: 'Close'      },
+    uk: { msg: 'Привіт! Дякуємо, що обрали нас',                    link: 'Залишити відгук →',           close: 'Закрити'    },
+    be: { msg: 'Прывітанне! Дзякуем, што вы нас абралі',            link: 'Пакінуць водгук →',            close: 'Зачыніць'   },
+    pl: { msg: 'Cześć! Dziękujemy, że nas wybraliście',            link: 'Zostaw opinię →',              close: 'Zamknij'    }
+  };
+
+  var t = messages[lang] || messages.ru;
+
+  var isDark      = document.documentElement.getAttribute('data-theme') === 'dark';
+  var bg          = isDark ? '#272b3d' : '#ffffff';
+  var borderColor = isDark ? '#3a3f55' : '#e2e8f0';
+  var textColor   = isDark ? '#e8edf5' : '#0f172a';
+  var mutedColor  = isDark ? '#8b93a8' : '#64748b';
+
+  var popup = document.createElement('div');
+  popup.id = 'gtm-bottom-right-hint';
+  popup.setAttribute('role', 'dialog');
+  popup.style.cssText = [
+    'position:fixed',
+    'bottom:24px',
+    'right:24px',
+    'z-index:2147483647',
+    'padding:14px 16px',
+    'border:1px solid ' + borderColor,
+    'background:' + bg,
+    'color:' + textColor,
+    'border-radius:16px',
+    'box-shadow:0 4px 24px rgba(0,0,0,0.1)',
+    'font-family:Geologica,sans-serif',
+    'font-size:13.5px',
+    'display:flex',
+    'align-items:center',
+    'gap:14px',
+    'max-width:320px',
+    'animation:gtmSlideIn 0.3s ease'
+  ].join(';');
+
+  var style = document.createElement('style');
+  style.textContent = '@keyframes gtmSlideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}';
+  document.head.appendChild(style);
+
+  var icon = document.createElement('div');
+  icon.textContent = '💬';
+  icon.style.cssText = 'font-size:20px;flex-shrink:0';
+
+  var text = document.createElement('div');
+  text.style.cssText = 'line-height:1.5';
+
+  var msg = document.createElement('div');
+  msg.textContent = t.msg;
+  msg.style.cssText = 'color:' + textColor + ';margin-bottom:4px;font-weight:500';
+
+  var link = document.createElement('a');
+  link.textContent = t.link;
+  link.href = '#';
+  link.style.cssText = [
+    'background:linear-gradient(135deg,#0284c7,#6366f1)',
+    '-webkit-background-clip:text',
+    'background-clip:text',
+    '-webkit-text-fill-color:transparent',
+    'color:transparent',
+    'text-decoration:none',
+    'font-weight:600',
+    'font-size:13px',
+    'cursor:pointer'
+  ].join(';');
+  link.onclick = function(e){
+    e.preventDefault();
+    var modal = document.getElementById('feedbackModal');
+    if (modal) modal.classList.remove('hidden');
+  };
+
+  text.appendChild(msg);
+  text.appendChild(link);
+
+  var close = document.createElement('button');
+  close.type = 'button';
+  close.innerHTML = '✕';
+  close.setAttribute('aria-label', t.close);
+  close.style.cssText = [
+    'width:28px',
+    'height:28px',
+    'flex-shrink:0',
+    'display:flex',
+    'align-items:center',
+    'justify-content:center',
+    'border:1.5px solid ' + borderColor,
+    'border-radius:8px',
+    'background:transparent',
+    'color:' + mutedColor,
+    'cursor:pointer',
+    'font-size:12px',
+    'transition:all 0.2s',
+    'margin-left:auto'
+  ].join(';');
+  close.onmouseenter = function(){
+    close.style.borderColor = '#ef4444';
+    close.style.color = '#ef4444';
+    close.style.background = '#fef2f2';
+  };
+  close.onmouseleave = function(){
+    close.style.borderColor = borderColor;
+    close.style.color = mutedColor;
+    close.style.background = 'transparent';
+  };
+  close.onclick = function(){ popup.remove(); };
+
+  popup.appendChild(icon);
+  popup.appendChild(text);
+  popup.appendChild(close);
+  document.body.appendChild(popup);
+})();
+</script>

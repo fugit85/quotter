@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odmiana słów kluczowych</title>
+    <meta name="description"
+        content="Odmiana polskich słów przez przypadki, liczby i zgodne przymiotniki — słówka wykluczające w Google Ads." />
+    <script src="../script.js?v=10" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/pl/decline.html">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/decline.html">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/decline.html">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/decline.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Odmiana</span>
+            <div class="nav-links">
+                <a href="index.html">Typy dopasowań</a>
+                <a href="capiralizator.html">Kapitalizacja</a>
+                <a href="undublicator.html">Duplikaty</a>
+                <a href="minusator.html">Wykluczenia</a>
+                <a href="decline.html" class="active">Odmiana</a>
+            </div>
+            <div class="nav-actions">
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Język">
+                        <span class="lang-picker-code">PL</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../decline.html" class="lang-picker-item" role="option">RU</a>
+                        <a href="../kz/index.html" class="lang-picker-item" role="option">KZ</a>
+                        <a href="../en/index.html" class="lang-picker-item" role="option">EN</a>
+                        <a href="../uk/decline.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="../be/index.html" class="lang-picker-item" role="option">BE</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">PL</span>
+                    </div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Zmień motyw">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Ciemny</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Typy dopasowań</a>
+            <a href="capiralizator.html">Kapitalizacja</a>
+            <a href="undublicator.html">Duplikaty</a>
+            <a href="minusator.html">Wykluczenia</a>
+            <a href="decline.html" class="active">Odmiana</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Odmiana słów wykluczających
+            </h1>
+            <p class="page-subtitle">Polska odmiana: siedem przypadków (w tym wołacz), liczba pojedyncza i mnoga —
+                także zgodność przymiotnika z rzeczownikiem w frazie. Przydatne do pełnych list wykluczeń w Google Ads.</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Tekst źródłowy</div>
+            <textarea id="input" placeholder="Wpisz słowo lub frazę po polsku"></textarea>
+
+            <div class="toolbar">
+                <div class="decline-options">
+                    <label class="decline-label">
+                        <input type="checkbox" id="byAll" checked>
+                        <span>Wszystko</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byGender">
+                        <span>Rodzaj</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byNumber">
+                        <span>Liczba</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byCase">
+                        <span>Przypadki</span>
+                    </label>
+                </div>
+                <button type="button" class="btn btn-primary btn-inflect" id="button-inflect"
+                    data-label-default="✦ Odmień" aria-busy="false">
+                    <span class="btn-inflect-inner">
+                        <svg class="btn-inflect-spinner" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"
+                            focusable="false">
+                            <circle class="btn-inflect-spinner-track" cx="12" cy="12" r="9.5" fill="none"
+                                stroke="currentColor" stroke-width="2.5" />
+                            <circle class="btn-inflect-spinner-head" cx="12" cy="12" r="9.5" fill="none"
+                                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+                        </svg>
+                        <span class="btn-inflect-label">✦ Odmień</span>
+                    </span>
+                </button>
+            </div>
+
+            <div class="option-group" style="margin-top: 12px;">
+                <div class="field-label">Dodatkowe zapisy</div>
+                <div class="decline-options">
+                    <label class="decline-label">
+                        <input type="checkbox" id="addTranslit">
+                        <span>Bez polskich znaków (ASCII)</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="addLayout">
+                        <span>Mapowanie układu (jak RU)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field-label">Wynik</div>
+            <textarea id="result" readonly placeholder="Tutaj pojawi się wynik…"></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Kopiuj</button>
+                <button class="btn btn-ghost" id="clear">✕ Wyczyść</button>
+            </div>
+
+        <section class="faq">
+            <h2>Pytania i odpowiedzi</h2>
+
+            <details class="faq-item">
+                <summary>Co robią opcje „Rodzaj”, „Liczba”, „Przypadki”?</summary>
+                <p><strong>Przypadki</strong> — siedem form: mianownik, dopełniacz, celownik, biernik, narzędnik, miejscownik i wołacz (tam, gdzie forma jest odmienna lub ma sens w słowniku). <strong>Liczba</strong> — liczba pojedyncza i mnoga. <strong>Rodzaj</strong> — dla przymiotników: generator pokazuje warianty zgodne z polską gramatyką (w tym podziały rodzaju męskiego: osobowy, żywotny nieosobowy, nieżywotny, oraz żeński i nijaki). Dla rzeczownika podtyp rodzaju męskiego i ożywienia jest zachowany z analizy słowa — tak jak w języku (np. biernik przy „żywych” męskich).</p>
+              </details>
+
+            <details class="faq-item">
+                <summary>Bez polskich znaków i mapowanie układu</summary>
+                <p><strong>ASCII</strong> — ta sama forma zapisana bez diakrytyków (np. „ząb” → „zab”). Druga opcja używa tego samego mechanizmu co wersja rosyjska (pozycje klawiszy w układzie fonetycznym); przy samym tekście polskim łacińskim często niewiele doda, ale zostawiamy dla spójności z innymi językami.</p>
+              </details>
+
+            <details class="faq-item">
+                <summary>Kilka linii albo cała fraza?</summary>
+                <p>Każda linia osobno: jedno słowo — pełna siatka form; kilka słów — to samo przypadek i liczba na całej frazie (zgodnie z polską fleksją). Inne części mowy pozostają bez zmian.</p>
+              </details>
+
+            <details class="faq-item">
+                <summary>Tylko jedna forma w wyniku?</summary>
+                <p>Używaj polskiej pisowni z ogonkami (np. <strong>duży</strong>, nie „duzy”) — bez tego słownik może nie rozpoznać słowa. Strona musi być pod adresem <strong>/pl/decline.html</strong>, żeby w zapytaniu poszedł język polski (po aktualizacji strony wybierz „twardy” odśwież lub wyczyść cache). Backend na Cloud Run musi być zdeployowany z biblioteką Morfeusz (ostatni kod repozytorium).</p>
+              </details>
+
+            <details class="faq-item">
+                <summary>Dlaczego warto odmieniać wykluczenia?</summary>
+                <p>Przy szerokim lub frazowym dopasowaniu reklama może się pojawić na odmienionej formie słowa. Jedna wpisana forma w wykluczeniach często nie blokuje całej gamy form.</p>
+            </details>
+
+          </section>
+
+    <div id="feedbackModal" class="feedback-modal hidden">
+            <div class="feedback-content">
+                <button type="button" class="feedback-close" id="feedbackClose" aria-label="Zamknij">✕</button>
+                <p class="feedback-intro">Jeśli coś jest niewygodne albo potrzebujesz funkcji — napisz.</p>
+                <form id="feedbackForm" method="post">
+                    <div class="feedback-rating">
+                    <span class="feedback-rating-caption" id="feedbackRatingCaption">Oceń wygodę</span>
+                    <div class="feedback-stars" role="group" aria-labelledby="feedbackRatingCaption">
+                    <input type="hidden" id="feedbackRating" value="" autocomplete="off" />
+                    <button type="button" class="feedback-star" data-value="1" aria-label="1/5">★</button>
+                    <button type="button" class="feedback-star" data-value="2" aria-label="2/5">★</button>
+                    <button type="button" class="feedback-star" data-value="3" aria-label="3/5">★</button>
+                    <button type="button" class="feedback-star" data-value="4" aria-label="4/5">★</button>
+                    <button type="button" class="feedback-star" data-value="5" aria-label="5/5">★</button>
+                    </div>
+                    </div>
+                    <textarea id="feedbackComment" name="comment" placeholder="Twój komentarz" required></textarea>
+                    <input type="text" id="feedbackContact" name="contact"
+                        placeholder="Kontakt (opcjonalnie)" />
+                    <button type="submit" class="feedback-submit">Wyślij</button>
+                </form>
+                <div id="feedbackMessage" class="feedback-message"></div>
+            </div>
+        </div>
+    </div>
+    </main>
+    <footer>
+        <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">Serwis chroniony przez reCAPTCHA · <a href="https://policies.google.com/privacy" target="_blank" style="color:inherit">Prywatność</a> · <a href="https://policies.google.com/terms" target="_blank" style="color:inherit">Warunki</a></p>
+    </footer>
+</body>
+
+</html>

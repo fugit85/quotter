@@ -1,8 +1,12 @@
 'use strict';
 
+// После деплоя в Cloud Run: вставьте URL сервиса из консоли (без слэша в конце).
+// Пример: https://quotter-api-abc123xyz-ew.a.run.app
+var API_BASE = 'https://PASTE_CLOUD_RUN_SERVICE_URL_HERE'.replace(/\/$/, '');
+
 var CONFIG = {
-    declineApiUrl: 'https://declination-rus.onrender.com/decline',
-    feedbackSubmitUrl: 'https://feedback-service-ykt7.onrender.com/submit',
+    declineApiUrl: API_BASE + '/decline',
+    feedbackSubmitUrl: API_BASE + '/submit',
     recaptchaSiteKey: '6Lch7H8sAAAAAK9ayTdPK7pwgOcCnm3DJLoI15Mk'
 };
 

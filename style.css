@@ -1121,10 +1121,15 @@ footer {
   margin-bottom: 20px;
 }
 
+.feedback-content .feedback-intro {
+  padding-right: 44px;
+}
+
 .feedback-close {
   position: absolute;
   top: 16px;
   right: 16px;
+  z-index: 2;
   width: 30px;
   height: 30px;
   border: 1.5px solid var(--border-soft);
@@ -1160,7 +1165,7 @@ footer {
   border: 1.5px solid var(--border-soft);
   border-radius: 12px;
   color: var(--text);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geologica', sans-serif;
   font-size: 13px;
   line-height: 1.6;
   padding: 12px 14px;
@@ -1176,7 +1181,61 @@ footer {
 
 #feedbackContact {
   height: 42px;
-  font-family: 'Geologica', sans-serif;
+}
+
+.feedback-rating {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedback-rating-caption {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.feedback-stars {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.feedback-star {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--border-soft);
+  transition: color 0.15s, transform 0.12s;
+  border-radius: 4px;
+}
+
+.feedback-star.is-hover {
+  color: #fbbf24;
+}
+
+.feedback-star:hover {
+  transform: scale(1.08);
+  outline: none;
+}
+
+.feedback-star:focus-visible {
+  transform: scale(1.08);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.35);
+}
+
+.feedback-star.is-on {
+  color: #f59e0b;
+}
+
+.feedback-star.is-on.is-hover {
+  color: #fbbf24;
 }
 
 #feedbackComment:focus,

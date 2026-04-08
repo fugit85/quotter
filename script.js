@@ -1094,6 +1094,74 @@ var feedbackClose = document.getElementById('feedbackClose');
 var feedbackForm = document.getElementById('feedbackForm');
 var feedbackMsgBox = document.getElementById('feedbackMessage');
 
+function initFeedbackStarRating() {
+    var form = document.getElementById('feedbackForm');
+    if (!form) {
+        return;
+    }
+    var wrap = form.querySelector('.feedback-stars');
+    var hidden = document.getElementById('feedbackRating');
+    if (!wrap || !hidden) {
+        return;
+    }
+    var stars = wrap.querySelectorAll('.feedback-star');
+    function clearHover() {
+        stars.forEach(function (btn) {
+            btn.classList.remove('is-hover');
+        });
+    }
+    function setHoverUpTo(n) {
+        stars.forEach(function (btn, idx) {
+            btn.classList.toggle('is-hover', idx < n);
+        });
+    }
+    function applyVisual(value) {
+        var v = value >= 1 && value <= 5 ? value : 0;
+        hidden.value = v ? String(v) : '';
+        stars.forEach(function (btn, idx) {
+            btn.classList.toggle('is-on', idx < v);
+        });
+    }
+    function currentValue() {
+        var n = parseInt(hidden.value, 10);
+        return n >= 1 && n <= 5 ? n : 0;
+    }
+    wrap.addEventListener('mouseleave', clearHover);
+    wrap.addEventListener('focusin', function (e) {
+        var t = e.target;
+        if (!t.classList || !t.classList.contains('feedback-star')) {
+            return;
+        }
+        var n = parseInt(t.getAttribute('data-value'), 10);
+        if (n >= 1 && n <= 5) {
+            setHoverUpTo(n);
+        }
+    });
+    wrap.addEventListener('focusout', function (e) {
+        if (!wrap.contains(e.relatedTarget)) {
+            clearHover();
+        }
+    });
+    stars.forEach(function (btn, idx) {
+        var n = idx + 1;
+        btn.addEventListener('mouseenter', function () {
+            setHoverUpTo(n);
+        });
+        btn.addEventListener('click', function () {
+            if (currentValue() === n) {
+                applyVisual(0);
+            } else {
+                applyVisual(n);
+            }
+        });
+    });
+    form.addEventListener('reset', function () {
+        clearHover();
+        applyVisual(0);
+    });
+}
+initFeedbackStarRating();
+
 function loadRecaptchaScript(onLoad) {
     if (typeof grecaptcha !== 'undefined' && grecaptcha.execute) {
         if (onLoad) {
@@ -1148,6 +1216,14 @@ if (feedbackModal && feedbackClose && feedbackForm && feedbackMsgBox) {
         var contactEl = document.getElementById('feedbackContact');
         var comment = commentEl ? commentEl.value.trim() : '';
         var contact = contactEl ? contactEl.value.trim() : '';
+        var ratingEl = document.getElementById('feedbackRating');
+        var rating = 0;
+        if (ratingEl && ratingEl.value) {
+            var rv = parseInt(ratingEl.value, 10);
+            if (rv >= 1 && rv <= 5) {
+                rating = rv;
+            }
+        }
         if (!comment) {
             return;
         }
@@ -1172,6 +1248,7 @@ if (feedbackModal && feedbackClose && feedbackForm && feedbackMsgBox) {
                 body: JSON.stringify({
                     comment: comment,
                     contact: contact,
+                    rating: rating,
                     url: window.location.href,
                     recaptcha_token: token
                 })

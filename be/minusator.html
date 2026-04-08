@@ -156,8 +156,19 @@
     <div id="feedbackModal" class="feedback-modal hidden">
         <div class="feedback-content">
             <button class="feedback-close" id="feedbackClose" type="button" aria-label="Зачыніць">✕</button>
-            <p>Калі нешта незручна або патрэбна функцыя — напішыце.</p>
+            <p class="feedback-intro">Калі нешта незручна або патрэбна функцыя — напішыце.</p>
             <form id="feedbackForm" method="post">
+                <div class="feedback-rating">
+                <span class="feedback-rating-caption" id="feedbackRatingCaption">Ацаніць зручнасць</span>
+                <div class="feedback-stars" role="group" aria-labelledby="feedbackRatingCaption">
+                <input type="hidden" id="feedbackRating" value="" autocomplete="off" />
+                <button type="button" class="feedback-star" data-value="1" aria-label="1/5">★</button>
+                <button type="button" class="feedback-star" data-value="2" aria-label="2/5">★</button>
+                <button type="button" class="feedback-star" data-value="3" aria-label="3/5">★</button>
+                <button type="button" class="feedback-star" data-value="4" aria-label="4/5">★</button>
+                <button type="button" class="feedback-star" data-value="5" aria-label="5/5">★</button>
+                </div>
+                </div>
                 <textarea id="feedbackComment" name="comment" placeholder="Ваш каментар" required></textarea>
                 <input type="text" id="feedbackContact" name="contact" placeholder="Кантакт (неабавязкова)" />
                 <button type="submit" class="feedback-submit">Адправіць</button>

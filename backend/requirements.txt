@@ -1,6 +1,8 @@
 flask==3.0.3
 werkzeug==3.0.3
 pymorphy3==2.0.2
+pymorphy3-dicts-uk==2.4.1.1.1663094765
 gunicorn==22.0.0
 Flask-Cors==4.0.1
 requests==2.31.0
+morfeusz2==1.99.12

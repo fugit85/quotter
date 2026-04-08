@@ -17,6 +17,13 @@ def submit():
     contact = data.get("contact", "")
     url = data.get("url", "")
     token = data.get("recaptcha_token", "")
+    rating_raw = data.get("rating", 0)
+    try:
+        rating = int(rating_raw)
+    except (TypeError, ValueError):
+        rating = 0
+    if rating < 0 or rating > 5:
+        rating = 0
 
     if not comment:
         return jsonify({"ok": False}), 400
@@ -33,8 +40,12 @@ def submit():
         if not result.get("success") or score < 0.5:
             return jsonify({"ok": False, "error": "Проверка не пройдена"}), 400
 
+    rating_line = f"Оценка: {rating} из 5" if 1 <= rating <= 5 else "Оценка: не указана"
+
     text = f"""
 Новый отзыв:
+
+{rating_line}
 
 Комментарий:
 {comment}

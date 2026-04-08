@@ -594,6 +594,50 @@ select:focus {
   transform: translateY(0);
 }
 
+.btn-primary.btn-inflect:disabled {
+  cursor: default;
+  opacity: 0.94;
+  transform: none;
+  box-shadow: var(--shadow-btn);
+}
+
+.btn-primary.btn-inflect:disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-btn);
+}
+
+.btn-inflect-inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-inflect-spinner {
+  display: none;
+  flex-shrink: 0;
+  transform-origin: center;
+}
+
+.btn-inflect.is-loading .btn-inflect-spinner {
+  display: block;
+  animation: btn-inflect-spin 0.75s linear infinite;
+}
+
+.btn-inflect-spinner-track {
+  opacity: 0.3;
+}
+
+.btn-inflect-spinner-head {
+  stroke-dasharray: 14 46;
+}
+
+@keyframes btn-inflect-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .btn-ghost {
   background: var(--surface2);
   color: var(--text-muted);

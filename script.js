@@ -18,6 +18,8 @@ var UI_STRINGS = {
         exportCsv: '↓ Export CSV',
         exportSaved: '✓ Saved',
         declineEmpty: 'Enter text to inflect',
+        inflectLoading: 'Inflecting…',
+        inflectWaking: 'Waking server…',
         serverError: function (s) { return 'Server error: ' + s; },
         connectionError: 'Could not reach the server',
         csvAlertMinus: 'Could not find keywords. Make sure the file is exported from Google Keyword Planner.',
@@ -43,6 +45,8 @@ var UI_STRINGS = {
         exportCsv: '↓ Экспорт CSV',
         exportSaved: '✓ Сохранено',
         declineEmpty: 'Введите текст для склонения',
+        inflectLoading: 'Склоняем…',
+        inflectWaking: 'Подождите минутку, неполадки…',
         serverError: function (s) { return 'Ошибка сервера: ' + s; },
         connectionError: 'Ошибка при соединении с сервером',
         csvAlertMinus: 'Не удалось найти ключевые слова. Убедитесь что файл выгружен из Планировщика Google.',
@@ -76,6 +80,8 @@ var UI_STRINGS = {
         exportCsv: '↓ Экспарт CSV',
         exportSaved: '✓ Захавана',
         declineEmpty: 'Увядзіце тэкст для скланення',
+        inflectLoading: 'Склонім…',
+        inflectWaking: 'Будзім сервер…',
         serverError: function (s) { return 'Памылка сервера: ' + s; },
         connectionError: 'Не атрымалася звязацца з серверам',
         csvAlertMinus: 'Не знойдзены ключавыя словы. Пераканайцеся, што файл з Планіроўшчыка Google.',
@@ -109,6 +115,8 @@ var UI_STRINGS = {
         exportCsv: '↓ Експорт CSV',
         exportSaved: '✓ Збережено',
         declineEmpty: 'Введіть текст для відмінювання',
+        inflectLoading: 'Відмінюємо…',
+        inflectWaking: 'Будимо сервер…',
         serverError: function (s) { return 'Помилка сервера: ' + s; },
         connectionError: 'Не вдалося зв’язатися з сервером',
         csvAlertMinus: 'Не знайдено ключові слова. Переконайтеся, що файл з Планувальника Google.',
@@ -142,6 +150,8 @@ var UI_STRINGS = {
         exportCsv: '↓ Eksport CSV',
         exportSaved: '✓ Zapisano',
         declineEmpty: 'Wpisz tekst do odmiany',
+        inflectLoading: 'Odmieniamy…',
+        inflectWaking: 'Uruchamiamy serwer…',
         serverError: function (s) { return 'Błąd serwera: ' + s; },
         connectionError: 'Nie udało się połączyć z serwerem',
         csvAlertMinus: 'Nie znaleziono słów kluczowych. Upewnij się, że plik pochodzi z Planera słów kluczowych Google.',
@@ -162,6 +172,8 @@ var UI_STRINGS = {
         exportCsv: '↓ CSV экспорт',
         exportSaved: '✓ Сақталды',
         declineEmpty: 'Септіру үшін мәтінді енгізіңіз',
+        inflectLoading: 'Септіреміз…',
+        inflectWaking: 'Серверді оятамыз…',
         serverError: function (s) { return 'Сервер қатесі: ' + s; },
         connectionError: 'Серверге қосылу мүмкін болмады',
         csvAlertMinus: 'Кілт сөздер табылмады. Файл Google сөз жоспарлаушысынан шығарылғанына көз жеткізіңіз.',
@@ -807,16 +819,45 @@ function initDeclineCheckboxes() {
     syncDeclineCheckboxes(byAll);
 }
 
+var INFLECT_WAKE_HINT_MS = 10000;
+
+function setDeclineInflectBusy(button, busy, statusLabel) {
+    if (!button) {
+        return;
+    }
+    var labelEl = button.querySelector('.btn-inflect-label');
+    if (busy) {
+        button.disabled = true;
+        button.classList.add('is-loading');
+        button.setAttribute('aria-busy', 'true');
+        if (labelEl) {
+            labelEl.textContent = statusLabel || L.inflectLoading;
+        }
+    } else {
+        button.disabled = false;
+        button.classList.remove('is-loading');
+        button.setAttribute('aria-busy', 'false');
+        var defLabel = button.getAttribute('data-label-default');
+        if (labelEl) {
+            labelEl.textContent = defLabel || '✦ Склонять';
+        }
+    }
+}
+
 function wireInflect() {
-    fetch(CONFIG.declineApiUrl.replace('/decline', '/healthz')).catch(function(){});
+    fetch(CONFIG.declineApiUrl.replace('/decline', '/healthz')).catch(function () {});
     var button = document.getElementById('button-inflect');
     var inputEl = document.getElementById('input');
     var resultEl = document.getElementById('result');
     if (!(button && inputEl && resultEl)) {
         return;
-    }  
-    
+    }
+
     button.addEventListener('click', function () {
+        if (button.disabled) {
+            return;
+        }
+
         var text = inputEl.value.trim();
         if (!text) {
             originalForms = [];
@@ -838,6 +879,17 @@ function wireInflect() {
             byNumber = byAll || !!(n && n.checked);
             byCase = byAll || !!(c && c.checked);
         }
+
+        setDeclineInflectBusy(button, true, L.inflectLoading);
+        var wakeHintTimer = setTimeout(function () {
+            if (!button.classList.contains('is-loading') || !button.disabled) {
+                return;
+            }
+            var labelEl = button.querySelector('.btn-inflect-label');
+            if (labelEl) {
+                labelEl.textContent = L.inflectWaking;
+            }
+        }, INFLECT_WAKE_HINT_MS);
 
         fetch(CONFIG.declineApiUrl, {
             method: 'POST',
@@ -871,6 +923,10 @@ function wireInflect() {
                 originalForms = [];
                 console.error('Decline API error:', err);
                 setTextareaValue(resultEl, L.connectionError);
+            })
+            .finally(function () {
+                clearTimeout(wakeHintTimer);
+                setDeclineInflectBusy(button, false);
             });
     });
 }

@@ -2,7 +2,7 @@
 
 // После деплоя в Cloud Run: вставьте URL сервиса из консоли (без слэша в конце).
 // Пример: https://quotter-api-abc123xyz-ew.a.run.app
-var API_BASE = 'https://PASTE_CLOUD_RUN_SERVICE_URL_HERE'.replace(/\/$/, '');
+var API_BASE = 'https://quotter-api-923883205237.europe-west1.run.app'.replace(/\/$/, '');
 
 var CONFIG = {
     declineApiUrl: API_BASE + '/decline',

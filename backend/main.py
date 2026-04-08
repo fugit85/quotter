@@ -12,7 +12,7 @@ CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
 @app.route("/submit", methods=["POST"])
 def submit():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     comment = data.get("comment", "")
     contact = data.get("contact", "")
     url = data.get("url", "")
@@ -31,10 +31,11 @@ def submit():
     # Проверка reCAPTCHA
     secret = os.environ.get("RECAPTCHA_SECRET")
     if secret and token:
-        r = requests.post("https://www.google.com/recaptcha/api/siteverify", data={
-            "secret": secret,
-            "response": token
-        })
+        r = requests.post(
+            "https://www.google.com/recaptcha/api/siteverify",
+            data={"secret": secret, "response": token},
+            timeout=10,
+        )
         result = r.json()
         score = result.get("score", 0)
         if not result.get("success") or score < 0.5:
@@ -57,13 +58,15 @@ def submit():
 {url}
 """
 
-    try:
-        requests.post(
-            f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-            json={"chat_id": CHAT_ID, "text": text}
-        )
-    except Exception as e:
-        print("Ошибка отправки в Telegram:", e)
+    if BOT_TOKEN and CHAT_ID:
+        try:
+            requests.post(
+                f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+                json={"chat_id": CHAT_ID, "text": text},
+                timeout=10,
+            )
+        except Exception as e:
+            print("Ошибка отправки в Telegram:", e)
 
     return jsonify({"ok": True})
 
@@ -205,7 +208,7 @@ def decline_api():
 def root():
     return 'Service is up', 200
 
-@app.route('/healthz', methods=['GET'])
+@app.route('/healthz', methods=['GET', 'HEAD'])
 def healthz():
     return 'OK', 200
 

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Відмінювання мінус-слів</title>
+    <meta name="description" content="Відмінювання слів за відмінками й родами онлайн. Зберіть усі словоформи мінус-слів для Google Ads." />
+    <script src="../script.js?v=10" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/uk/decline.html">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/decline.html">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/decline.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/decline.html">
+    <link rel="stylesheet" href="../style.css"><link rel="icon" href="../quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Відмінювання</span>
+            <div class="nav-links">
+                <a href="index.html">Типи відповідності</a>
+                <a href="capiralizator.html">Капіталізація</a>
+                <a href="undublicator.html">Дублікати</a>
+                <a href="minusator.html">Мінус-слова</a>
+                <a href="decline.html" class="active">Відмінювання</a>
+            </div>
+            <div class="nav-actions">
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Мова">
+                        <span class="lang-picker-code">UK</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <a href="../decline.html" class="lang-picker-item" role="option">RU</a>
+                        <a href="../kz/index.html" class="lang-picker-item" role="option">KZ</a>
+                        <a href="../en/index.html" class="lang-picker-item" role="option">EN</a>
+                        <span class="lang-picker-item lang-picker-item--current" role="option" aria-selected="true">UK</span>
+                        <a href="../be/index.html" class="lang-picker-item" role="option">BE</a>
+                        <a href="../pl/decline.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Змінити тему">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Темна</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Типи відповідності</a>
+            <a href="capiralizator.html">Капіталізація</a>
+            <a href="undublicator.html">Дублікати</a>
+            <a href="minusator.html">Мінус-слова</a>
+            <a href="decline.html" class="active">Відмінювання</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Відмінювання мінус-слів
+            </h1>
+            <p class="page-subtitle">Українська морфологія: відмінює слова за відмінками, числами та родами — отримайте словоформи для мінус-фраз у Google Ads.</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Вихідний текст</div>
+            <textarea id="input" placeholder="Введіть слово або фразу українською"></textarea>
+
+            <div class="toolbar">
+                <div class="decline-options">
+                    <label class="decline-label">
+                        <input type="checkbox" id="byAll" checked>
+                        <span>Усе</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byGender">
+                        <span>Рід</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byNumber">
+                        <span>Число</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byCase">
+                        <span>Відмінки</span>
+                    </label>
+                </div>
+                <button type="button" class="btn btn-primary btn-inflect" id="button-inflect"
+                    data-label-default="✦ Відмінити" aria-busy="false">
+                    <span class="btn-inflect-inner">
+                        <svg class="btn-inflect-spinner" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"
+                            focusable="false">
+                            <circle class="btn-inflect-spinner-track" cx="12" cy="12" r="9.5" fill="none"
+                                stroke="currentColor" stroke-width="2.5" />
+                            <circle class="btn-inflect-spinner-head" cx="12" cy="12" r="9.5" fill="none"
+                                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+                        </svg>
+                        <span class="btn-inflect-label">✦ Відмінити</span>
+                    </span>
+                </button>
+            </div>
+
+            <div class="option-group" style="margin-top: 12px;">
+                <div class="field-label">Додати написання</div>
+                <div class="decline-options">
+                    <label class="decline-label">
+                        <input type="checkbox" id="addTranslit">
+                        <span>Трансліт</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="addLayout">
+                        <span>Розкладка</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field-label">Результат</div>
+            <textarea id="result" readonly placeholder="Результат з’явиться тут..."></textarea>
+
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy">⎘ Копіювати</button>
+                <button class="btn btn-ghost" id="clear">✕ Очистити</button>
+            </div>
+
+        <section class="faq">
+            <h2>Питання та відповіді</h2>
+
+            <details class="faq-item">
+                <summary>Що означають опції «Рід», «Число», «Відмінки»?</summary>
+                <p>«Відмінки» — сім відмінків: називний, родовий, давальний, знахідний, орудний, місцевий і кличний. «Число» — однина та множина; кличний у множині з’являється лише там, де для слова є окрема форма. «Рід» — для прикметників: чоловічий, жіночий, середній. Для іменників «Рід» зазвичай не розширює результат. «Усе» вмикає відмінки, число та рід разом.</p>
+              </details>
+
+            <details class="faq-item">
+                <summary>Трансліт і розкладка</summary>
+                <p>Трансліт — латинські літери за вимовою. Розкладка — ніби друкували українською, але клавіатура була в латиниці (корисно для мінус-слів з «чужою» розкладкою). Символи і, ї, є, ґ враховані в трансліті.</p>
+              </details>
+
+            <details class="faq-item">
+                <summary>Кілька рядків або фраза?</summary>
+                <p>Кожен рядок окремо: одне слово — усі його форми; кілька слів у рядку — однаковий відмінок/число на всій фразі (узгоджено).</p>
+              </details>
+
+            <details class="faq-item">
+                <summary>Навіщо відмінювати мінус-слова?</summary>
+                <p>Google Ads за широкою чи фразовою відповідністю показує оголошення за різними формами слова. Однієї форми в мінусах часто недостатньо.</p>
+            </details>
+
+          </section>
+
+    <div id="feedbackModal" class="feedback-modal hidden">
+            <div class="feedback-content">
+                <button type="button" class="feedback-close" id="feedbackClose" aria-label="Закрити">✕</button>
+                <p class="feedback-intro">Якщо щось незручно або потрібна функція — напишіть.</p>
+                <form id="feedbackForm" method="post">
+                    <div class="feedback-rating">
+                    <span class="feedback-rating-caption" id="feedbackRatingCaption">Оцінити зручність</span>
+                    <div class="feedback-stars" role="group" aria-labelledby="feedbackRatingCaption">
+                    <input type="hidden" id="feedbackRating" value="" autocomplete="off" />
+                    <button type="button" class="feedback-star" data-value="1" aria-label="1/5">★</button>
+                    <button type="button" class="feedback-star" data-value="2" aria-label="2/5">★</button>
+                    <button type="button" class="feedback-star" data-value="3" aria-label="3/5">★</button>
+                    <button type="button" class="feedback-star" data-value="4" aria-label="4/5">★</button>
+                    <button type="button" class="feedback-star" data-value="5" aria-label="5/5">★</button>
+                    </div>
+                    </div>
+                    <textarea id="feedbackComment" name="comment" placeholder="Ваш коментар" required></textarea>
+                    <input type="text" id="feedbackContact" name="contact"
+                        placeholder="Контакт (необов’язково)" />
+                    <button type="submit" class="feedback-submit">Надіслати</button>
+                </form>
+                <div id="feedbackMessage" class="feedback-message"></div>
+            </div>
+        </div>
+    </div>
+    </main>
+    <footer>
+        <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
+        <p style="font-size:11px;margin-top:4px;">Сайт захищено reCAPTCHA · <a href="https://policies.google.com/privacy" target="_blank" style="color:inherit">Конфіденційність</a> · <a href="https://policies.google.com/terms" target="_blank" style="color:inherit">Умови</a></p>
+    </footer>
+</body>
+
+</html>

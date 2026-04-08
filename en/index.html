@@ -215,8 +215,19 @@
             <div id="feedbackModal" class="feedback-modal hidden">
                 <div class="feedback-content">
                     <button class="feedback-close" id="feedbackClose" type="button" aria-label="Close">✕</button>
-                    <p>If something is awkward or you need a feature — tell us.</p>
+                    <p class="feedback-intro">If something is awkward or you need a feature — tell us.</p>
                     <form id="feedbackForm" method="post">
+                        <div class="feedback-rating">
+                        <span class="feedback-rating-caption" id="feedbackRatingCaption">Rate ease of use</span>
+                        <div class="feedback-stars" role="group" aria-labelledby="feedbackRatingCaption">
+                        <input type="hidden" id="feedbackRating" value="" autocomplete="off" />
+                        <button type="button" class="feedback-star" data-value="1" aria-label="1 of 5">★</button>
+                        <button type="button" class="feedback-star" data-value="2" aria-label="2 of 5">★</button>
+                        <button type="button" class="feedback-star" data-value="3" aria-label="3 of 5">★</button>
+                        <button type="button" class="feedback-star" data-value="4" aria-label="4 of 5">★</button>
+                        <button type="button" class="feedback-star" data-value="5" aria-label="5 of 5">★</button>
+                        </div>
+                        </div>
                         <textarea id="feedbackComment" name="comment" placeholder="Your message" required></textarea>
                         <input type="text" id="feedbackContact" name="contact"
                             placeholder="Contact (optional)" />

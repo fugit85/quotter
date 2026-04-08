@@ -10,6 +10,21 @@ var CONFIG = {
 
 var DOC_LANG = (document.documentElement.getAttribute('lang') || 'ru').split('-')[0].toLowerCase();
 
+// Язык морфологии для /decline: uk → укр., pl → польск. (Morfeusz), иначе русский.
+var DECLINE_LANG = DOC_LANG === 'uk' ? 'uk' : (DOC_LANG === 'pl' ? 'pl' : 'ru');
+
+/** Язык склонения для API: приоритет у пути URL (обход кэша script.js и ошибок в html lang). */
+function declineMorphLang() {
+    var p = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '';
+    if (p.indexOf('/pl/') !== -1) {
+        return 'pl';
+    }
+    if (p.indexOf('/uk/') !== -1) {
+        return 'uk';
+    }
+    return DECLINE_LANG;
+}
+
 var UI_STRINGS = {
     en: {
         themeLight: 'Light',
@@ -670,11 +685,15 @@ function toTranslit(text) {
         'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
         'ф': 'f', 'х': 'kh', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
         'ъ': '\'', 'ы': 'y', 'ь': '\'', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+        'і': 'i', 'ї': 'yi', 'є': 'ye', 'ґ': 'g',
         'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo',
         'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'J', 'К': 'K', 'Л': 'L', 'М': 'M',
         'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U',
         'Ф': 'F', 'Х': 'Kh', 'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sch',
-        'Ъ': '\'', 'Ы': 'Y', 'Ь': '\'', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
+        'Ъ': '\'', 'Ы': 'Y', 'Ь': '\'', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya',
+        'І': 'I', 'Ї': 'Yi', 'Є': 'Ye', 'Ґ': 'G',
+        'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
+        'Ą': 'A', 'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N', 'Ó': 'O', 'Ś': 'S', 'Ź': 'Z', 'Ż': 'Z'
     };
     return s.split('').map(function (c) { return map[c] || c; }).join('');
 }
@@ -867,7 +886,13 @@ function wireInflect() {
         fetch(CONFIG.declineApiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: text, byGender: byGender, byNumber: byNumber, byCase: byCase })
+            body: JSON.stringify({
+                text: text,
+                lang: declineMorphLang(),
+                byGender: byGender,
+                byNumber: byNumber,
+                byCase: byCase
+            })
         })
             .then(function (res) {
                 if (!res.ok) {

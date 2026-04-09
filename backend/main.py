@@ -1,4 +1,5 @@
 import os
+import unicodedata
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pymorphy3
@@ -107,6 +108,16 @@ def _cases_for_lang(lang: str):
     if lang == "uk":
         return CASES_UK
     return CASES_RU
+
+
+def _ru_match_input_ye_spelling(surface: str, original_token: str) -> str:
+    if not surface:
+        return surface
+    surf = unicodedata.normalize('NFC', str(surface))
+    orig = unicodedata.normalize('NFC', original_token)
+    if 'ё' in orig or 'Ё' in orig:
+        return surf
+    return surf.replace('Ё', 'Е').replace('ё', 'е')
 
 
 def _pl_lemma_tag_from_row(row):
@@ -289,10 +300,13 @@ def _collect_phrase_forms_pl(tokens, rows, by_gender, by_number, by_case, cases)
     return out
 
 
-def _inflect_surface(parsed, tagset, original_token):
+def _inflect_surface(parsed, tagset, original_token, *, lang: str):
     inf = parsed.inflect(tagset)
     if inf:
-        return inf.word
+        w = inf.word
+        if lang == 'ru':
+            w = _ru_match_input_ye_spelling(w, original_token)
+        return w
     if 'voct' in tagset:
         return None
     return original_token
@@ -305,7 +319,7 @@ def _append_unique(ordered, seen, value):
     ordered.append(value)
 
 
-def _collect_single_word_forms(token, parsed, by_gender, by_number, by_case, cases):
+def _collect_single_word_forms(token, parsed, by_gender, by_number, by_case, cases, *, lang: str):
     out = []
     seen = set()
     is_adj = _pymorphy_is_adjective(parsed)
@@ -314,29 +328,29 @@ def _collect_single_word_forms(token, parsed, by_gender, by_number, by_case, cas
     for case in cases_iter:
         if by_number:
             for number in NUMBERS:
-                w = _inflect_surface(parsed, {case, number}, token)
+                w = _inflect_surface(parsed, {case, number}, token, lang=lang)
                 _append_unique(out, seen, w)
         else:
-            w = _inflect_surface(parsed, {case}, token)
+            w = _inflect_surface(parsed, {case}, token, lang=lang)
             _append_unique(out, seen, w)
 
         if is_adj and by_gender:
             for gender in GENDERS:
                 if by_number:
-                    w = _inflect_surface(parsed, {case, 'sing', gender}, token)
+                    w = _inflect_surface(parsed, {case, 'sing', gender}, token, lang=lang)
                     _append_unique(out, seen, w)
                 else:
-                    w = _inflect_surface(parsed, {case, gender}, token)
+                    w = _inflect_surface(parsed, {case, gender}, token, lang=lang)
                     _append_unique(out, seen, w)
 
             if by_number:
-                w = _inflect_surface(parsed, {case, 'plur'}, token)
+                w = _inflect_surface(parsed, {case, 'plur'}, token, lang=lang)
                 _append_unique(out, seen, w)
 
     return out
 
 
-def _phrase_line_inflect(tokens, parsed_list, tagset, *, strict_voct: bool):
+def _phrase_line_inflect(tokens, parsed_list, tagset, *, strict_voct: bool, lang: str):
     parts = []
     for token, parsed in zip(tokens, parsed_list):
         inflected = parsed.inflect(tagset)
@@ -345,7 +359,10 @@ def _phrase_line_inflect(tokens, parsed_list, tagset, *, strict_voct: bool):
                 return None
             parts.append(token)
         else:
-            parts.append(inflected.word)
+            w = inflected.word
+            if lang == 'ru':
+                w = _ru_match_input_ye_spelling(w, token)
+            parts.append(w)
     return ' '.join(parts)
 
 
@@ -360,12 +377,15 @@ def _collect_phrase_forms(tokens, parsed_list, by_gender, by_number, by_case, ca
         if by_number:
             for number in NUMBERS:
                 line = _phrase_line_inflect(
-                    tokens, parsed_list, {case, number}, strict_voct=is_voct and strict_voct
+                    tokens, parsed_list, {case, number},
+                    strict_voct=is_voct and strict_voct, lang=lang,
                 )
                 if line is not None:
                     out.append(line)
         else:
-            line = _phrase_line_inflect(tokens, parsed_list, {case}, strict_voct=is_voct and strict_voct)
+            line = _phrase_line_inflect(
+                tokens, parsed_list, {case}, strict_voct=is_voct and strict_voct, lang=lang,
+            )
             if line is not None:
                 out.append(line)
 
@@ -373,19 +393,22 @@ def _collect_phrase_forms(tokens, parsed_list, by_gender, by_number, by_case, ca
             for gender in GENDERS:
                 if by_number:
                     line = _phrase_line_inflect(
-                        tokens, parsed_list, {case, 'sing', gender}, strict_voct=is_voct and strict_voct
+                        tokens, parsed_list, {case, 'sing', gender},
+                        strict_voct=is_voct and strict_voct, lang=lang,
                     )
                     if line is not None:
                         out.append(line)
                 else:
                     line = _phrase_line_inflect(
-                        tokens, parsed_list, {case, gender}, strict_voct=is_voct and strict_voct
+                        tokens, parsed_list, {case, gender},
+                        strict_voct=is_voct and strict_voct, lang=lang,
                     )
                     if line is not None:
                         out.append(line)
             if by_number:
                 line = _phrase_line_inflect(
-                    tokens, parsed_list, {case, 'plur'}, strict_voct=is_voct and strict_voct
+                    tokens, parsed_list, {case, 'plur'},
+                    strict_voct=is_voct and strict_voct, lang=lang,
                 )
                 if line is not None:
                     out.append(line)
@@ -397,7 +420,7 @@ def decline_api():
     data = request.get_json(silent=True) or {}
     raw = data.get('text', '') or ''
     if not raw.strip():
-        return jsonify([]), 200
+        return jsonify({'lines': []}), 200
 
     lang = (data.get('lang') or 'ru').strip().lower()
     if lang not in ('uk', 'pl'):
@@ -407,8 +430,7 @@ def decline_api():
     by_number = data.get('byNumber', True)
     by_case = data.get('byCase', True)
 
-    merged = []
-    seen = set()
+    line_results = []
 
     for line in raw.split('\n'):
         line = line.strip()
@@ -437,20 +459,20 @@ def decline_api():
         else:
             morph = _morph_for_lang(lang)
             cases = _cases_for_lang(lang)
-            parsed_list = [morph.parse(t)[0] for t in tokens]
+            parsed_list = [morph.parse(unicodedata.normalize('NFC', t))[0] for t in tokens]
             if len(tokens) == 1:
                 chunk = _collect_single_word_forms(
-                    tokens[0], parsed_list[0], by_gender, by_number, by_case, cases
+                    tokens[0], parsed_list[0], by_gender, by_number, by_case, cases,
+                    lang=lang,
                 )
             else:
                 chunk = _collect_phrase_forms(
                     tokens, parsed_list, by_gender, by_number, by_case, cases, lang=lang
                 )
 
-        for item in chunk:
-            _append_unique(merged, seen, item)
+        line_results.append(list(chunk))
 
-    return jsonify(merged), 200
+    return jsonify({'lines': line_results}), 200
 
 
 @app.route('/', methods=['GET', 'HEAD'])

@@ -7,7 +7,7 @@
     <title>Кілт сөздерді жақшалау</title>
     <meta name="description"
         content="Google Ads үшін кілт сөздерді фразалық « » немесе дәл [ ] сәйкестікке ораңыз. Google сөз жоспарлаушысынан CSV жүктеңіз — өңдеу қажет емес. PPC мамандарына тегін құрал." />
-    <script src="../script.js?v=8" defer></script>
+    <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/kz/">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/">
     <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/">
@@ -88,15 +88,15 @@
             <div class="toolbar">
                 <label class="btn btn-ghost btn-upload" for="csvUploadQuote"
                     title="Google сөз жоспарлаушысынан CSV экспортын жүктеңіз">⇪ CSV жүктеу</label>
-                <input type="file" id="csvUploadQuote" accept=".csv" style="display:none">
+                <input type="file" id="csvUploadQuote" accept=".csv" class="file-input-hidden">
                 <select id="mode">
                     <option value="phrase">Фразалық сәйкестік</option>
                     <option value="exact">Дәл сәйкестік</option>
                     <option value="custom">Өз таңбаларыңыз</option>
                 </select>
-                <div class="custom-wrap" id="customWrap" style="display:none">
+                <div class="custom-wrap is-hidden" id="customWrap">
                     <input class="custom-symbol-input" id="customOpen" maxlength="5" placeholder="[" value="[">
-                    <span style="color:var(--text-muted);font-size:13px">мәтін</span>
+                    <span class="custom-wrap-label-hint">мәтін</span>
                     <input class="custom-symbol-input" id="customClose" maxlength="5" placeholder="]" value="]">
                 </div>
                 <button class="btn btn-primary" id="button-quote">✦ Орау</button>
@@ -140,7 +140,7 @@
                     </div>
                     <div class="option-group">
                         <div class="field-label">Арнайы таңбалар <span
-                                style="font-weight:400;text-transform:none;letter-spacing:0">(!, ?, @, #, % және
+                                class="field-label-note">(!, ?, @, #, % және
                                 т.б.)</span></div>
                         <div class="decline-options">
                             <label class="decline-label"><input type="radio" name="cleanMode" value="keep" checked> Қалдыру
@@ -240,10 +240,10 @@
 
     <footer>
         <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
-        <p style="font-size:11px;margin-top:4px;">Сайт reCAPTCHA қорғауында · <a
+        <p class="recaptcha-disclaimer">Сайт reCAPTCHA қорғауында · <a
                 href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
-                style="color:inherit">Құпиялылық</a> · <a href="https://policies.google.com/terms" target="_blank"
-                rel="noopener noreferrer" style="color:inherit">Шарттар</a></p>
+               >Құпиялылық</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer">Шарттар</a></p>
     </footer>
 
 </body>

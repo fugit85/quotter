@@ -7,7 +7,7 @@
     <title>Минус-сөздерді жинау</title>
     <meta name="description"
         content="Сөздерге басып немесе жолдарды белгілеп теріс кілт сөздер тізімін жасаңыз. Сөз жоспарлаушысынан CSV импорттаңыз." />
-    <script src="../script.js?v=8" defer></script>
+    <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/kz/minusator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/minusator.html">
     <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/minusator.html">
@@ -95,7 +95,7 @@
             <div class="minus-toolbar">
                 <div class="minus-toolbar-left">
                     <label class="btn btn-ghost btn-upload" for="csvUpload">⇪ CSV жүктеу</label>
-                    <input type="file" id="csvUpload" accept=".csv" style="display:none">
+                    <input type="file" id="csvUpload" accept=".csv" class="file-input-hidden">
                     <button class="btn btn-primary" id="start-minus">✦ Интерактивті тізім</button>
                     <button class="btn btn-ghost" id="get-minus-words">Теріс сөздер</button>
                     <button class="btn btn-ghost" id="get-white-list">Ақ тізім</button>
@@ -181,10 +181,10 @@
     </div>
     <footer>
         <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
-        <p style="font-size:11px;margin-top:4px;">Сайт reCAPTCHA қорғауында · <a
+        <p class="recaptcha-disclaimer">Сайт reCAPTCHA қорғауында · <a
                 href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
-                style="color:inherit">Құпиялылық</a> · <a href="https://policies.google.com/terms" target="_blank"
-                rel="noopener noreferrer" style="color:inherit">Шарттар</a></p>
+               >Құпиялылық</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer">Шарттар</a></p>
     </footer>
 </body>
 

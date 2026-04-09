@@ -679,6 +679,11 @@ wireWhitelistButton();
 
 function toTranslit(text) {
     var s = text == null ? '' : String(text);
+    try {
+        s = s.normalize('NFC');
+    } catch (err) {
+        /* ignore */
+    }
     var map = {
         'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
         'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'j', 'к': 'k', 'л': 'l', 'м': 'm',
@@ -698,21 +703,53 @@ function toTranslit(text) {
     return s.split('').map(function (c) { return map[c] || c; }).join('');
 }
 
+var RU_KEYBOARD_LAYOUT_MAP = {
+    'й': 'q', 'ц': 'w', 'у': 'e', 'к': 'r', 'е': 't', 'н': 'y', 'г': 'u',
+    'ш': 'i', 'щ': 'o', 'з': 'p', 'х': '[', 'ъ': ']', 'ф': 'a', 'ы': 's',
+    'в': 'd', 'а': 'f', 'п': 'g', 'р': 'h', 'о': 'j', 'л': 'k', 'д': 'l',
+    'ж': ';', 'э': '\'', 'я': 'z', 'ч': 'x', 'с': 'c', 'м': 'v', 'и': 'b',
+    'т': 'n', 'ь': 'm', 'б': ',', 'ю': '.',
+    'Й': 'Q', 'Ц': 'W', 'У': 'E', 'К': 'R', 'Е': 'T', 'Н': 'Y', 'Г': 'U',
+    'Ш': 'I', 'Щ': 'O', 'З': 'P', 'Х': '{', 'Ъ': '}', 'Ф': 'A', 'Ы': 'S',
+    'В': 'D', 'А': 'F', 'П': 'G', 'Р': 'H', 'О': 'J', 'Л': 'K', 'Д': 'L',
+    'Ж': ':', 'Э': '"', 'Я': 'Z', 'Ч': 'X', 'С': 'C', 'М': 'V', 'И': 'B',
+    'Т': 'N', 'Ь': 'M', 'Б': '<', 'Ю': '>'
+};
+
+var _ruLayoutLatToCyrCache = null;
+function ruLayoutLatToCyrMap() {
+    if (_ruLayoutLatToCyrCache) {
+        return _ruLayoutLatToCyrCache;
+    }
+    var inv = {};
+    for (var cyr in RU_KEYBOARD_LAYOUT_MAP) {
+        if (!Object.prototype.hasOwnProperty.call(RU_KEYBOARD_LAYOUT_MAP, cyr)) {
+            continue;
+        }
+        var lat = RU_KEYBOARD_LAYOUT_MAP[cyr];
+        if (!(lat in inv)) {
+            inv[lat] = cyr;
+        }
+    }
+    _ruLayoutLatToCyrCache = inv;
+    return inv;
+}
+
+/** Latin typed as if keys were Russian JCUKEN (inverse of toLayout); used for PL decline "like RU layout". */
+function toLayoutLatinAsRuKeys(text) {
+    var s = text == null ? '' : String(text);
+    try {
+        s = s.normalize('NFC');
+    } catch (err) {
+        /* ignore */
+    }
+    var inv = ruLayoutLatToCyrMap();
+    return s.split('').map(function (c) { return inv[c] || c; }).join('');
+}
+
 function toLayout(text) {
     var s = text == null ? '' : String(text);
-    var map = {
-        'й': 'q', 'ц': 'w', 'у': 'e', 'к': 'r', 'е': 't', 'н': 'y', 'г': 'u',
-        'ш': 'i', 'щ': 'o', 'з': 'p', 'х': '[', 'ъ': ']', 'ф': 'a', 'ы': 's',
-        'в': 'd', 'а': 'f', 'п': 'g', 'р': 'h', 'о': 'j', 'л': 'k', 'д': 'l',
-        'ж': ';', 'э': '\'', 'я': 'z', 'ч': 'x', 'с': 'c', 'м': 'v', 'и': 'b',
-        'т': 'n', 'ь': 'm', 'б': ',', 'ю': '.',
-        'Й': 'Q', 'Ц': 'W', 'У': 'E', 'К': 'R', 'Е': 'T', 'Н': 'Y', 'Г': 'U',
-        'Ш': 'I', 'Щ': 'O', 'З': 'P', 'Х': '{', 'Ъ': '}', 'Ф': 'A', 'Ы': 'S',
-        'В': 'D', 'А': 'F', 'П': 'G', 'Р': 'H', 'О': 'J', 'Л': 'K', 'Д': 'L',
-        'Ж': ':', 'Э': '"', 'Я': 'Z', 'Ч': 'X', 'С': 'C', 'М': 'V', 'И': 'B',
-        'Т': 'N', 'Ь': 'M', 'Б': '<', 'Ю': '>'
-    };
-    return s.split('').map(function (c) { return map[c] || c; }).join('');
+    return s.split('').map(function (c) { return RU_KEYBOARD_LAYOUT_MAP[c] || c; }).join('');
 }
 
 function normalizeDeclineResponseData(data) {
@@ -740,7 +777,11 @@ function buildDeclineOutput(forms, wantTranslit, wantLayout) {
             pushUnique(toTranslit(form));
         }
         if (wantLayout) {
-            pushUnique(toLayout(form));
+            if (DOC_LANG === 'pl') {
+                pushUnique(toLayoutLatinAsRuKeys(form));
+            } else {
+                pushUnique(toLayout(form));
+            }
         }
         linesOut.push.apply(linesOut, group);
     });

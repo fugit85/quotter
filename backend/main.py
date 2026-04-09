@@ -92,6 +92,18 @@ NUMBERS = ['sing', 'plur']
 GENDERS = ['masc', 'femn', 'neut']
 
 
+def _pymorphy_is_adjective(parsed) -> bool:
+    """В pymorphy3 нельзя писать 'ADJS' in parsed.tag / 'ADJF' in parsed.tag — ValueError на неизвестной граммеме."""
+    try:
+        pos = parsed.tag.POS
+        if pos in ('ADJF', 'ADJS'):
+            return True
+    except (AttributeError, TypeError, ValueError):
+        pass
+    t = str(parsed.tag)
+    return 'ADJF' in t or 'ADJS' in t
+
+
 def _morph_for_lang(lang: str):
     if lang == "uk":
         return morph_uk
@@ -308,7 +320,7 @@ def _append_unique(ordered, seen, value):
 def _collect_single_word_forms(token, parsed, by_gender, by_number, by_case, cases):
     out = []
     seen = set()
-    is_adj = 'ADJF' in parsed.tag or 'ADJS' in parsed.tag
+    is_adj = _pymorphy_is_adjective(parsed)
     cases_iter = cases if by_case else ['nomn']
 
     for case in cases_iter:
@@ -353,7 +365,7 @@ def _phrase_line_inflect(tokens, parsed_list, tagset, *, strict_voct: bool):
 def _collect_phrase_forms(tokens, parsed_list, by_gender, by_number, by_case, cases, *, lang: str):
     out = []
     cases_iter = cases if by_case else ['nomn']
-    has_adj = any('ADJF' in p.tag or 'ADJS' in p.tag for p in parsed_list)
+    has_adj = any(_pymorphy_is_adjective(p) for p in parsed_list)
     strict_voct = lang == 'uk'
 
     for case in cases_iter:

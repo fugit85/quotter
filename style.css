@@ -1352,3 +1352,45 @@ footer {
   }
 
 }
+
+.option-group--spaced {
+  margin-top: 12px;
+}
+
+.recaptcha-disclaimer {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.recaptcha-disclaimer a {
+  color: inherit;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+.custom-wrap.is-hidden {
+  display: none;
+}
+
+.custom-wrap-label-hint {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.field-label-note {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.clipboard-fallback-textarea {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+}
+
+.feedback-form--hidden {
+  display: none;
+}

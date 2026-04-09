@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Собрать минус-слова</title>
     <meta name="description" content="Минусатор — Онлайн инструмент для сбора минус-слов из списка ключевых слов. Кликайте на слова или отмечайте строки — отминусуйте нерелевантные запросы и выгрузите результат в CSV для Google Ads. Попробуйте!" />
-    <script src="script.js?v=8" defer></script>
+    <script src="script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/minusator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/minusator.html">
     <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/minusator.html">
@@ -96,7 +96,7 @@
             <div class="minus-toolbar">
                 <div class="minus-toolbar-left">
                     <label class="btn btn-ghost btn-upload" for="csvUpload">⇪ Загрузить CSV</label>
-                    <input type="file" id="csvUpload" accept=".csv" style="display:none">
+                    <input type="file" id="csvUpload" accept=".csv" class="file-input-hidden">
                     <button class="btn btn-primary" id="start-minus">✦ Минусовать</button>
                     <button class="btn btn-ghost" id="get-minus-words">Минус-слова</button>
                     <button class="btn btn-ghost" id="get-white-list">Белый список</button>
@@ -177,7 +177,7 @@
         </div>
     <footer>
         <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
-        <p style="font-size:11px;margin-top:4px;">Сайт защищён reCAPTCHA · <a href="https://policies.google.com/privacy" target="_blank" style="color:inherit">Конфиденциальность</a> · <a href="https://policies.google.com/terms" target="_blank" style="color:inherit">Условия</a></p>
+        <p class="recaptcha-disclaimer">Сайт защищён reCAPTCHA · <a href="https://policies.google.com/privacy" target="_blank">Конфиденциальность</a> · <a href="https://policies.google.com/terms" target="_blank">Условия</a></p>
     </footer>
 </body>
 

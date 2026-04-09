@@ -1,6 +1,5 @@
 'use strict';
 
-// Бэкенд Cloud Run (склонение + форма отзывов)
 var API_ORIGIN = 'https://quotter-api-923883205237.europe-west1.run.app';
 var CONFIG = {
     declineApiUrl: API_ORIGIN + '/decline',
@@ -10,10 +9,8 @@ var CONFIG = {
 
 var DOC_LANG = (document.documentElement.getAttribute('lang') || 'ru').split('-')[0].toLowerCase();
 
-// Язык морфологии для /decline: uk → укр., pl → польск. (Morfeusz), иначе русский.
 var DECLINE_LANG = DOC_LANG === 'uk' ? 'uk' : (DOC_LANG === 'pl' ? 'pl' : 'ru');
 
-/** Язык склонения для API: приоритет у пути URL (обход кэша script.js и ошибок в html lang). */
 function declineMorphLang() {
     var p = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '';
     if (p.indexOf('/pl/') !== -1) {
@@ -271,9 +268,7 @@ function fallbackCopyToClipboard(text) {
         var ta = document.createElement('textarea');
         ta.value = text;
         ta.setAttribute('readonly', '');
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        ta.style.top = '0';
+        ta.className = 'clipboard-fallback-textarea';
         document.body.appendChild(ta);
         ta.focus();
         ta.select();
@@ -372,7 +367,7 @@ function wireQuoteTool() {
 
     if (modeElement && customWrap) {
         modeElement.addEventListener('change', function () {
-            customWrap.style.display = modeElement.value === 'custom' ? 'flex' : 'none';
+            customWrap.classList.toggle('is-hidden', modeElement.value !== 'custom');
         });
     }
 
@@ -539,6 +534,21 @@ if (copyButton) {
     });
 }
 
+var selectAllResultBtn = document.getElementById('selectAllResult');
+if (selectAllResultBtn) {
+    selectAllResultBtn.addEventListener('click', function () {
+        var result = document.getElementById('result');
+        if (!result) {
+            return;
+        }
+        result.focus();
+        result.select();
+        if (typeof result.setSelectionRange === 'function') {
+            result.setSelectionRange(0, result.value.length);
+        }
+    });
+}
+
 function wireDeduplicator() {
     var buttonDuplicate = document.getElementById('button-dublicate');
     var inputElement = document.getElementById('input');
@@ -682,7 +692,6 @@ function toTranslit(text) {
     try {
         s = s.normalize('NFC');
     } catch (err) {
-        /* ignore */
     }
     var map = {
         'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
@@ -735,13 +744,11 @@ function ruLayoutLatToCyrMap() {
     return inv;
 }
 
-/** Latin typed as if keys were Russian JCUKEN (inverse of toLayout); used for PL decline "like RU layout". */
 function toLayoutLatinAsRuKeys(text) {
     var s = text == null ? '' : String(text);
     try {
         s = s.normalize('NFC');
     } catch (err) {
-        /* ignore */
     }
     var inv = ruLayoutLatToCyrMap();
     return s.split('').map(function (c) { return inv[c] || c; }).join('');
@@ -1266,11 +1273,6 @@ if (feedbackModal && feedbackClose && feedbackForm && feedbackMsgBox) {
             return;
         }
 
-        var hint = document.getElementById('gtm-bottom-right-hint');
-        if (hint) {
-            hint.remove();
-        }
-
         var submitBtn = feedbackForm.querySelector('.feedback-submit');
         if (!submitBtn) {
             return;
@@ -1301,7 +1303,7 @@ if (feedbackModal && feedbackClose && feedbackForm && feedbackMsgBox) {
                     if (!data || data.ok === false) {
                         throw new Error('api');
                     }
-                    feedbackForm.style.display = 'none';
+                    feedbackForm.classList.add('feedback-form--hidden');
                     feedbackMsgBox.innerHTML =
                         '<div class="feedback-success">' +
                         '<div class="feedback-success-icon">✓</div>' +
@@ -1311,7 +1313,7 @@ if (feedbackModal && feedbackClose && feedbackForm && feedbackMsgBox) {
                     setTimeout(function () {
                         feedbackModal.classList.add('hidden');
                         setTimeout(function () {
-                            feedbackForm.style.display = '';
+                            feedbackForm.classList.remove('feedback-form--hidden');
                             feedbackMsgBox.innerHTML = '';
                             feedbackForm.reset();
                             submitBtn.disabled = false;

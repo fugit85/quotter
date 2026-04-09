@@ -7,7 +7,7 @@
     <title>Забраць мінус-словы</title>
     <meta name="description"
         content="Збірайце мінус-словы, клікаючы словы або адзначаючы радкі. CSV з Планіроўшчыка." />
-    <script src="../script.js?v=8" defer></script>
+    <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/be/minusator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/minusator.html">
     <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/minusator.html">
@@ -95,7 +95,7 @@
             <div class="minus-toolbar">
                 <div class="minus-toolbar-left">
                     <label class="btn btn-ghost btn-upload" for="csvUpload">⇪ Загрузіць CSV</label>
-                    <input type="file" id="csvUpload" accept=".csv" style="display:none">
+                    <input type="file" id="csvUpload" accept=".csv" class="file-input-hidden">
                     <button class="btn btn-primary" id="start-minus">✦ Мінусаваць</button>
                     <button class="btn btn-ghost" id="get-minus-words">Мінус-словы</button>
                     <button class="btn btn-ghost" id="get-white-list">Белы спіс</button>
@@ -178,10 +178,10 @@
     </div>
     <footer>
         <p>2025–2026 — Інструменты для штодзённай працы ў PPC. Для задавальнення. AI power.</p>
-        <p style="font-size:11px;margin-top:4px;">Сайт абаронены reCAPTCHA · <a
+        <p class="recaptcha-disclaimer">Сайт абаронены reCAPTCHA · <a
                 href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
-                style="color:inherit">Канфідэнцыяльнасць</a> · <a href="https://policies.google.com/terms" target="_blank"
-                rel="noopener noreferrer" style="color:inherit">Умовы</a></p>
+               >Канфідэнцыяльнасць</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer">Умовы</a></p>
     </footer>
 </body>
 

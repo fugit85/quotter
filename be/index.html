@@ -7,7 +7,7 @@
     <title>Закавычыць ключавыя словы</title>
     <meta name="description"
         content="Апакуйце ключавыя словы ў фразавае супадзенне &quot; &quot; або дакладнае [ ] для Google Ads. CSV з Планіроўшчыка без рэдагавання." />
-    <script src="../script.js?v=8" defer></script>
+    <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/be/">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/">
     <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/">
@@ -88,15 +88,15 @@
             <div class="toolbar">
                 <label class="btn btn-ghost btn-upload" for="csvUploadQuote"
                     title="Загрузіць CSV з Планіроўшчыка Google">⇪ Загрузіць CSV</label>
-                <input type="file" id="csvUploadQuote" accept=".csv" style="display:none">
+                <input type="file" id="csvUploadQuote" accept=".csv" class="file-input-hidden">
                 <select id="mode">
                     <option value="phrase">Фразавае супадзенне</option>
                     <option value="exact">Дакладнае супадзенне</option>
                     <option value="custom">Свой сімвал</option>
                 </select>
-                <div class="custom-wrap" id="customWrap" style="display:none">
+                <div class="custom-wrap is-hidden" id="customWrap">
                     <input class="custom-symbol-input" id="customOpen" maxlength="5" placeholder="[" value="[">
-                    <span style="color:var(--text-muted);font-size:13px">тэкст</span>
+                    <span class="custom-wrap-label-hint">тэкст</span>
                     <input class="custom-symbol-input" id="customClose" maxlength="5" placeholder="]" value="]">
                 </div>
                 <button class="btn btn-primary" id="button-quote">✦ Апакаваць</button>
@@ -140,7 +140,7 @@
                     </div>
                     <div class="option-group">
                         <div class="field-label">Спецсімвалы <span
-                                style="font-weight:400;text-transform:none;letter-spacing:0">(!, ?, @, #, % і інш.)</span>
+                                class="field-label-note">(!, ?, @, #, % і інш.)</span>
                         </div>
                         <div class="decline-options">
                             <label class="decline-label"><input type="radio" name="cleanMode" value="keep" checked> Не
@@ -237,10 +237,10 @@
 
     <footer>
         <p>2025–2026 — Інструменты для штодзённай працы ў PPC. Для задавальнення. AI power.</p>
-        <p style="font-size:11px;margin-top:4px;">Сайт абаронены reCAPTCHA · <a
+        <p class="recaptcha-disclaimer">Сайт абаронены reCAPTCHA · <a
                 href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
-                style="color:inherit">Канфідэнцыяльнасць</a> · <a href="https://policies.google.com/terms" target="_blank"
-                rel="noopener noreferrer" style="color:inherit">Умовы</a></p>
+               >Канфідэнцыяльнасць</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer">Умовы</a></p>
     </footer>
 
 </body>

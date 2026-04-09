@@ -29,7 +29,6 @@ def submit():
     if not comment:
         return jsonify({"ok": False}), 400
 
-    # Проверка reCAPTCHA
     secret = os.environ.get("RECAPTCHA_SECRET")
     if secret and token:
         r = requests.post(
@@ -72,19 +71,14 @@ def submit():
     return jsonify({"ok": True})
 
 
-# Отдельные анализаторы: ru и uk не смешиваются
 morph_ru = pymorphy3.MorphAnalyzer(lang="ru")
 morph_uk = pymorphy3.MorphAnalyzer(lang="uk")
 morph_pl = morfeusz2.Morfeusz()
 
-# Русский:  «школьные» 6 падежей (без звательного в цикле — для большинства лексем совпадает с ном. или редко).
 CASES_RU = ['nomn', 'gent', 'datv', 'accs', 'ablt', 'loct']
-# Украинский: 7 падежей с кличным (voct) — pymorphy3-dicts-uk, граммемы OpenCorpora.
 CASES_UK = ['nomn', 'gent', 'datv', 'accs', 'ablt', 'loct', 'voct']
-# Польский (NKJP / Morfeusz): 7 падежей, включая wołacz (voc).
 CASES_PL = ['nom', 'gen', 'dat', 'acc', 'inst', 'loc', 'voc']
 PL_NUMBERS = ['sg', 'pl']
-# Подроды мужского + женский + средний (NKJP); для прилагательных перебираем варианты согласования.
 PL_ADJ_GENDERS = ['m1', 'm2', 'm3', 'f', 'n']
 PL_DECL_POS = frozenset({'subst', 'adj', 'num'})
 
@@ -93,7 +87,6 @@ GENDERS = ['masc', 'femn', 'neut']
 
 
 def _pymorphy_is_adjective(parsed) -> bool:
-    """В pymorphy3 нельзя писать 'ADJS' in parsed.tag / 'ADJF' in parsed.tag — ValueError на неизвестной граммеме."""
     try:
         pos = parsed.tag.POS
         if pos in ('ADJF', 'ADJS'):
@@ -117,7 +110,6 @@ def _cases_for_lang(lang: str):
 
 
 def _pl_lemma_tag_from_row(row):
-    """Morfeusz2: элемент analyse — (start, end, (orth, lemma, tag, name, labels))."""
     if len(row) >= 3 and isinstance(row[2], (list, tuple)) and len(row[2]) >= 3:
         inner = row[2]
         lemma, tag = inner[1], inner[2]
@@ -133,7 +125,6 @@ def _pl_lemma_tag_from_row(row):
 
 
 def _pl_case_slot_ok(case_slot: str) -> bool:
-    """Польский NKJP в Morfeusz сливает совпадающие формы: nom.acc, gen.dat, ..."""
     if not case_slot:
         return False
     for piece in case_slot.split('.'):
@@ -189,7 +180,6 @@ def _pl_build_tag(base_tag: str, case: str, number: str, adj_gender: str | None)
 
 
 def _pl_synthesize(m, lemma: str, tag: str):
-    """Morfeusz2.generate ожидает целочисленный tagId, не строку тега."""
     try:
         tid = m._morfeusz_obj.getIdResolver().getTagId(tag)
     except Exception:
@@ -264,7 +254,6 @@ def _collect_single_word_forms_pl(token, lemma, tag, by_gender, by_number, by_ca
 
 
 def _collect_phrase_forms_pl(tokens, rows, by_gender, by_number, by_case, cases):
-    """rows: list of (lemma, tag) | None; None — токен без номинальной интерпретации Morfeusz."""
     out = []
     has_adj = any(r and r[1].split(':')[0] == 'adj' for r in rows)
     cases_iter = cases if by_case else ['nom']
@@ -301,7 +290,6 @@ def _collect_phrase_forms_pl(tokens, rows, by_gender, by_number, by_case, cases)
 
 
 def _inflect_surface(parsed, tagset, original_token):
-    """Поверхностная форма; для звательного без результата — None (не подставлять номинатив)."""
     inf = parsed.inflect(tagset)
     if inf:
         return inf.word
@@ -349,7 +337,6 @@ def _collect_single_word_forms(token, parsed, by_gender, by_number, by_case, cas
 
 
 def _phrase_line_inflect(tokens, parsed_list, tagset, *, strict_voct: bool):
-    """Собирает фразу; при strict_voct (кличный, укр.) любая неудача inflect — строка отбрасывается."""
     parts = []
     for token, parsed in zip(tokens, parsed_list):
         inflected = parsed.inflect(tagset)

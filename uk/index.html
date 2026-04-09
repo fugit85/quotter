@@ -7,7 +7,7 @@
     <title>Обгорнути ключові слова</title>
     <meta name="description"
         content="Обгорніть ключові слова у фразову відповідність &quot; &quot; або точну [ ] для Google Ads. CSV з Планувальника без редагування." />
-    <script src="../script.js?v=8" defer></script>
+    <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/uk/">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/">
     <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/">
@@ -90,15 +90,15 @@
             <div class="toolbar">
                 <label class="btn btn-ghost btn-upload" for="csvUploadQuote"
                     title="Завантажити CSV з Планувальника Google">⇪ Завантажити CSV</label>
-                <input type="file" id="csvUploadQuote" accept=".csv" style="display:none">
+                <input type="file" id="csvUploadQuote" accept=".csv" class="file-input-hidden">
                 <select id="mode">
                     <option value="phrase">Фразова відповідність</option>
                     <option value="exact">Точна відповідність</option>
                     <option value="custom">Власний символ</option>
                 </select>
-                <div class="custom-wrap" id="customWrap" style="display:none">
+                <div class="custom-wrap is-hidden" id="customWrap">
                     <input class="custom-symbol-input" id="customOpen" maxlength="5" placeholder="[" value="[">
-                    <span style="color:var(--text-muted);font-size:13px">текст</span>
+                    <span class="custom-wrap-label-hint">текст</span>
                     <input class="custom-symbol-input" id="customClose" maxlength="5" placeholder="]" value="]">
                 </div>
                 <button class="btn btn-primary" id="button-quote">✦ Обгорнути</button>
@@ -142,7 +142,7 @@
                     </div>
                     <div class="option-group">
                         <div class="field-label">Спецсимволи <span
-                                style="font-weight:400;text-transform:none;letter-spacing:0">(!, ?, @, #, % тощо)</span>
+                                class="field-label-note">(!, ?, @, #, % тощо)</span>
                         </div>
                         <div class="decline-options">
                             <label class="decline-label"><input type="radio" name="cleanMode" value="keep" checked> Не
@@ -239,10 +239,10 @@
 
     <footer>
         <p>2025–2026 — Інструменти для щоденної роботи в PPC. Для задоволення. AI power.</p>
-        <p style="font-size:11px;margin-top:4px;">Сайт захищено reCAPTCHA · <a
+        <p class="recaptcha-disclaimer">Сайт захищено reCAPTCHA · <a
                 href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
-                style="color:inherit">Конфіденційність</a> · <a href="https://policies.google.com/terms" target="_blank"
-                rel="noopener noreferrer" style="color:inherit">Умови</a></p>
+               >Конфіденційність</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer">Умови</a></p>
     </footer>
 
 </body>

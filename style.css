@@ -1360,10 +1360,18 @@ footer {
 .recaptcha-disclaimer {
   font-size: 11px;
   margin-top: 4px;
+  color: var(--text-light);
 }
 
-.recaptcha-disclaimer a {
-  color: inherit;
+.recaptcha-disclaimer a,
+.recaptcha-disclaimer a:visited {
+  color: var(--text-light);
+  text-decoration: none;
+}
+
+.recaptcha-disclaimer a:hover {
+  color: var(--text-muted);
+  text-decoration: underline;
 }
 
 .file-input-hidden {

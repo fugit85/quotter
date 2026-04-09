@@ -759,8 +759,46 @@ function toLayout(text) {
     return s.split('').map(function (c) { return RU_KEYBOARD_LAYOUT_MAP[c] || c; }).join('');
 }
 
-function normalizeDeclineResponseData(data) {
-    return Array.isArray(data) ? data : [];
+function normalizeDeclineResponseData(data, sourceText) {
+    var inputLines = [];
+    if (sourceText != null && String(sourceText).trim()) {
+        inputLines = String(sourceText).split(/\r?\n/).map(function (l) {
+            return l.trim();
+        }).filter(Boolean);
+    }
+    var langIsRu = declineMorphLang() === 'ru';
+
+    if (data && typeof data === 'object' && !Array.isArray(data) && Array.isArray(data.lines)) {
+        var flat = [];
+        data.lines.forEach(function (chunk, i) {
+            if (!chunk || !chunk.length) {
+                return;
+            }
+            var row = chunk.map(function (f) {
+                return f == null ? '' : String(f);
+            }).filter(function (s) {
+                return s;
+            });
+            if (langIsRu && i < inputLines.length) {
+                var lt = inputLines[i];
+                if (lt.indexOf('ё') === -1 && lt.indexOf('Ё') === -1) {
+                    row = row.map(function (s) {
+                        return s.replace(/Ё/g, 'Е').replace(/ё/g, 'е');
+                    });
+                }
+            }
+            row.forEach(function (s) {
+                if (flat.indexOf(s) === -1) {
+                    flat.push(s);
+                }
+            });
+        });
+        return flat;
+    }
+    if (Array.isArray(data)) {
+        return data;
+    }
+    return [];
 }
 
 function buildDeclineOutput(forms, wantTranslit, wantLayout) {
@@ -951,7 +989,7 @@ function wireInflect() {
                 return res.json();
             })
             .then(function (data) {
-                var arr = normalizeDeclineResponseData(data);
+                var arr = normalizeDeclineResponseData(data, text);
                 var uniqueForms = Array.from(new Set(arr.filter(function (f) { return f; })));
                 originalForms = uniqueForms.map(function (f) {
                     return f == null ? '' : String(f);

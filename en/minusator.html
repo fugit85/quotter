@@ -7,7 +7,7 @@
     <title>Collect minus words</title>
     <meta name="description"
         content="Build negative keyword lists by clicking words or selecting lines. Import CSV from Keyword Planner." />
-    <script src="../script.js?v=8" defer></script>
+    <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/en/minusator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/minusator.html">
     <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/minusator.html">
@@ -95,7 +95,7 @@
             <div class="minus-toolbar">
                 <div class="minus-toolbar-left">
                     <label class="btn btn-ghost btn-upload" for="csvUpload">⇪ Upload CSV</label>
-                    <input type="file" id="csvUpload" accept=".csv" style="display:none">
+                    <input type="file" id="csvUpload" accept=".csv" class="file-input-hidden">
                     <button class="btn btn-primary" id="start-minus">✦ Build interactive list</button>
                     <button class="btn btn-ghost" id="get-minus-words">To negatives</button>
                     <button class="btn btn-ghost" id="get-white-list">Keep list (whitelist)</button>
@@ -181,10 +181,10 @@
     </div>
     <footer>
         <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
-        <p style="font-size:11px;margin-top:4px;">This site is protected by reCAPTCHA · <a
+        <p class="recaptcha-disclaimer">This site is protected by reCAPTCHA · <a
                 href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
-                style="color:inherit">Privacy</a> · <a href="https://policies.google.com/terms" target="_blank"
-                rel="noopener noreferrer" style="color:inherit">Terms</a></p>
+               >Privacy</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer">Terms</a></p>
     </footer>
 </body>
 

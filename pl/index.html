@@ -7,7 +7,7 @@
     <title>Opakuj słowa kluczowe</title>
     <meta name="description"
         content="Opakuj słowa kluczowe w dopasowanie frazowe &quot; &quot; lub dokładne [ ] w Google Ads. Import CSV z Planera słów kluczowych Google — bez edycji. Darmowe narzędzie dla PPC." />
-    <script src="../script.js?v=8" defer></script>
+    <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/pl/">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/">
     <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/">
@@ -90,15 +90,15 @@
             <div class="toolbar">
                 <label class="btn btn-ghost btn-upload" for="csvUploadQuote"
                     title="Wgraj eksport CSV z Planera słów kluczowych Google">⇪ Wgraj CSV</label>
-                <input type="file" id="csvUploadQuote" accept=".csv" style="display:none">
+                <input type="file" id="csvUploadQuote" accept=".csv" class="file-input-hidden">
                 <select id="mode">
                     <option value="phrase">Dopasowanie frazowe</option>
                     <option value="exact">Dopasowanie dokładne</option>
                     <option value="custom">Własne symbole</option>
                 </select>
-                <div class="custom-wrap" id="customWrap" style="display:none">
+                <div class="custom-wrap is-hidden" id="customWrap">
                     <input class="custom-symbol-input" id="customOpen" maxlength="5" placeholder="[" value="[">
-                    <span style="color:var(--text-muted);font-size:13px">tekst</span>
+                    <span class="custom-wrap-label-hint">tekst</span>
                     <input class="custom-symbol-input" id="customClose" maxlength="5" placeholder="]" value="]">
                 </div>
                 <button class="btn btn-primary" id="button-quote">✦ Opakuj</button>
@@ -142,7 +142,7 @@
                     </div>
                     <div class="option-group">
                         <div class="field-label">Znaki specjalne <span
-                                style="font-weight:400;text-transform:none;letter-spacing:0">(!, ?, @, #, %, …)</span>
+                                class="field-label-note">(!, ?, @, #, %, …)</span>
                         </div>
                         <div class="decline-options">
                             <label class="decline-label"><input type="radio" name="cleanMode" value="keep" checked>
@@ -243,10 +243,10 @@
 
     <footer>
         <p>2025–2026 — Narzędzia na co dzień w PPC. Dla zabawy. AI power.</p>
-        <p style="font-size:11px;margin-top:4px;">Strona chroniona przez reCAPTCHA · <a
+        <p class="recaptcha-disclaimer">Strona chroniona przez reCAPTCHA · <a
                 href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
-                style="color:inherit">Prywatność</a> · <a href="https://policies.google.com/terms" target="_blank"
-                rel="noopener noreferrer" style="color:inherit">Warunki</a></p>
+               >Prywatność</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer">Warunki</a></p>
     </footer>
 
 </body>

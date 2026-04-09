@@ -7,7 +7,7 @@
     <title>Zbierz słowa wykluczające</title>
     <meta name="description"
         content="Buduj listy wykluczeń, klikając słowa lub zaznaczając całe wiersze. Import CSV z Planera słów kluczowych." />
-    <script src="../script.js?v=8" defer></script>
+    <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/pl/minusator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/minusator.html">
     <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/minusator.html">
@@ -97,7 +97,7 @@
             <div class="minus-toolbar">
                 <div class="minus-toolbar-left">
                     <label class="btn btn-ghost btn-upload" for="csvUpload">⇪ Wgraj CSV</label>
-                    <input type="file" id="csvUpload" accept=".csv" style="display:none">
+                    <input type="file" id="csvUpload" accept=".csv" class="file-input-hidden">
                     <button class="btn btn-primary" id="start-minus">✦ Zbuduj listę interaktywną</button>
                     <button class="btn btn-ghost" id="get-minus-words">Do wykluczeń</button>
                     <button class="btn btn-ghost" id="get-white-list">Biała lista</button>
@@ -184,10 +184,10 @@
     </div>
     <footer>
         <p>2025–2026 — Narzędzia na co dzień w PPC. Dla zabawy. AI power.</p>
-        <p style="font-size:11px;margin-top:4px;">Strona chroniona przez reCAPTCHA · <a
+        <p class="recaptcha-disclaimer">Strona chroniona przez reCAPTCHA · <a
                 href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer"
-                style="color:inherit">Prywatność</a> · <a href="https://policies.google.com/terms" target="_blank"
-                rel="noopener noreferrer" style="color:inherit">Warunki</a></p>
+               >Prywatność</a> · <a href="https://policies.google.com/terms" target="_blank"
+                rel="noopener noreferrer">Warunki</a></p>
     </footer>
 </body>
 

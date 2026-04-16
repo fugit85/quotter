@@ -1493,7 +1493,12 @@ if (feedbackModal && feedbackClose && feedbackForm && feedbackMsgBox) {
         }
 
         function showBubble() { bubble.hidden = false; }
-        function hideBubble() { bubble.hidden = true; }
+        function hideBubble() {
+            bubble.hidden = true;
+            chipsRoot.innerHTML = '';
+            setStatus('');
+            allSuggestionWords = [];
+        }
 
         function renderResults(results) {
             chipsRoot.innerHTML = '';
@@ -1609,6 +1614,20 @@ if (feedbackModal && feedbackClose && feedbackForm && feedbackMsgBox) {
                     appendWordToEnd(input, w);
                 });
                 refreshAllChipStates(input, chipsRoot);
+            });
+        }
+
+        var clearBtn = document.getElementById('clear');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function () {
+                hideBubble();
+            });
+        }
+
+        var inflectBtn = document.getElementById('button-inflect');
+        if (inflectBtn) {
+            inflectBtn.addEventListener('click', function () {
+                hideBubble();
             });
         }
     }

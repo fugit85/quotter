@@ -9,3 +9,4 @@ morfeusz2==1.99.12
 navec==0.10.0
 gensim==4.3.2
 numpy==1.26.4
+scipy==1.11.4

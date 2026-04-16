@@ -139,7 +139,7 @@ def _pymorphy_is_finite_verb_or_infinitive(parsed) -> bool:
 
 def _pymorphy_skip_phrase_case(parsed) -> bool:
     pos = _pymorphy_pos(parsed)
-    return pos in ('VERB', 'INFN', 'GRND')
+    return pos in ('VERB', 'INFN')
 
 
 def _verbal_lemma_parse(morph, parsed):
@@ -622,16 +622,13 @@ def decline_api():
             parsed_list = [_pick_pymorphy_parse_for_decline(morph, t) for t in tokens]
             if len(tokens) == 1:
                 p0 = parsed_list[0]
-                pos0 = _pymorphy_pos(p0)
                 if _pymorphy_is_finite_verb_or_infinitive(p0):
                     # Клиент шлёт byCase и для глагола; падежи у глагола не используем.
                     chunk = _collect_verbal_forms(
                         p0, tokens[0], by_gender, by_number, by_tense, morph, lang,
                     )
-                elif pos0 == 'GRND':
-                    chunk = [tokens[0]]
                 else:
-                    # byTense с фронта для не-глаголов игнорируется.
+                    # Имена, прилагательные, деепричастия и т.д.; byTense для них не используется.
                     chunk = _collect_single_word_forms(
                         tokens[0], p0, by_gender, by_number, by_case, cases,
                         lang=lang,

@@ -624,12 +624,14 @@ def decline_api():
                 p0 = parsed_list[0]
                 pos0 = _pymorphy_pos(p0)
                 if _pymorphy_is_finite_verb_or_infinitive(p0):
+                    # Клиент шлёт byCase и для глагола; падежи у глагола не используем.
                     chunk = _collect_verbal_forms(
                         p0, tokens[0], by_gender, by_number, by_tense, morph, lang,
                     )
                 elif pos0 == 'GRND':
                     chunk = [tokens[0]]
                 else:
+                    # byTense с фронта для не-глаголов игнорируется.
                     chunk = _collect_single_word_forms(
                         tokens[0], p0, by_gender, by_number, by_case, cases,
                         lang=lang,

@@ -881,6 +881,8 @@ function syncDeclineCheckboxes(allCheckbox) {
             if (byTense) {
                 byTense.checked = false;
             }
+        } else {
+            byAll.checked = true;
         }
         return;
     }

@@ -847,6 +847,13 @@ select:focus {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  flex-basis: 100%;
+}
+
+.decline-actions {
+  display: flex;
+  gap: 10px;
+  flex-basis: 100%;
 }
 
 .decline-label {

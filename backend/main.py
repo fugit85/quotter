@@ -651,6 +651,38 @@ def decline_api():
 _navec_data = None
 
 
+def _load_navec():
+    try:
+        import numpy as np
+        from navec import Navec
+    except ImportError as e:
+        print('similar: import failed', e)
+        return None
+    path = os.environ.get('NAVEC_PATH', '/app/navec.tar')
+    if not os.path.isfile(path):
+        print('similar: navec file missing', path)
+        return None
+    try:
+        navec = Navec.load(path)
+        words = list(navec.vocab.words)
+        word2idx = {w: i for i, w in enumerate(words)}
+        matrix = navec.pq.unpack()
+        norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+        norms[norms == 0] = 1.0
+        normed = matrix / norms
+        data = {
+            'words': words,
+            'word2idx': word2idx,
+            'normed': normed,
+            'np': np,
+        }
+        print('similar: navec loaded,', len(words), 'words')
+        return data
+    except Exception as e:
+        print('similar: navec load error', e)
+        return None
+
+
 def _get_navec():
     global _navec_data, _navec_init_attempted
     with _navec_lock:
@@ -659,34 +691,14 @@ def _get_navec():
         if _navec_init_attempted:
             return None
         _navec_init_attempted = True
-        try:
-            import numpy as np
-            from navec import Navec
-        except ImportError as e:
-            print('similar: import failed', e)
-            return None
-        path = os.environ.get('NAVEC_PATH', '/app/navec.tar')
-        if not os.path.isfile(path):
-            print('similar: navec file missing', path)
-            return None
-        try:
-            navec = Navec.load(path)
-            words = list(navec.vocab.words)
-            word2idx = {w: i for i, w in enumerate(words)}
-            matrix = navec.pq.unpack()
-            norms = np.linalg.norm(matrix, axis=1, keepdims=True)
-            norms[norms == 0] = 1.0
-            normed = matrix / norms
-            _navec_data = {
-                'words': words,
-                'word2idx': word2idx,
-                'normed': normed,
-                'np': np,
-            }
-        except Exception as e:
-            print('similar: navec load error', e)
-            return None
+        _navec_data = _load_navec()
         return _navec_data
+
+
+print('similar: preloading navec model…')
+_navec_data = _load_navec()
+if _navec_data:
+    _navec_init_attempted = True
 
 
 def _navec_most_similar(nd, word: str, topn: int):
@@ -743,13 +755,16 @@ def _find_similar_for_word(nd, raw: str, limit: int) -> dict:
         return {'word': raw, 'used': None, 'similar': []}
     query_lemma = _pymorphy_lemma(used)
     seen = {used}
+    seen_lemmas = {query_lemma}
     similar = []
     for w, score in ms:
         if w in seen:
             continue
-        if _pymorphy_lemma(w) == query_lemma:
+        lemma = _pymorphy_lemma(w)
+        if lemma in seen_lemmas:
             continue
         seen.add(w)
+        seen_lemmas.add(lemma)
         similar.append({'word': w, 'score': score})
         if len(similar) >= limit:
             break

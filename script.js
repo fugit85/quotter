@@ -867,6 +867,7 @@ function syncDeclineCheckboxes(allCheckbox) {
     var byGender = document.getElementById('byGender');
     var byNumber = document.getElementById('byNumber');
     var byCase = document.getElementById('byCase');
+    var byTense = document.getElementById('byTense');
 
     if (!byAll || !byGender || !byNumber || !byCase) {
         return;
@@ -877,17 +878,27 @@ function syncDeclineCheckboxes(allCheckbox) {
             byGender.checked = false;
             byNumber.checked = false;
             byCase.checked = false;
+            if (byTense) {
+                byTense.checked = false;
+            }
         }
         return;
     }
 
-    var allThreeChecked = byGender.checked && byNumber.checked && byCase.checked;
-    if (allThreeChecked) {
+    var tenseOn = byTense ? byTense.checked : false;
+    var allOptionsChecked = byGender.checked && byNumber.checked && byCase.checked && tenseOn;
+    if (!byTense) {
+        allOptionsChecked = byGender.checked && byNumber.checked && byCase.checked;
+    }
+    if (allOptionsChecked) {
         byAll.checked = true;
         byGender.checked = false;
         byNumber.checked = false;
         byCase.checked = false;
-    } else if (byGender.checked || byNumber.checked || byCase.checked) {
+        if (byTense) {
+            byTense.checked = false;
+        }
+    } else if (byGender.checked || byNumber.checked || byCase.checked || tenseOn) {
         byAll.checked = false;
     } else {
         byAll.checked = true;
@@ -899,6 +910,7 @@ function initDeclineCheckboxes() {
     var byGender = document.getElementById('byGender');
     var byNumber = document.getElementById('byNumber');
     var byCase = document.getElementById('byCase');
+    var byTense = document.getElementById('byTense');
     if (!byAll || !byGender || !byNumber || !byCase) {
         return;
     }
@@ -906,6 +918,9 @@ function initDeclineCheckboxes() {
     byGender.addEventListener('change', function () { syncDeclineCheckboxes(null); });
     byNumber.addEventListener('change', function () { syncDeclineCheckboxes(null); });
     byCase.addEventListener('change', function () { syncDeclineCheckboxes(null); });
+    if (byTense) {
+        byTense.addEventListener('change', function () { syncDeclineCheckboxes(null); });
+    }
     syncDeclineCheckboxes(byAll);
 }
 
@@ -956,21 +971,21 @@ function wireInflect() {
         var byGender = true;
         var byNumber = true;
         var byCase = true;
+        var byTense = true;
 
         if (byAllCheckbox) {
             var byAll = byAllCheckbox.checked;
             var g = document.getElementById('byGender');
             var n = document.getElementById('byNumber');
             var c = document.getElementById('byCase');
+            var t = document.getElementById('byTense');
             byGender = byAll || !!(g && g.checked);
             byNumber = byAll || !!(n && n.checked);
             byCase = byAll || !!(c && c.checked);
+            byTense = byAll || !!(t && t.checked);
         }
 
         setDeclineInflectBusy(button, true, L.inflectLoading);
-
-        var byTenseEl = document.getElementById('byTense');
-        var byTense = !!(byTenseEl && byTenseEl.checked);
 
         fetch(CONFIG.declineApiUrl, {
             method: 'POST',

@@ -1,4 +1,5 @@
 import os
+import threading
 import unicodedata
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -75,6 +76,10 @@ def submit():
 morph_ru = pymorphy3.MorphAnalyzer(lang="ru")
 morph_uk = pymorphy3.MorphAnalyzer(lang="uk")
 morph_pl = morfeusz2.Morfeusz()
+
+_navec_kv = None
+_navec_lock = threading.Lock()
+_navec_init_attempted = False
 
 CASES_RU = ['nomn', 'gent', 'datv', 'accs', 'ablt', 'loct']
 CASES_UK = ['nomn', 'gent', 'datv', 'accs', 'ablt', 'loct', 'voct']
@@ -641,6 +646,102 @@ def decline_api():
         line_results.append(list(chunk))
 
     return jsonify({'lines': line_results}), 200
+
+
+def _get_navec_keyed_vectors():
+    global _navec_kv, _navec_init_attempted
+    with _navec_lock:
+        if _navec_kv is not None:
+            return _navec_kv
+        if _navec_init_attempted:
+            return None
+        _navec_init_attempted = True
+        try:
+            from navec import Navec
+        except ImportError:
+            print('similar: navec import failed')
+            return None
+        path = os.environ.get('NAVEC_PATH', '/app/navec.tar')
+        if not os.path.isfile(path):
+            print('similar: navec file missing', path)
+            return None
+        try:
+            _navec_kv = Navec.load(path).as_gensim
+        except Exception as e:
+            print('similar: navec load error', e)
+            return None
+        return _navec_kv
+
+
+def _similar_query_variants(word: str) -> list[str]:
+    w = unicodedata.normalize('NFC', (word or '').strip()).lower()
+    out = []
+    if w:
+        out.append(w)
+    try:
+        p = morph_ru.parse(w)[0]
+        nf = p.normal_form.lower()
+        if nf and nf not in out:
+            out.append(nf)
+    except (AttributeError, TypeError, ValueError):
+        pass
+    return out
+
+
+def _find_similar_for_word(kv, raw: str, limit: int) -> dict:
+    used = None
+    ms = []
+    for cand in _similar_query_variants(raw):
+        if cand in kv:
+            used = cand
+            ms = kv.most_similar(positive=[cand], topn=limit + 5)
+            break
+    if not used:
+        return {'word': raw, 'used': None, 'similar': []}
+    seen = {used}
+    similar = []
+    for w, score in ms:
+        if w in seen:
+            continue
+        seen.add(w)
+        similar.append({'word': w, 'score': float(score)})
+        if len(similar) >= limit:
+            break
+    return {'word': raw, 'used': used, 'similar': similar}
+
+
+@app.route('/similar', methods=['POST'])
+def similar_words():
+    kv = _get_navec_keyed_vectors()
+    if kv is None:
+        return jsonify({
+            'ok': False,
+            'error': 'navec_unavailable',
+            'results': [],
+        }), 503
+
+    data = request.get_json(silent=True) or {}
+
+    words = data.get('words')
+    if words is None:
+        single = (data.get('word') or '').strip()
+        words = [single] if single else []
+    if not isinstance(words, list):
+        words = []
+    words = [str(w).strip() for w in words if str(w).strip()]
+    words = words[:20]
+
+    try:
+        limit = int(data.get('limit', 12))
+    except (TypeError, ValueError):
+        limit = 12
+    limit = max(3, min(limit, 40))
+
+    if not words:
+        return jsonify({'ok': True, 'results': []}), 200
+
+    results = [_find_similar_for_word(kv, w, limit) for w in words]
+    return jsonify({'ok': True, 'results': results}), 200
 
 
 @app.route('/', methods=['GET', 'HEAD'])

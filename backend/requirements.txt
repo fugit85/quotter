@@ -6,3 +6,6 @@ gunicorn==22.0.0
 Flask-Cors==4.0.1
 requests==2.31.0
 morfeusz2==1.99.12
+navec==0.10.0
+gensim==4.3.2
+numpy==1.26.4

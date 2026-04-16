@@ -648,29 +648,65 @@ def decline_api():
     return jsonify({'lines': line_results}), 200
 
 
-def _get_navec_keyed_vectors():
-    global _navec_kv, _navec_init_attempted
+_navec_data = None
+
+
+def _get_navec():
+    global _navec_data, _navec_init_attempted
     with _navec_lock:
-        if _navec_kv is not None:
-            return _navec_kv
+        if _navec_data is not None:
+            return _navec_data
         if _navec_init_attempted:
             return None
         _navec_init_attempted = True
         try:
+            import numpy as np
             from navec import Navec
-        except ImportError:
-            print('similar: navec import failed')
+        except ImportError as e:
+            print('similar: import failed', e)
             return None
         path = os.environ.get('NAVEC_PATH', '/app/navec.tar')
         if not os.path.isfile(path):
             print('similar: navec file missing', path)
             return None
         try:
-            _navec_kv = Navec.load(path).as_gensim
+            navec = Navec.load(path)
+            words = list(navec.vocab.words)
+            word2idx = {w: i for i, w in enumerate(words)}
+            matrix = navec.pq.unpack()
+            norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+            norms[norms == 0] = 1.0
+            normed = matrix / norms
+            _navec_data = {
+                'words': words,
+                'word2idx': word2idx,
+                'normed': normed,
+                'np': np,
+            }
         except Exception as e:
             print('similar: navec load error', e)
             return None
-        return _navec_kv
+        return _navec_data
+
+
+def _navec_most_similar(nd, word: str, topn: int):
+    np = nd['np']
+    idx = nd['word2idx'].get(word)
+    if idx is None:
+        return []
+    vec = nd['normed'][idx]
+    scores = nd['normed'].dot(vec)
+    best = np.argpartition(-scores, topn + 1)[:topn + 1]
+    best = best[np.argsort(-scores[best])]
+    out = []
+    for i in best:
+        i = int(i)
+        if i == idx:
+            continue
+        out.append((nd['words'][i], float(scores[i])))
+        if len(out) >= topn:
+            break
+    return out
 
 
 def _similar_query_variants(word: str) -> list[str]:
@@ -688,13 +724,13 @@ def _similar_query_variants(word: str) -> list[str]:
     return out
 
 
-def _find_similar_for_word(kv, raw: str, limit: int) -> dict:
+def _find_similar_for_word(nd, raw: str, limit: int) -> dict:
     used = None
     ms = []
     for cand in _similar_query_variants(raw):
-        if cand in kv:
+        if cand in nd['word2idx']:
             used = cand
-            ms = kv.most_similar(positive=[cand], topn=limit + 5)
+            ms = _navec_most_similar(nd, cand, limit + 5)
             break
     if not used:
         return {'word': raw, 'used': None, 'similar': []}
@@ -704,7 +740,7 @@ def _find_similar_for_word(kv, raw: str, limit: int) -> dict:
         if w in seen:
             continue
         seen.add(w)
-        similar.append({'word': w, 'score': float(score)})
+        similar.append({'word': w, 'score': score})
         if len(similar) >= limit:
             break
     return {'word': raw, 'used': used, 'similar': similar}
@@ -712,8 +748,8 @@ def _find_similar_for_word(kv, raw: str, limit: int) -> dict:
 
 @app.route('/similar', methods=['POST'])
 def similar_words():
-    kv = _get_navec_keyed_vectors()
-    if kv is None:
+    nd = _get_navec()
+    if nd is None:
         return jsonify({
             'ok': False,
             'error': 'navec_unavailable',
@@ -740,7 +776,7 @@ def similar_words():
     if not words:
         return jsonify({'ok': True, 'results': []}), 200
 
-    results = [_find_similar_for_word(kv, w, limit) for w in words]
+    results = [_find_similar_for_word(nd, w, limit) for w in words]
     return jsonify({'ok': True, 'results': results}), 200
 
 

@@ -1402,56 +1402,54 @@ footer {
   margin-top: 8px;
 }
 
-.decline-test-wrap {
-  position: relative;
-}
-
 .decline-suggest-trigger {
   white-space: nowrap;
 }
 
-.decline-suggest-bubble {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 20;
-  width: 360px;
-  max-width: calc(100% - 24px);
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-  background: var(--surface);
+.decline-suggest-panel {
+  margin-top: 14px;
+  padding: 16px 18px;
+  max-width: 520px;
+  background: var(--surface2);
   border: 1px solid var(--border-soft);
-  border-radius: 16px;
-  box-shadow: var(--shadow), 0 8px 30px rgba(0, 0, 0, 0.12);
-  padding: 20px 18px 16px;
+  border-radius: 12px;
 }
 
-.decline-suggest-bubble[hidden] {
+.decline-suggest-panel[hidden] {
   display: none;
 }
 
-.decline-suggest-bubble-close {
-  position: absolute;
-  top: 10px;
-  right: 12px;
+.decline-suggest-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.decline-suggest-panel-header .field-label {
+  margin: 0;
+}
+
+.decline-suggest-panel-close {
   border: none;
   background: none;
-  font-size: 22px;
+  font-size: 20px;
   line-height: 1;
   color: var(--text-muted);
   cursor: pointer;
   padding: 2px 6px;
   border-radius: 6px;
+  flex-shrink: 0;
 }
 
-.decline-suggest-bubble-close:hover {
+.decline-suggest-panel-close:hover {
   color: var(--text);
-  background: var(--surface2);
+  background: var(--surface);
 }
 
 .decline-suggest-hint {
-  font-size: 13px;
-  color: var(--text-muted);
+  font-size: 12px;
+  color: var(--text-light);
   line-height: 1.45;
   margin-bottom: 10px;
 }
@@ -1459,15 +1457,22 @@ footer {
 .decline-suggest-status {
   font-size: 12px;
   color: var(--text-muted);
-  min-height: 1.2em;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+}
+
+.decline-suggest-status:empty {
+  display: none;
 }
 
 .decline-suggest-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+}
+
+.decline-suggest-chips:empty {
+  display: none;
 }
 
 .decline-suggest-chip {
@@ -1497,7 +1502,7 @@ footer {
 }
 
 .decline-suggest-add-all {
-  width: 100%;
+  width: auto;
 }
 
 .decline-suggest-group {
@@ -1517,14 +1522,4 @@ footer {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-}
-
-@media (max-width: 600px) {
-  .decline-suggest-bubble {
-    right: 4px;
-    top: 8px;
-    width: calc(100% - 8px);
-    max-width: none;
-    border-radius: 12px;
-  }
 }

@@ -134,9 +134,20 @@
                             <circle class="btn-inflect-spinner-head" cx="12" cy="12" r="9.5" fill="none"
                                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
                         </svg>
-                        <span class="btn-inflect-label">⌕ Похожие</span>
+                        <span class="btn-inflect-label">※ Похожие</span>
                     </span>
                 </button>
+            </div>
+
+            <div class="decline-suggest-panel" id="suggestBubble" hidden>
+                <div class="decline-suggest-panel-header">
+                    <div class="field-label">Похожие слова</div>
+                    <button type="button" class="decline-suggest-panel-close" id="suggestBubbleClose" aria-label="Свернуть">&times;</button>
+                </div>
+                <p class="decline-suggest-hint">Кликайте на слова, которые хотите добавить в поле ввода, или добавьте сразу все, нажав на кнопку «Добавить все».</p>
+                <div id="suggestStatus" class="decline-suggest-status" aria-live="polite"></div>
+                <div id="suggestChips" class="decline-suggest-chips"></div>
+                <button type="button" class="btn btn-ghost decline-suggest-add-all" id="suggestAddAll">Добавить все</button>
             </div>
 
             <div class="option-group option-group--spaced">
@@ -218,14 +229,6 @@
                 <div id="feedbackMessage" class="feedback-message"></div>
             </div>
         </div>
-        </div>
-
-        <div class="decline-suggest-bubble" id="suggestBubble" hidden>
-            <button type="button" class="decline-suggest-bubble-close" id="suggestBubbleClose" aria-label="Закрыть">&times;</button>
-            <div class="field-label">Похожие слова</div>
-            <div id="suggestStatus" class="decline-suggest-status" aria-live="polite"></div>
-            <div id="suggestChips" class="decline-suggest-chips"></div>
-            <button type="button" class="btn btn-ghost decline-suggest-add-all" id="suggestAddAll">Добавить все</button>
         </div>
         </div>
     </main>

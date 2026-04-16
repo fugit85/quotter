@@ -724,20 +724,30 @@ def _similar_query_variants(word: str) -> list[str]:
     return out
 
 
+def _pymorphy_lemma(word: str) -> str:
+    try:
+        return morph_ru.parse(word)[0].normal_form.lower()
+    except (AttributeError, TypeError, ValueError, IndexError):
+        return word.lower()
+
+
 def _find_similar_for_word(nd, raw: str, limit: int) -> dict:
     used = None
     ms = []
     for cand in _similar_query_variants(raw):
         if cand in nd['word2idx']:
             used = cand
-            ms = _navec_most_similar(nd, cand, limit + 5)
+            ms = _navec_most_similar(nd, cand, limit + 20)
             break
     if not used:
         return {'word': raw, 'used': None, 'similar': []}
+    query_lemma = _pymorphy_lemma(used)
     seen = {used}
     similar = []
     for w, score in ms:
         if w in seen:
+            continue
+        if _pymorphy_lemma(w) == query_lemma:
             continue
         seen.add(w)
         similar.append({'word': w, 'score': score})

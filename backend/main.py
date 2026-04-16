@@ -98,6 +98,159 @@ def _pymorphy_is_adjective(parsed) -> bool:
     return 'ADJF' in t or 'ADJS' in t
 
 
+_DECLINE_POS_DEPRIORITIZED = frozenset({
+    'GRND', 'VERB', 'INFN', 'ADVP', 'PREP', 'CONJ', 'PRCL', 'INTJ', 'PRED',
+})
+
+
+def _pymorphy_pos(parsed):
+    try:
+        return parsed.tag.POS
+    except (AttributeError, TypeError, ValueError):
+        return None
+
+
+def _pymorphy_decline_pos_priority(pos):
+    """Lower value = preferred for /decline when several parses exist."""
+    if pos == 'NOUN':
+        return 0
+    if pos in ('NUMR', 'NPRO'):
+        return 1
+    if pos in ('ADJF', 'ADJS', 'COMP', 'PRTF', 'PRTS'):
+        return 2
+    if pos in _DECLINE_POS_DEPRIORITIZED:
+        return 10
+    return 5
+
+
+def _pick_pymorphy_parse_for_decline(morph, token: str):
+    normalized = unicodedata.normalize('NFC', token)
+    parses = morph.parse(normalized)
+    best_i = min(
+        range(len(parses)),
+        key=lambda i: (_pymorphy_decline_pos_priority(_pymorphy_pos(parses[i])), i),
+    )
+    return parses[best_i]
+
+
+def _pymorphy_is_finite_verb_or_infinitive(parsed) -> bool:
+    return _pymorphy_pos(parsed) in ('VERB', 'INFN')
+
+
+def _pymorphy_skip_phrase_case(parsed) -> bool:
+    pos = _pymorphy_pos(parsed)
+    return pos in ('VERB', 'INFN', 'GRND')
+
+
+def _verbal_lemma_parse(morph, parsed):
+    nf = unicodedata.normalize('NFC', parsed.normal_form)
+    for c in morph.parse(nf):
+        if c.tag.POS == 'INFN':
+            return c
+    for c in morph.parse(nf):
+        if c.tag.POS == 'VERB':
+            try:
+                st = str(c.tag).lower()
+            except (TypeError, ValueError):
+                st = ''
+            if 'infn' in st:
+                return c
+    return parsed
+
+
+def _try_verbal_inflect(parsed, grams: set, original_token: str, lang: str):
+    inf = parsed.inflect(grams)
+    if not inf:
+        return None
+    w = inf.word
+    if lang == 'ru':
+        w = _ru_match_input_ye_spelling(w, original_token)
+    return w
+
+
+def _collect_verbal_forms(parsed, token, by_gender, by_number, by_tense, morph, lang):
+    base = _verbal_lemma_parse(morph, parsed)
+    out = []
+    seen = set()
+    orig_nfc = unicodedata.normalize('NFC', token)
+
+    def add_from_base(grams):
+        w = _try_verbal_inflect(base, set(grams), token, lang)
+        if w:
+            _append_unique(out, seen, w)
+
+    def add_from_parsed(grams):
+        w = _try_verbal_inflect(parsed, set(grams), token, lang)
+        if w:
+            _append_unique(out, seen, w)
+
+    if by_tense:
+        persons = ('1per', '2per', '3per')
+        numbers = ('sing', 'plur') if by_number else ('sing',)
+        if lang == 'uk':
+            for num in numbers:
+                for per in persons:
+                    add_from_base({'pres', num, per})
+            if by_gender:
+                for g in ('masc', 'femn', 'neut'):
+                    add_from_base({'past', g})
+            else:
+                add_from_base({'past', 'masc'})
+            if by_number:
+                add_from_base({'past', 'plur'})
+            for num in numbers:
+                for per in persons:
+                    add_from_base({'futr', num, per})
+        else:
+            for num in numbers:
+                for per in persons:
+                    add_from_base({'pres', num, per})
+            if by_gender:
+                for g in GENDERS:
+                    add_from_base({'past', 'sing', g})
+            else:
+                add_from_base({'past', 'sing', 'masc'})
+            if by_number:
+                add_from_base({'past', 'plur'})
+            for num in numbers:
+                for per in persons:
+                    add_from_base({'futr', num, per})
+    else:
+        _append_unique(out, seen, orig_nfc)
+        if by_number and _pymorphy_pos(parsed) == 'VERB':
+            try:
+                num = parsed.tag.number
+            except (AttributeError, TypeError, ValueError):
+                num = None
+            if num == 'sing':
+                add_from_parsed({'plur'})
+            elif num == 'plur':
+                add_from_parsed({'sing'})
+        if by_gender and _pymorphy_pos(parsed) == 'VERB':
+            try:
+                tense = parsed.tag.tense
+                n = parsed.tag.number
+            except (AttributeError, TypeError, ValueError):
+                tense, n = None, None
+            if tense == 'past':
+                if lang == 'uk':
+                    if n == 'sing':
+                        for g in ('masc', 'femn', 'neut'):
+                            add_from_parsed({'past', g})
+                    elif n == 'plur':
+                        add_from_parsed({'past', 'plur'})
+                else:
+                    if n == 'sing':
+                        for g in GENDERS:
+                            add_from_parsed({'past', 'sing', g})
+                    elif n == 'plur':
+                        add_from_parsed({'past', 'plur'})
+
+    if not out:
+        _append_unique(out, seen, orig_nfc)
+    return out
+
+
 def _morph_for_lang(lang: str):
     if lang == "uk":
         return morph_uk
@@ -353,6 +506,12 @@ def _collect_single_word_forms(token, parsed, by_gender, by_number, by_case, cas
 def _phrase_line_inflect(tokens, parsed_list, tagset, *, strict_voct: bool, lang: str):
     parts = []
     for token, parsed in zip(tokens, parsed_list):
+        if _pymorphy_skip_phrase_case(parsed):
+            w = parsed.word
+            if lang == 'ru':
+                w = _ru_match_input_ye_spelling(w, token)
+            parts.append(w)
+            continue
         inflected = parsed.inflect(tagset)
         if not inflected:
             if strict_voct:
@@ -429,6 +588,7 @@ def decline_api():
     by_gender = data.get('byGender', True)
     by_number = data.get('byNumber', True)
     by_case = data.get('byCase', True)
+    by_tense = bool(data.get('byTense', False))
 
     line_results = []
 
@@ -459,12 +619,21 @@ def decline_api():
         else:
             morph = _morph_for_lang(lang)
             cases = _cases_for_lang(lang)
-            parsed_list = [morph.parse(unicodedata.normalize('NFC', t))[0] for t in tokens]
+            parsed_list = [_pick_pymorphy_parse_for_decline(morph, t) for t in tokens]
             if len(tokens) == 1:
-                chunk = _collect_single_word_forms(
-                    tokens[0], parsed_list[0], by_gender, by_number, by_case, cases,
-                    lang=lang,
-                )
+                p0 = parsed_list[0]
+                pos0 = _pymorphy_pos(p0)
+                if _pymorphy_is_finite_verb_or_infinitive(p0):
+                    chunk = _collect_verbal_forms(
+                        p0, tokens[0], by_gender, by_number, by_tense, morph, lang,
+                    )
+                elif pos0 == 'GRND':
+                    chunk = [tokens[0]]
+                else:
+                    chunk = _collect_single_word_forms(
+                        tokens[0], p0, by_gender, by_number, by_case, cases,
+                        lang=lang,
+                    )
             else:
                 chunk = _collect_phrase_forms(
                     tokens, parsed_list, by_gender, by_number, by_case, cases, lang=lang

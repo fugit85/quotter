@@ -969,6 +969,9 @@ function wireInflect() {
 
         setDeclineInflectBusy(button, true, L.inflectLoading);
 
+        var byTenseEl = document.getElementById('byTense');
+        var byTense = !!(byTenseEl && byTenseEl.checked);
+
         fetch(CONFIG.declineApiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -977,7 +980,8 @@ function wireInflect() {
                 lang: declineMorphLang(),
                 byGender: byGender,
                 byNumber: byNumber,
-                byCase: byCase
+                byCase: byCase,
+                byTense: byTense
             })
         })
             .then(function (res) {

@@ -1,4 +1,5 @@
 import os
+import re
 import threading
 import unicodedata
 from flask import Flask, request, jsonify
@@ -6,6 +7,14 @@ from flask_cors import CORS
 import pymorphy3
 import morfeusz2
 import requests
+
+from natasha import (
+    MorphVocab,
+    NamesExtractor,
+    DatesExtractor,
+    MoneyExtractor,
+    AddrExtractor,
+)
 
 app = Flask(__name__)
 CORS(app)
@@ -803,6 +812,110 @@ def similar_words():
 
     results = [_find_similar_for_word(nd, w, limit) for w in words]
     return jsonify({'ok': True, 'results': results}), 200
+
+
+_natasha_morph_vocab = MorphVocab()
+_natasha_names = NamesExtractor(_natasha_morph_vocab)
+_natasha_dates = DatesExtractor(_natasha_morph_vocab)
+_natasha_money = MoneyExtractor(_natasha_morph_vocab)
+_natasha_addr = AddrExtractor(_natasha_morph_vocab)
+
+
+_EMAIL_RE = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
+_URL_RE = re.compile(
+    r'(?:(?:https?|ftp)://[^\s<>"\'`]+|(?:www\.|[a-z0-9-]+\.)'
+    r'(?:ru|com|net|org|io|co|kz|ua|by|pl|info|biz|me|dev|app|xyz|site|store|shop|online|tech|cloud|ai)'
+    r'(?:/[^\s<>"\'`]*)?)',
+    re.IGNORECASE,
+)
+_PHONE_RE = re.compile(
+    r'(?:\+?\d{1,3}[\s\-\.]?)?(?:\(\d{2,5}\)|\d{2,5})[\s\-\.]?\d{2,4}[\s\-\.]?\d{2,4}(?:[\s\-\.]?\d{1,4})?'
+)
+_HASHTAG_RE = re.compile(r'#[\wа-яёА-ЯЁ_-]+', re.UNICODE)
+_NUMBER_RE = re.compile(r'\b\d+(?:[.,]\d+)?\b')
+
+
+def _extract_natasha_spans(extractor, text):
+    out = []
+    try:
+        matches = list(extractor(text))
+    except Exception:
+        return out
+    for match in matches:
+        try:
+            start, stop = match.span
+        except (AttributeError, TypeError, ValueError):
+            continue
+        raw = text[start:stop].strip(' \t\r\n.,;:!?"\'()[]{}«»')
+        if raw:
+            out.append(raw)
+    return out
+
+
+def _dedup_preserve(seq):
+    seen = set()
+    out = []
+    for raw in seq:
+        v = raw.strip() if isinstance(raw, str) else str(raw).strip()
+        if not v:
+            continue
+        key = v.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(v)
+    return out
+
+
+def _filter_digit_only(items):
+    return [x for x in items if not re.fullmatch(r'[\d\s.,\-]+', x or '')]
+
+
+def _extract_phones(text):
+    raw = _PHONE_RE.findall(text)
+    out = []
+    for m in raw:
+        digits = re.sub(r'\D', '', m)
+        if len(digits) >= 7:
+            out.append(m.strip())
+    return out
+
+
+@app.route('/extract', methods=['POST'])
+def extract_api():
+    data = request.get_json(silent=True) or {}
+    text = data.get('text', '') or ''
+    if not text.strip():
+        return jsonify({'groups': []}), 200
+
+    if len(text) > 500_000:
+        text = text[:500_000]
+
+    names = _filter_digit_only(_extract_natasha_spans(_natasha_names, text))
+    geo = _extract_natasha_spans(_natasha_addr, text)
+    dates = _extract_natasha_spans(_natasha_dates, text)
+    money = _extract_natasha_spans(_natasha_money, text)
+
+    emails = _EMAIL_RE.findall(text)
+    urls = [u.rstrip('.,;:!?)]}') for u in _URL_RE.findall(text)]
+    phones = _extract_phones(text)
+    hashtags = _HASHTAG_RE.findall(text)
+    numbers = _NUMBER_RE.findall(text)
+
+    groups = [
+        {'id': 'names', 'label': 'Имена', 'items': _dedup_preserve(names)},
+        {'id': 'geo', 'label': 'Гео и адреса', 'items': _dedup_preserve(geo)},
+        {'id': 'dates', 'label': 'Даты', 'items': _dedup_preserve(dates)},
+        {'id': 'money', 'label': 'Цены и суммы', 'items': _dedup_preserve(money)},
+        {'id': 'emails', 'label': 'Email', 'items': _dedup_preserve(emails)},
+        {'id': 'phones', 'label': 'Телефоны', 'items': _dedup_preserve(phones)},
+        {'id': 'urls', 'label': 'Ссылки и домены', 'items': _dedup_preserve(urls)},
+        {'id': 'hashtags', 'label': 'Хэштеги', 'items': _dedup_preserve(hashtags)},
+        {'id': 'numbers', 'label': 'Числа', 'items': _dedup_preserve(numbers)},
+    ]
+    groups = [g for g in groups if g['items']]
+
+    return jsonify({'groups': groups}), 200
 
 
 @app.route('/', methods=['GET', 'HEAD'])

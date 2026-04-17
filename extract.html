@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Извлечь имена, гео, даты и цены из ключевых слов</title>
+    <meta name="description"
+        content="Извлекатор — онлайн инструмент для PPC-специалистов. Извлекает имена, гео, даты, цены, телефоны и домены из списка ключевых слов и одним кликом удаляет их из текста. Готово для Google Ads.">
+    <script src="script.js" defer></script>
+    <link rel="canonical" href="https://qoutter.cloud/extract.html">
+    <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/extract.html">
+    <link rel="alternate" hreflang="kk" href="https://qoutter.cloud/kz/">
+    <link rel="alternate" hreflang="en" href="https://qoutter.cloud/en/">
+    <link rel="alternate" hreflang="uk" href="https://qoutter.cloud/uk/">
+    <link rel="alternate" hreflang="be" href="https://qoutter.cloud/be/">
+    <link rel="alternate" hreflang="pl" href="https://qoutter.cloud/pl/">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="quote.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-inner">
+            <span class="nav-logo">Qoutter</span>
+            <span class="nav-divider"></span>
+            <span class="nav-current-page">Извлекатор</span>
+            <div class="nav-links">
+                <a href="index.html">Закавычник</a>
+                <a href="minusator.html">Минусатор</a>
+                <a href="decline.html">Склонятор</a>
+                <a href="extract.html" class="active">Извлекатор</a>
+                <div class="nav-more">
+                    <button type="button" class="nav-more-toggle" aria-expanded="false" aria-haspopup="true">
+                        Ещё
+                        <svg class="nav-more-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-more-panel" hidden>
+                        <a href="capiralizator.html">Капитализатор</a>
+                        <a href="undublicator.html">Дубликаты</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <div class="lang-picker">
+                    <button type="button" class="lang-picker-toggle" aria-expanded="false" aria-haspopup="listbox"
+                        aria-label="Мова / Language">
+                        <span class="lang-picker-code">RU</span>
+                        <svg class="lang-picker-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 4.5 6 7.5 9 4.5" />
+                        </svg>
+                    </button>
+                    <div class="lang-picker-panel" hidden role="listbox" aria-label="Language">
+                        <span class="lang-picker-item lang-picker-item--current" role="option"
+                            aria-selected="true">RU</span>
+                        <a href="kz/index.html" class="lang-picker-item" role="option">KZ</a>
+                        <a href="en/index.html" class="lang-picker-item" role="option">EN</a>
+                        <a href="uk/index.html" class="lang-picker-item" role="option">UK</a>
+                        <a href="be/index.html" class="lang-picker-item" role="option">BE</a>
+                        <a href="pl/index.html" class="lang-picker-item" role="option">PL</a>
+                    </div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Сменить тему">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Тёмная</span>
+                </button>
+                <button class="nav-menu-btn" id="navMenuBtn">≡</button>
+            </div>
+        </div>
+        <div class="nav-dropdown" id="navDropdown">
+            <a href="index.html">Закавычник</a>
+            <a href="minusator.html">Минусатор</a>
+            <a href="decline.html">Склонятор</a>
+            <a href="extract.html" class="active">Извлекатор</a>
+            <a href="capiralizator.html">Капитализатор</a>
+            <a href="undublicator.html">Дубликаты</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="page-title-dot"></span>
+                Извлечь данные из ключевых слов
+            </h1>
+            <p class="page-subtitle">Находит в тексте имена, города, даты, цены, телефоны и домены — отмечайте
+                ненужное одним кликом и удаляйте из всего списка. Освобождает вечера PPC-специалистов.</p>
+        </div>
+
+        <div class="card">
+            <div class="field-label">Исходный текст</div>
+            <textarea id="input" placeholder="Вставьте список ключевых слов — каждая фраза с новой строки"></textarea>
+
+            <div class="toolbar">
+                <label class="btn btn-ghost btn-upload" for="csvUploadExtract"
+                    title="Загрузить выгрузку из Планировщика Google Ads (CSV)">⇪ Загрузить CSV</label>
+                <input type="file" id="csvUploadExtract" accept=".csv" class="file-input-hidden">
+                <button class="btn btn-primary" id="button-extract">✦ Извлечь</button>
+                <button class="btn btn-ghost" id="clear-input">✕ Очистить</button>
+                <span class="counter" id="counter">0 строк</span>
+            </div>
+            <div class="extract-busy" id="extractBusy">Анализируем текст…</div>
+        </div>
+
+        <div class="extract-hint">Кликайте на слова, чтобы выбрать. Чекбокс выделяет весь список ↓</div>
+
+        <div class="card">
+            <label class="extract-master" id="extractMaster" style="display:none;">
+                <input type="checkbox" id="extractMasterCheckbox">
+                <span>Выделить все списки</span>
+                <span class="extract-master-count" id="extractMasterCount">0 / 0 выбрано</span>
+            </label>
+
+            <div class="extract-empty" id="extractEmpty" style="display:none;">
+                Нажмите «Извлечь», чтобы увидеть результаты.
+            </div>
+
+            <div class="extract-groups" id="extractGroups"></div>
+
+            <div class="extract-actions" id="extractActions" style="display:none;">
+                <div class="extract-mode">
+                    <span class="extract-mode-label">Режим удаления</span>
+                    <label class="decline-label">
+                        <input type="radio" name="extractMode" value="words" checked>
+                        <span>Слова</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="radio" name="extractMode" value="lines">
+                        <span>Строки</span>
+                    </label>
+                </div>
+                <button class="btn btn-ghost" id="extract-copy-selected" disabled>⎘ Копировать выделенное</button>
+                <button class="btn btn-danger" id="extract-remove-selected" disabled>✕ Удалить выделенное</button>
+            </div>
+        </div>
+
+        <div class="card" id="cleanSection" style="display:none;">
+            <div class="field-label">Очищенный текст</div>
+            <textarea id="clean-result" readonly placeholder="Сюда попадёт текст без отмеченных слов…"></textarea>
+            <div class="toolbar">
+                <button class="btn btn-ghost" id="copy-clean">⎘ Копировать</button>
+                <button class="btn btn-ghost" id="export-csv-clean">↓ Экспорт CSV</button>
+                <button class="btn btn-ghost" id="clear-clean">✕ Очистить</button>
+                <span class="counter" id="counter-clean">0 строк</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <section class="faq">
+                <h2>Вопросы и ответы</h2>
+
+                <details class="faq-item">
+                    <summary>Как работает Извлекатор?</summary>
+                    <p>Инструмент использует библиотеку Natasha и её рулевой движок Yargy — это правило-ориентированный
+                        парсер русского языка. Он находит именованные сущности (имена людей, гео, даты, цены), а также
+                        стандартные паттерны: email, телефоны, домены. Модель ничего не «галлюцинирует» — все
+                        совпадения берутся точно из вашего текста.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Зачем это PPC-специалисту?</summary>
+                    <p>Типичный список запросов из Планировщика содержит случайные гео, чужие бренды, имена конкурентов
+                        и прочий мусор — всё это кормит клики мимо цели. Извлекатор за секунду подсвечивает все
+                        «опасные» слова. Дальше — чекбоксы: отметили → удалили → получили чистый список.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>В чём разница между «Удалить слова» и «Удалить строки»?</summary>
+                    <p><b>Удалить слова</b> — вырезает только выбранные фразы из текста, остальные слова в строке
+                        остаются. Удобно, когда слово лишнее само по себе: «<i>купить диван москва</i>» → «<i>купить
+                            диван</i>».<br><b>Удалить строки</b> — целиком выкидывает строки, где встречается хотя бы
+                        одно выбранное слово. Удобно для жёсткой фильтрации: если в ключе упоминается конкурент —
+                        выкидываем весь ключ.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Можно ли загрузить CSV из Планировщика Google Ads?</summary>
+                    <p>Да, кнопка «Загрузить CSV» принимает выгрузку из Google Keyword Planner напрямую — ключевые
+                        слова подставятся в поле ввода без ручного редактирования.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Данные уходят на сервер?</summary>
+                    <p>Для извлечения сущностей текст отправляется на наш сервер (Natasha — Python-библиотека и не
+                        может работать в браузере). Мы ничего не логируем и не храним — после ответа данные
+                        выбрасываются. Удаление слов из исходного текста происходит у вас в браузере без сетевых
+                        запросов.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Какие типы сущностей распознаются?</summary>
+                    <p>Имена людей, географические названия и адреса, даты, цены и денежные суммы, email-адреса,
+                        телефоны, домены и ссылки, хэштеги, отдельные числа. Состав списков адаптируется под ваш
+                        текст — если даты в тексте не встретились, блока «Даты» не будет.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>А если я хочу просто скопировать все имена или все гео?</summary>
+                    <p>Отметьте чекбокс у нужного списка (например, «Гео и адреса») и нажмите «Копировать выделенное» —
+                        получите готовый список в буфере. Можно выбрать сразу несколько списков или отдельные слова
+                        внутри.</p>
+                </details>
+            </section>
+        </div>
+
+        <div id="feedbackModal" class="feedback-modal hidden">
+            <div class="feedback-content">
+                <button type="button" class="feedback-close" id="feedbackClose" aria-label="Закрыть">✕</button>
+                <p class="feedback-intro">Если что-то не так удобно или очень нужна другая фича — пишите! 😉</p>
+                <form id="feedbackForm" method="post">
+                    <div class="feedback-rating">
+                        <span class="feedback-rating-caption" id="feedbackRatingCaption">Оценить удобство</span>
+                        <div class="feedback-stars" role="group" aria-labelledby="feedbackRatingCaption">
+                            <input type="hidden" id="feedbackRating" value="" autocomplete="off" />
+                            <button type="button" class="feedback-star" data-value="1" aria-label="1/5">★</button>
+                            <button type="button" class="feedback-star" data-value="2" aria-label="2/5">★</button>
+                            <button type="button" class="feedback-star" data-value="3" aria-label="3/5">★</button>
+                            <button type="button" class="feedback-star" data-value="4" aria-label="4/5">★</button>
+                            <button type="button" class="feedback-star" data-value="5" aria-label="5/5">★</button>
+                        </div>
+                    </div>
+                    <textarea id="feedbackComment" name="comment" placeholder="Ваш комментарий" required></textarea>
+                    <input type="text" id="feedbackContact" name="contact"
+                        placeholder="Контакт для обратной связи (необязательно)" />
+                    <button type="submit" class="feedback-submit">Отправить</button>
+                </form>
+                <div id="feedbackMessage" class="feedback-message"></div>
+            </div>
+        </div>
+    </main>
+
+    <button class="scroll-top" id="scrollTop" aria-label="Наверх">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3,12 9,6 15,12" />
+        </svg>
+    </button>
+
+    <footer>
+        <p>2025–2026 — Tools for PPC daily routine. Made for fun. AI power.</p>
+        <p class="recaptcha-disclaimer">Сайт защищён reCAPTCHA · <a href="https://policies.google.com/privacy"
+                target="_blank">Конфиденциальность</a> · <a href="https://policies.google.com/terms"
+                target="_blank">Условия</a></p>
+    </footer>
+</body>
+
+</html>

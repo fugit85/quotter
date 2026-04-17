@@ -200,6 +200,17 @@ def build_cities() -> None:
 
         log(f"  {cc}: {count_city} cities, {count_region} regions (pop ≥ {MIN_POPULATION_CITY})")
 
+    extras_path = TOOLS_DIR / "cities_extra.txt"
+    if extras_path.exists():
+        extra_count = 0
+        for line in extras_path.read_text(encoding="utf-8").splitlines():
+            s = line.strip()
+            if not s or s.startswith("#"):
+                continue
+            all_names.add(s)
+            extra_count += 1
+        log(f"  + {extra_count} curated extras from cities_extra.txt")
+
     countries: list[str] = []
     try:
         from babel import Locale  # type: ignore

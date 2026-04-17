@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import threading
 import unicodedata
 from flask import Flask, request, jsonify
@@ -835,6 +836,181 @@ _HASHTAG_RE = re.compile(r'#[\wа-яёА-ЯЁ_-]+', re.UNICODE)
 _NUMBER_RE = re.compile(r'\b\d+(?:[.,]\d+)?\b')
 
 
+# === Supplementary extractors for lowercase PPC-style keyword lists ===
+# Natasha/Yargy grammars rely heavily on Russian capitalization and structural
+# markers ("г. Москва", "ул. Тверская"), so they miss most entities in raw
+# lowercase keyword exports. The lookups and regexes below fill that gap.
+
+_RU_GEO_SINGLE_LEMMAS = frozenset({
+    # Russian cities (nominative lemmas — pymorphy normalises inflected forms)
+    'москва', 'петербург', 'питер', 'новосибирск', 'екатеринбург', 'казань',
+    'челябинск', 'самара', 'омск', 'уфа', 'красноярск', 'воронеж', 'пермь',
+    'волгоград', 'краснодар', 'саратов', 'тюмень', 'тольятти', 'ижевск',
+    'барнаул', 'ульяновск', 'иркутск', 'хабаровск', 'ярославль', 'владивосток',
+    'махачкала', 'томск', 'оренбург', 'кемерово', 'рязань', 'астрахань', 'киров',
+    'пенза', 'липецк', 'балашиха', 'чебоксары', 'калининград', 'курск', 'тула',
+    'ставрополь', 'тверь', 'магнитогорск', 'сочи', 'брянск', 'иваново',
+    'белгород', 'владимир', 'сургут', 'калуга', 'архангельск', 'симферополь',
+    'чита', 'смоленск', 'курган', 'орёл', 'орел', 'волжский', 'мурманск',
+    'саранск', 'подольск', 'стерлитамак', 'грозный', 'якутск', 'кострома',
+    'севастополь', 'тамбов', 'петрозаводск', 'нижневартовск', 'новороссийск',
+    'таганрог', 'сыктывкар', 'нижнекамск', 'нальчик', 'орск', 'дзержинск',
+    'братск', 'ангарск', 'королёв', 'королев', 'энгельс', 'люберцы',
+    'красногорск', 'пушкино', 'одинцово', 'домодедово', 'щёлково', 'щелково',
+    'раменское', 'реутов', 'жуковский', 'долгопрудный', 'лобня', 'ногинск',
+    'видное', 'троицк', 'дмитров', 'клин', 'серпухов', 'коломна',
+    'воскресенск', 'зеленоград', 'чехов', 'ступино', 'егорьевск',
+    'электросталь', 'ивантеевка', 'мытищи', 'химки', 'фрязино', 'дубна',
+    'лыткарино', 'абакан', 'арзамас', 'армавир', 'балаково', 'бердск',
+    'березники', 'бийск', 'вологда', 'воркута', 'глазов', 'димитровград',
+    'евпатория', 'ейск', 'ессентуки', 'железногорск', 'златоуст', 'зеленодольск',
+    'кисловодск', 'копейск', 'кызыл', 'майкоп', 'миасс', 'михайловск',
+    'находка', 'невинномысск', 'нефтекамск', 'нефтеюганск', 'норильск',
+    'ноябрьск', 'обнинск', 'первоуральск', 'пятигорск', 'ревда', 'салават',
+    'салехард', 'саров', 'серов', 'северодвинск', 'сызрань', 'тобольск',
+    'туапсе', 'уссурийск', 'ухта', 'феодосия', 'элиста', 'геленджик', 'анапа',
+    'адлер', 'сочи',
+    # World cities (Russian transliteration)
+    'лондон', 'париж', 'берлин', 'рим', 'мадрид', 'амстердам', 'прага', 'вена',
+    'варшава', 'будапешт', 'киев', 'минск', 'алматы', 'астана', 'ташкент',
+    'баку', 'тбилиси', 'ереван', 'бишкек', 'душанбе', 'ашхабад', 'стамбул',
+    'анкара', 'анталия', 'анталья', 'дубай', 'каир', 'токио', 'сеул', 'пекин',
+    'шанхай', 'бангкок', 'паттайя', 'пхукет', 'сингапур', 'джакарта', 'ханой',
+    'чикаго', 'майами', 'бостон', 'сиэтл', 'вашингтон', 'атланта', 'торонто',
+    'монреаль', 'ванкувер', 'мехико', 'гавана', 'лиссабон', 'барселона',
+    'милан', 'неаполь', 'флоренция', 'цюрих', 'женева', 'копенгаген',
+    'стокгольм', 'осло', 'хельсинки', 'рига', 'вильнюс', 'таллин', 'дублин',
+    'брюссель', 'лион', 'марсель', 'ницца', 'венеция', 'афины', 'салоники',
+    # Countries
+    'россия', 'украина', 'беларусь', 'казахстан', 'узбекистан', 'таджикистан',
+    'туркмения', 'армения', 'грузия', 'азербайджан', 'молдова', 'литва',
+    'латвия', 'эстония', 'польша', 'германия', 'франция', 'италия', 'испания',
+    'португалия', 'нидерланды', 'бельгия', 'австрия', 'швейцария', 'швеция',
+    'норвегия', 'финляндия', 'дания', 'исландия', 'ирландия',
+    'великобритания', 'англия', 'шотландия', 'уэльс', 'греция', 'турция',
+    'кипр', 'египет', 'марокко', 'тунис', 'оаэ', 'иран', 'израиль', 'китай',
+    'япония', 'корея', 'индия', 'пакистан', 'бангладеш', 'таиланд', 'вьетнам',
+    'лаос', 'камбоджа', 'мьянма', 'малайзия', 'индонезия', 'филиппины', 'сша',
+    'америка', 'канада', 'мексика', 'бразилия', 'аргентина', 'чили', 'перу',
+    'колумбия', 'венесуэла', 'куба', 'австралия',
+    # Regions / macro-geo
+    'крым', 'кавказ', 'сибирь', 'урал', 'алтай', 'камчатка', 'байкал',
+    'поволжье', 'кубань', 'забайкалье', 'приморье', 'сахалин',
+})
+
+_RU_GEO_MULTI = (
+    'санкт-петербург', 'санкт петербург',
+    'нижний новгород', 'ростов-на-дону', 'ростов на дону',
+    'улан-удэ', 'улан удэ', 'йошкар-ола', 'йошкар ола',
+    'комсомольск-на-амуре', 'комсомольск на амуре',
+    'петропавловск-камчатский', 'петропавловск камчатский',
+    'каменск-уральский', 'каменск уральский',
+    'орехово-зуево', 'орехово зуево',
+    'сергиев посад', 'наро-фоминск', 'наро фоминск',
+    'великие луки', 'великий новгород',
+    'старый оскол', 'набережные челны',
+    'южно-сахалинск', 'южно сахалинск',
+    'ханты-мансийск', 'ханты мансийск',
+    'новый уренгой', 'минеральные воды', 'красная поляна', 'роза хутор',
+    'московская область', 'ленинградская область',
+    'нью-йорк', 'нью йорк', 'лос-анджелес', 'лос анджелес',
+    'сан-франциско', 'сан франциско', 'куала-лумпур', 'куала лумпур',
+    'абу-даби', 'абу даби', 'нур-султан', 'нур султан',
+    'саудовская аравия', 'южная корея', 'северная корея',
+    'новая зеландия', 'рио-де-жанейро', 'буэнос-айрес',
+)
+_RU_GEO_MULTI_SORTED = tuple(sorted(set(_RU_GEO_MULTI), key=len, reverse=True))
+
+_RU_FIRST_NAME_LEMMAS = frozenset({
+    # Male
+    'александр', 'алексей', 'анатолий', 'андрей', 'антон', 'аркадий', 'арсений',
+    'артём', 'артем', 'артур', 'богдан', 'борис', 'вадим', 'валентин',
+    'валерий', 'василий', 'виктор', 'виталий', 'владимир', 'владислав',
+    'вячеслав', 'геннадий', 'георгий', 'герман', 'глеб', 'григорий', 'даниил',
+    'данил', 'денис', 'дмитрий', 'евгений', 'егор', 'иван', 'игорь', 'илья',
+    'кирилл', 'константин', 'лев', 'леонид', 'максим', 'марк', 'матвей',
+    'михаил', 'никита', 'николай', 'олег', 'павел', 'пётр', 'петр', 'роман',
+    'руслан', 'святослав', 'сергей', 'станислав', 'степан', 'тимофей', 'тимур',
+    'фёдор', 'федор', 'филипп', 'юрий', 'ярослав',
+    # Female
+    'александра', 'алёна', 'алена', 'алина', 'алла', 'альбина', 'анастасия',
+    'ангелина', 'анна', 'антонина', 'арина', 'валентина', 'валерия', 'варвара',
+    'вера', 'вероника', 'виктория', 'галина', 'дарья', 'диана', 'екатерина',
+    'елена', 'елизавета', 'жанна', 'зинаида', 'зоя', 'инна', 'ирина', 'карина',
+    'кира', 'ксения', 'лариса', 'лидия', 'лилия', 'любовь', 'людмила',
+    'маргарита', 'марина', 'мария', 'надежда', 'наталья', 'наталия', 'нина',
+    'оксана', 'ольга', 'полина', 'раиса', 'регина', 'светлана', 'снежана',
+    'софия', 'софья', 'таисия', 'тамара', 'татьяна', 'ульяна', 'элеонора',
+    'эльвира', 'юлия', 'яна',
+    # Kazakh / Central-Asian / CIS
+    'арман', 'ержан', 'ерлан', 'ерик', 'ердаулет', 'асет', 'айбар', 'нурлан',
+    'султан', 'даулет', 'болат', 'мейрам', 'самат', 'чингиз', 'нурсултан',
+    'амирхан', 'арсен',
+    'айгуль', 'айгерим', 'гульжан', 'зарина', 'зульфия', 'лейла', 'мадина',
+    'карлыгаш', 'нурия', 'дарина', 'бота', 'алтынай',
+})
+
+_RU_SURNAME_SUFFIX_RE = re.compile(
+    r'(?:ов|ова|ев|ева|ёв|ёва|ин|ина|ын|ына|ский|ская|цкий|цкая|ской|ской|'
+    r'чук|енко|ян|янц|дзе|адзе|швили|иани)$',
+    re.IGNORECASE | re.UNICODE,
+)
+_RU_PATRONYMIC_RE = re.compile(
+    r'(?:ович|евич|ьевич|иевич|ьич|евна|овна|ична|ьевна|иевна)$',
+    re.IGNORECASE | re.UNICODE,
+)
+_CYR_WORD_RE = re.compile(r'[а-яёА-ЯЁ]+(?:-[а-яёА-ЯЁ]+)*', re.UNICODE)
+
+_DATE_SUPPLEMENT_RE = re.compile(
+    r'\b\d{1,2}\s+(?:январ[яь]|феврал[яь]|март[ая]?|апрел[яь]|ма[йя]|'
+    r'июн[яь]|июл[яь]|август[а]?|сентябр[яь]|октябр[яь]|ноябр[яь]|декабр[яь])'
+    r'(?:\s+\d{2,4})?\b'
+    r'|\b\d{1,2}[.\-/]\d{1,2}[.\-/]\d{2,4}\b'
+    r'|\b\d{4}[.\-/]\d{1,2}[.\-/]\d{1,2}\b'
+    r'|\b(?:0?[1-9]|[12]\d|3[01])\s(?:0?[1-9]|1[0-2])\s(?:19|20)\d{2}\b',
+    re.IGNORECASE | re.UNICODE,
+)
+
+_MONEY_SUPPLEMENT_RE = re.compile(
+    r'[\$€£¥₽₴₸]\s?\d+(?:[.,\s]\d+)*'
+    r'|\d+(?:[.,\s]\d+)*\s?(?:[\$€£¥₽₴₸]|руб(?:лей|ля|ль|\.)?|р(?![а-яё])|'
+    r'коп(?:еек|ейки|\.)?|доллар(?:ов|а|)?|евро|тенге|тг(?![а-яё])|'
+    r'грн(?![а-яё])|гривен|гривн[яи]|юан(?:ей|я|ь)?|злот(?:ых|ый)?|'
+    r'zł|pln|usd|eur|gbp|cny|kzt|uah|byn)'
+    r'(?![a-zа-яё])'
+    r'|\b\d+(?:[.,]\d+)?\s?%(?!\w)',
+    re.IGNORECASE | re.UNICODE,
+)
+
+
+# --- External dictionaries (built by tools/build_dicts.py) ------------------
+# If present, they extend the hardcoded lookups above with ~10k cities from
+# GeoNames (RU/UA/BY/KZ), ~1k first names, and currency words across languages.
+# Absence is harmless — the hardcoded baseline keeps the extractor working.
+_HERE_DIR = os.path.dirname(os.path.abspath(__file__))
+if _HERE_DIR not in sys.path:
+    sys.path.insert(0, _HERE_DIR)
+
+_GEO_MULTI_RE = None
+_CURRENCY_EXTRA_RE = None
+try:
+    import dict_loader as _extract_dicts  # type: ignore
+
+    _RU_GEO_SINGLE_LEMMAS = frozenset(
+        _RU_GEO_SINGLE_LEMMAS | _extract_dicts.CITY_SINGLE_LEMMAS
+    )
+    _RU_FIRST_NAME_LEMMAS = frozenset(
+        _RU_FIRST_NAME_LEMMAS | _extract_dicts.NAME_LEMMAS
+    )
+    _GEO_MULTI_RE = _extract_dicts.CITY_MULTI_RE
+    _CURRENCY_EXTRA_RE = _extract_dicts.CURRENCY_WORDS_RE
+    print(f"[extractor] external dicts loaded: {_extract_dicts.stats()}")
+except ImportError:
+    print("[extractor] external dicts not available — using built-in baseline")
+except Exception as _exc:  # pragma: no cover - defensive
+    print(f"[extractor] dict merge skipped due to error: {_exc!r}")
+
+
 def _extract_natasha_spans(extractor, text):
     out = []
     try:
@@ -881,6 +1057,137 @@ def _extract_phones(text):
     return out
 
 
+_LEMMA_CACHE: dict[str, str] = {}
+
+
+def _cached_lemma(word: str) -> str:
+    key = word.lower()
+    cached = _LEMMA_CACHE.get(key)
+    if cached is not None:
+        return cached
+    try:
+        lemma = morph_ru.parse(key)[0].normal_form.lower()
+    except (AttributeError, TypeError, ValueError, IndexError):
+        lemma = key
+    if len(_LEMMA_CACHE) < 20000:
+        _LEMMA_CACHE[key] = lemma
+    return lemma
+
+
+def _tokenize_cyrillic(text: str):
+    """Return [(surface, lemma, start, end), …] for Cyrillic word tokens."""
+    out = []
+    for m in _CYR_WORD_RE.finditer(text):
+        surface = m.group()
+        out.append((surface, _cached_lemma(surface), m.start(), m.end()))
+    return out
+
+
+def _extract_names_lookup(text: str):
+    """Detect personal names in lowercase text: first [+patronymic] [+surname].
+
+    Requires at least a patronymic or surname context — solo first-name
+    mentions are skipped to avoid false positives on homographs like
+    "вера", "любовь", "надежда".
+    """
+    tokens = _tokenize_cyrillic(text)
+    out = []
+    i = 0
+    while i < len(tokens):
+        surface, lemma, _start, _end = tokens[i]
+        if lemma not in _RU_FIRST_NAME_LEMMAS:
+            i += 1
+            continue
+        parts = [surface]
+        j = i + 1
+        if j < len(tokens):
+            nxt_surface = tokens[j][0].lower()
+            nxt_lemma = tokens[j][1]
+            if _RU_PATRONYMIC_RE.search(nxt_lemma) or _RU_PATRONYMIC_RE.search(nxt_surface):
+                parts.append(tokens[j][0])
+                j += 1
+        if j < len(tokens):
+            nxt_lemma = tokens[j][1]
+            if _RU_SURNAME_SUFFIX_RE.search(nxt_lemma):
+                parts.append(tokens[j][0])
+                j += 1
+        if len(parts) >= 2:
+            out.append(' '.join(parts))
+        i = max(j, i + 1)
+    return out
+
+
+def _extract_geo_lookup(text: str):
+    """Find known cities/countries/regions, matching inflected forms via pymorphy.
+
+    Multi-token phrases use a single precompiled alternation regex (from the
+    external dict) when available — an order of magnitude faster than iterating
+    hundreds of phrases. Falls back to the built-in hardcoded list otherwise.
+    """
+    out: list[str] = []
+    matched_spans: list[tuple[int, int]] = []
+
+    def _overlaps(a: int, b: int) -> bool:
+        for s, e in matched_spans:
+            if a < e and b > s:
+                return True
+        return False
+
+    if _GEO_MULTI_RE is not None:
+        for m in _GEO_MULTI_RE.finditer(text):
+            start, end = m.start(), m.end()
+            if not _overlaps(start, end):
+                out.append(text[start:end])
+                matched_spans.append((start, end))
+    else:
+        lower = text.lower()
+        for phrase in _RU_GEO_MULTI_SORTED:
+            plen = len(phrase)
+            start = 0
+            while True:
+                pos = lower.find(phrase, start)
+                if pos < 0:
+                    break
+                end = pos + plen
+                left_ok = pos == 0 or not (lower[pos - 1].isalpha() or lower[pos - 1].isdigit())
+                right_ok = end >= len(lower) or not (lower[end].isalpha() or lower[end].isdigit())
+                if left_ok and right_ok and not _overlaps(pos, end):
+                    out.append(text[pos:end])
+                    matched_spans.append((pos, end))
+                    start = end
+                else:
+                    start = pos + 1
+
+    for surface, lemma, start, end in _tokenize_cyrillic(text):
+        if _overlaps(start, end):
+            continue
+        if lemma in _RU_GEO_SINGLE_LEMMAS:
+            out.append(surface)
+            matched_spans.append((start, end))
+    return out
+
+
+_MONEY_EXTRA_NUM_RE = re.compile(r'\d+(?:[.,\s]\d+)*\s*$')
+
+
+def _extract_money_with_dict(text: str):
+    """Catch '<number> <currency-word>' patterns using the loaded multilingual
+    currency dictionary (covers UAH/BYN/KZT/etc. inflections the main regex
+    may not list)."""
+    if _CURRENCY_EXTRA_RE is None:
+        return []
+    out = []
+    for m in _CURRENCY_EXTRA_RE.finditer(text):
+        word_start = m.start()
+        num_m = _MONEY_EXTRA_NUM_RE.search(text[:word_start])
+        if not num_m:
+            continue
+        span = text[num_m.start():m.end()].strip()
+        if span:
+            out.append(span)
+    return out
+
+
 @app.route('/extract', methods=['POST'])
 def extract_api():
     data = request.get_json(silent=True) or {}
@@ -891,10 +1198,19 @@ def extract_api():
     if len(text) > 500_000:
         text = text[:500_000]
 
-    names = _filter_digit_only(_extract_natasha_spans(_natasha_names, text))
+    names = _extract_natasha_spans(_natasha_names, text)
+    names += _extract_names_lookup(text)
+    names = _filter_digit_only(names)
+
     geo = _extract_natasha_spans(_natasha_addr, text)
+    geo += _extract_geo_lookup(text)
+
     dates = _extract_natasha_spans(_natasha_dates, text)
+    dates += [m.group(0) for m in _DATE_SUPPLEMENT_RE.finditer(text)]
+
     money = _extract_natasha_spans(_natasha_money, text)
+    money += [m.group(0).strip() for m in _MONEY_SUPPLEMENT_RE.finditer(text)]
+    money += _extract_money_with_dict(text)
 
     emails = _EMAIL_RE.findall(text)
     urls = [u.rstrip('.,;:!?)]}') for u in _URL_RE.findall(text)]

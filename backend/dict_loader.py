@@ -92,6 +92,51 @@ CURRENCY_WORDS_RE = _compile_alternation(
 CURRENCY_SYMBOL_SET: frozenset[str] = frozenset(_currency_symbols)
 
 
+# ----- Streets -----------------------------------------------------------
+
+_streets = _read_json("streets.json", {"single": [], "multi": [], "markers": []})
+
+STREET_NAMES_SINGLE: frozenset[str] = frozenset(
+    s.strip().lower() for s in _streets.get("single", []) if s and s.strip()
+)
+
+STREET_NAMES_MULTI_RE = _compile_alternation(
+    [p for p in _streets.get("multi", []) if p and p.strip()],
+    prefix_boundary=r"(?<![\w\-])",
+    suffix_boundary=r"(?![\w\-])",
+)
+
+# Marker regex: matches "ул.", "улица", "пр-т", "проспект", "köше", etc.
+# The optional trailing dot and flexible whitespace cover how people actually type.
+_STREET_MARKERS = sorted(
+    {m.strip().lower() for m in _streets.get("markers", []) if m and m.strip()},
+    key=len,
+    reverse=True,
+)
+
+if _STREET_MARKERS:
+    _marker_alt = "|".join(re.escape(m) for m in _STREET_MARKERS)
+    # (?<![\w\-]) — don't match mid-word ("пр" inside "прибор")
+    # marker + optional dot + whitespace + 1-3 Cyrillic capitalized words
+    # final group optionally captures house number
+    _NAME_TOKEN = r"[A-Za-zА-Яа-яЁёІіЇїЄєҐґЎўӘәҒғҚқҢңӨөҰұҮүҺһ][\w\-]*"
+    STREET_MARKER_RE = re.compile(
+        r"(?<![\w\-])(?:" + _marker_alt + r")\.?\s+"
+        r"(?:" + _NAME_TOKEN + r")(?:\s+" + _NAME_TOKEN + r"){0,3}"
+        r"(?:\s*,?\s*(?:д\.?|дом|буд\.?|үй)?\s*\d+[а-яA-Za-z]?(?:/\d+[а-яA-Za-z]?)?)?",
+        re.IGNORECASE | re.UNICODE,
+    )
+    # Short form for "just find the marker at a word boundary" — used for
+    # context detection (e.g. does this phrase contain a street marker?).
+    STREET_MARKER_ANY_RE = re.compile(
+        r"(?<![\w\-])(?:" + _marker_alt + r")\.?(?![\w\-])",
+        re.IGNORECASE | re.UNICODE,
+    )
+else:
+    STREET_MARKER_RE = None
+    STREET_MARKER_ANY_RE = None
+
+
 def stats() -> dict:
     """Small summary, printed once at startup."""
     return {
@@ -100,4 +145,7 @@ def stats() -> dict:
         "names": len(NAME_LEMMAS),
         "currency_words": len(_currency_words),
         "currency_codes": len(_currency_codes),
+        "street_single": len(STREET_NAMES_SINGLE),
+        "street_multi": len(_streets.get("multi", [])),
+        "street_markers": len(_STREET_MARKERS),
     }

@@ -1005,6 +1005,10 @@ if _HERE_DIR not in sys.path:
 
 _GEO_MULTI_RE = None
 _CURRENCY_EXTRA_RE = None
+_STREET_NAMES_SINGLE: frozenset[str] = frozenset()
+_STREET_NAMES_MULTI_RE = None
+_STREET_MARKER_RE = None
+_STREET_MARKER_ANY_RE = None
 try:
     import dict_loader as _extract_dicts  # type: ignore
 
@@ -1016,11 +1020,38 @@ try:
     )
     _GEO_MULTI_RE = _extract_dicts.CITY_MULTI_RE
     _CURRENCY_EXTRA_RE = _extract_dicts.CURRENCY_WORDS_RE
+    _STREET_NAMES_SINGLE = _extract_dicts.STREET_NAMES_SINGLE
+    _STREET_NAMES_MULTI_RE = _extract_dicts.STREET_NAMES_MULTI_RE
+    _STREET_MARKER_RE = _extract_dicts.STREET_MARKER_RE
+    _STREET_MARKER_ANY_RE = _extract_dicts.STREET_MARKER_ANY_RE
     print(f"[extractor] external dicts loaded: {_extract_dicts.stats()}")
 except ImportError:
     print("[extractor] external dicts not available — using built-in baseline")
 except Exception as _exc:  # pragma: no cover - defensive
     print(f"[extractor] dict merge skipped due to error: {_exc!r}")
+
+
+# Fallback street-marker regex when external dicts are unavailable — keeps
+# the extractor useful in that degraded mode. Covers the most common RU
+# markers; UA/BE/KK shorthand only available via the external dict.
+_STREET_MARKER_FALLBACK_RE = re.compile(
+    r"(?<![\w\-])(?:улица|ул|проспект|пр-т|пр-кт|пр|переулок|пер|"
+    r"шоссе|ш|бульвар|б-р|набережная|наб|площадь|пл|проезд|тупик|аллея|"
+    r"микрорайон|мкр|мкрн|квартал)\.?\s+"
+    r"[А-Яа-яЁё][\w\-]*(?:\s+[А-Яа-яЁё][\w\-]*){0,3}"
+    r"(?:\s*,?\s*(?:д\.?|дом)?\s*\d+[а-я]?(?:/\d+[а-я]?)?)?",
+    re.IGNORECASE | re.UNICODE,
+)
+
+# House number right after a single word — used to lift bare street names out
+# of a sentence ("Ленина 15", "на Садовой 4"). Multi-word names are covered by
+# STREET_NAMES_MULTI_RE, so the pattern deliberately captures exactly one word
+# to avoid greedy matches like "дома на Ленина 7" that mask the real street.
+_STREET_WITH_NUMBER_RE = re.compile(
+    r"(?<![\w\-])([А-Яа-яЁёІіЇїЄєҐґЎўӘәҒғҚқҢңӨөҰұҮүҺһ][\w\-]+)"
+    r"\s*,?\s*(?:д\.?|дом|буд\.?|үй)?\s*(\d+[а-яA-Za-z]?(?:/\d+[а-яA-Za-z]?)?)(?!\d)",
+    re.IGNORECASE | re.UNICODE,
+)
 
 
 def _extract_natasha_spans(extractor, text):
@@ -1180,6 +1211,80 @@ def _extract_geo_lookup(text: str):
     return out
 
 
+_STREET_LEMMA_SET: frozenset[str] | None = None
+
+
+def _get_street_lemma_set() -> frozenset[str]:
+    """Lazily build a lemma set from STREET_NAMES_SINGLE so inflected forms
+    ("на садовой 3" → lemma "садовый") still match the dictionary."""
+    global _STREET_LEMMA_SET
+    if _STREET_LEMMA_SET is None:
+        if not _STREET_NAMES_SINGLE:
+            _STREET_LEMMA_SET = frozenset()
+        else:
+            _STREET_LEMMA_SET = frozenset(_cached_lemma(s) for s in _STREET_NAMES_SINGLE)
+    return _STREET_LEMMA_SET
+
+
+def _extract_streets(text: str):
+    """Find streets using three passes:
+
+    1) Marker-based regex ("ул. Ленина", "просп. Мира 15") — high precision;
+       emits the full marker+name[+house number] span.
+    2) Multi-token dictionary lookup ("богдана хмельницкого", "толе би") —
+       requires a known street phrase, independent of markers.
+    3) Single-word + adjacent house number ("Ленина 15", "на садовой 4"):
+       matches any Cyrillic word followed by a house number and accepts it
+       when either the surface form OR its pymorphy lemma is a known street.
+
+    All three passes contribute to one deduplicated list. Spans that overlap
+    an earlier match are skipped to avoid double-counting fragments.
+    """
+    out: list[str] = []
+    spans: list[tuple[int, int]] = []
+
+    def _overlaps(a: int, b: int) -> bool:
+        for s, e in spans:
+            if a < e and b > s:
+                return True
+        return False
+
+    marker_re = _STREET_MARKER_RE or _STREET_MARKER_FALLBACK_RE
+    for m in marker_re.finditer(text):
+        s, e = m.start(), m.end()
+        if _overlaps(s, e):
+            continue
+        raw = text[s:e].strip(' \t\r\n.,;:!?"\'()[]{}«»')
+        if raw:
+            out.append(raw)
+            spans.append((s, e))
+
+    if _STREET_NAMES_MULTI_RE is not None:
+        for m in _STREET_NAMES_MULTI_RE.finditer(text):
+            s, e = m.start(), m.end()
+            if _overlaps(s, e):
+                continue
+            raw = text[s:e].strip(' \t\r\n.,;:!?"\'()[]{}«»')
+            if raw:
+                out.append(raw)
+                spans.append((s, e))
+
+    if _STREET_NAMES_SINGLE:
+        lemma_set = _get_street_lemma_set()
+        for m in _STREET_WITH_NUMBER_RE.finditer(text):
+            s, e = m.start(), m.end()
+            if _overlaps(s, e):
+                continue
+            word = m.group(1).strip().lower()
+            if word in _STREET_NAMES_SINGLE or _cached_lemma(word) in lemma_set:
+                raw = text[s:e].strip(' \t\r\n.,;:!?"\'()[]{}«»')
+                if raw:
+                    out.append(raw)
+                    spans.append((s, e))
+
+    return out, spans
+
+
 _MONEY_EXTRA_NUM_RE = re.compile(r'\d+(?:[.,\s]\d+)*\s*$')
 
 
@@ -1211,12 +1316,27 @@ def extract_api():
     if len(text) > 500_000:
         text = text[:500_000]
 
+    streets, street_spans = _extract_streets(text)
+
+    def _span_collides_with_streets(raw: str) -> bool:
+        if not raw or not street_spans:
+            return False
+        # Cheap check: if the phrase appears inside any street span's text, skip.
+        # Streets already carry the full phrase ("ул. Ленина"), so emitting
+        # "Ленина" again in geo/names would just duplicate the signal.
+        for s, e in street_spans:
+            if raw in text[s:e]:
+                return True
+        return False
+
     names = _extract_natasha_spans(_natasha_names, text)
     names += _extract_names_lookup(text)
     names = _filter_digit_only(names)
+    names = [n for n in names if not _span_collides_with_streets(n)]
 
     geo = _extract_natasha_spans(_natasha_addr, text)
     geo += _extract_geo_lookup(text)
+    geo = [g for g in geo if not _span_collides_with_streets(g)]
 
     dates = _extract_natasha_spans(_natasha_dates, text)
     dates += [m.group(0) for m in _DATE_SUPPLEMENT_RE.finditer(text)]
@@ -1234,6 +1354,7 @@ def extract_api():
     groups = [
         {'id': 'names', 'label': 'Имена', 'items': _dedup_preserve(names)},
         {'id': 'geo', 'label': 'Гео и адреса', 'items': _dedup_preserve(geo)},
+        {'id': 'streets', 'label': 'Улицы', 'items': _dedup_preserve(streets)},
         {'id': 'dates', 'label': 'Даты', 'items': _dedup_preserve(dates)},
         {'id': 'money', 'label': 'Цены и суммы', 'items': _dedup_preserve(money)},
         {'id': 'emails', 'label': 'Email', 'items': _dedup_preserve(emails)},

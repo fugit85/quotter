@@ -973,24 +973,27 @@ _AMBIGUOUS_SOLO_NAMES = frozenset({
     'соня', 'соломон', 'кира',
 })
 
+# NB: whitespace classes use [ \t] rather than \s throughout, so a match
+# cannot slip across a newline and glue digits from the next keyword-list
+# line into the current one (same reason as _PHONE_RE above).
 _DATE_SUPPLEMENT_RE = re.compile(
-    r'\b\d{1,2}\s+(?:январ[яь]|феврал[яь]|март[ая]?|апрел[яь]|ма[йя]|'
+    r'\b\d{1,2}[ \t]+(?:январ[яь]|феврал[яь]|март[ая]?|апрел[яь]|ма[йя]|'
     r'июн[яь]|июл[яь]|август[а]?|сентябр[яь]|октябр[яь]|ноябр[яь]|декабр[яь])'
-    r'(?:\s+\d{2,4})?\b'
+    r'(?:[ \t]+\d{2,4})?\b'
     r'|\b\d{1,2}[.\-/]\d{1,2}[.\-/]\d{2,4}\b'
     r'|\b\d{4}[.\-/]\d{1,2}[.\-/]\d{1,2}\b'
-    r'|\b(?:0?[1-9]|[12]\d|3[01])\s(?:0?[1-9]|1[0-2])\s(?:19|20)\d{2}\b',
+    r'|\b(?:0?[1-9]|[12]\d|3[01])[ \t](?:0?[1-9]|1[0-2])[ \t](?:19|20)\d{2}\b',
     re.IGNORECASE | re.UNICODE,
 )
 
 _MONEY_SUPPLEMENT_RE = re.compile(
-    r'[\$€£¥₽₴₸]\s?\d+(?:[.,\s]\d+)*'
-    r'|\d+(?:[.,\s]\d+)*\s?(?:[\$€£¥₽₴₸]|руб(?:лей|ля|ль|\.)?|р(?![а-яё])|'
+    r'[\$€£¥₽₴₸][ \t]?\d+(?:[.,\t ]\d+)*'
+    r'|\d+(?:[.,\t ]\d+)*[ \t]?(?:[\$€£¥₽₴₸]|руб(?:лей|ля|ль|\.)?|р(?![а-яё])|'
     r'коп(?:еек|ейки|\.)?|доллар(?:ов|а|)?|евро|тенге|тг(?![а-яё])|'
     r'грн(?![а-яё])|гривен|гривн[яи]|юан(?:ей|я|ь)?|злот(?:ых|ый)?|'
     r'zł|pln|usd|eur|gbp|cny|kzt|uah|byn)'
     r'(?![a-zа-яё])'
-    r'|\b\d+(?:[.,]\d+)?\s?%(?!\w)',
+    r'|\b\d+(?:[.,]\d+)?[ \t]?%(?!\w)',
     re.IGNORECASE | re.UNICODE,
 )
 
@@ -1034,12 +1037,15 @@ except Exception as _exc:  # pragma: no cover - defensive
 # Fallback street-marker regex when external dicts are unavailable — keeps
 # the extractor useful in that degraded mode. Covers the most common RU
 # markers; UA/BE/KK shorthand only available via the external dict.
+# NB: inter-token separators are [ \t]+ rather than \s+ so the match cannot
+# jump across a newline and glue the next keyword-list line into one street
+# ("улица жандосова\nул береке" → two streets, not one).
 _STREET_MARKER_FALLBACK_RE = re.compile(
     r"(?<![\w\-])(?:улица|ул|проспект|пр-т|пр-кт|пр|переулок|пер|"
     r"шоссе|ш|бульвар|б-р|набережная|наб|площадь|пл|проезд|тупик|аллея|"
-    r"микрорайон|мкр|мкрн|квартал)\.?\s+"
-    r"[А-Яа-яЁё][\w\-]*(?:\s+[А-Яа-яЁё][\w\-]*){0,3}"
-    r"(?:\s*,?\s*(?:д\.?|дом)?\s*\d+[а-я]?(?:/\d+[а-я]?)?)?",
+    r"микрорайон|мкр|мкрн|квартал)\.?[ \t]+"
+    r"[А-Яа-яЁё][\w\-]*(?:[ \t]+[А-Яа-яЁё][\w\-]*){0,3}"
+    r"(?:[ \t]*,?[ \t]*(?:д\.?|дом)?[ \t]*\d+[а-я]?(?:/\d+[а-я]?)?)?",
     re.IGNORECASE | re.UNICODE,
 )
 
@@ -1047,9 +1053,11 @@ _STREET_MARKER_FALLBACK_RE = re.compile(
 # of a sentence ("Ленина 15", "на Садовой 4"). Multi-word names are covered by
 # STREET_NAMES_MULTI_RE, so the pattern deliberately captures exactly one word
 # to avoid greedy matches like "дома на Ленина 7" that mask the real street.
+# [ \t]* (not \s*) keeps the street name and its house number on the same
+# line — otherwise "садовая\n15 ремонт" would be captured as one street.
 _STREET_WITH_NUMBER_RE = re.compile(
     r"(?<![\w\-])([А-Яа-яЁёІіЇїЄєҐґЎўӘәҒғҚқҢңӨөҰұҮүҺһ][\w\-]+)"
-    r"\s*,?\s*(?:д\.?|дом|буд\.?|үй)?\s*(\d+[а-яA-Za-z]?(?:/\d+[а-яA-Za-z]?)?)(?!\d)",
+    r"[ \t]*,?[ \t]*(?:д\.?|дом|буд\.?|үй)?[ \t]*(\d+[а-яA-Za-z]?(?:/\d+[а-яA-Za-z]?)?)(?!\d)",
     re.IGNORECASE | re.UNICODE,
 )
 
@@ -1066,8 +1074,12 @@ def _extract_natasha_spans(extractor, text):
         except (AttributeError, TypeError, ValueError):
             continue
         raw = text[start:stop].strip(' \t\r\n.,;:!?"\'()[]{}«»')
-        if raw:
-            out.append(raw)
+        # Drop matches that span a newline: in a PPC keyword list every
+        # line is an independent phrase, so "москва\nпитер" must not come
+        # back as one geo entity.
+        if not raw or '\n' in raw:
+            continue
+        out.append(raw)
     return out
 
 
@@ -1133,26 +1145,38 @@ def _extract_names_lookup(text: str):
     Solo first names are emitted unless they collide with a common Russian
     noun (listed in _AMBIGUOUS_SOLO_NAMES) — those still require a
     patronymic or surname for context.
+
+    Tokens are chained only within the same line: in PPC keyword lists a
+    newline separates independent phrases, so "иван\nпетров" must not be
+    emitted as a single "иван петров" name.
     """
     tokens = _tokenize_cyrillic(text)
     out = []
     i = 0
     while i < len(tokens):
-        surface, lemma, _start, _end = tokens[i]
+        surface, lemma, _start, end = tokens[i]
         if lemma not in _RU_FIRST_NAME_LEMMAS:
             i += 1
             continue
         parts = [surface]
+        prev_end = end
         j = i + 1
         if j < len(tokens):
             nxt_surface = tokens[j][0].lower()
             nxt_lemma = tokens[j][1]
-            if _RU_PATRONYMIC_RE.search(nxt_lemma) or _RU_PATRONYMIC_RE.search(nxt_surface):
+            nxt_start = tokens[j][2]
+            same_line = '\n' not in text[prev_end:nxt_start]
+            if same_line and (
+                _RU_PATRONYMIC_RE.search(nxt_lemma) or _RU_PATRONYMIC_RE.search(nxt_surface)
+            ):
                 parts.append(tokens[j][0])
+                prev_end = tokens[j][3]
                 j += 1
         if j < len(tokens):
             nxt_lemma = tokens[j][1]
-            if _RU_SURNAME_SUFFIX_RE.search(nxt_lemma):
+            nxt_start = tokens[j][2]
+            same_line = '\n' not in text[prev_end:nxt_start]
+            if same_line and _RU_SURNAME_SUFFIX_RE.search(nxt_lemma):
                 parts.append(tokens[j][0])
                 j += 1
         if len(parts) >= 2 or lemma not in _AMBIGUOUS_SOLO_NAMES:
@@ -1285,7 +1309,9 @@ def _extract_streets(text: str):
     return out, spans
 
 
-_MONEY_EXTRA_NUM_RE = re.compile(r'\d+(?:[.,\s]\d+)*\s*$')
+# [ \t] (not \s) keeps the thousands-separator lookback from crossing into
+# the previous keyword-list line.
+_MONEY_EXTRA_NUM_RE = re.compile(r'\d+(?:[.,\t ]\d+)*[ \t]*$')
 
 
 def _extract_money_with_dict(text: str):
@@ -1334,9 +1360,17 @@ def extract_api():
     names = _filter_digit_only(names)
     names = [n for n in names if not _span_collides_with_streets(n)]
 
-    geo = _extract_natasha_spans(_natasha_addr, text)
-    geo += _extract_geo_lookup(text)
+    # "Города и страны" — single-token (moscow/kyiv/...) and multi-token
+    # ("нижний новгород") lookups over the loaded city/country dictionary.
+    # Natasha's AddrExtractor captures full street addresses ("ул. Ленина, 5",
+    # "г. Москва, проспект Мира 10"), so it's routed into the streets group
+    # below — geo stays clean as "just cities and countries".
+    geo = _extract_geo_lookup(text)
     geo = [g for g in geo if not _span_collides_with_streets(g)]
+
+    natasha_addr = _extract_natasha_spans(_natasha_addr, text)
+    natasha_addr = [a for a in natasha_addr if not _span_collides_with_streets(a)]
+    streets = streets + natasha_addr
 
     dates = _extract_natasha_spans(_natasha_dates, text)
     dates += [m.group(0) for m in _DATE_SUPPLEMENT_RE.finditer(text)]
@@ -1353,8 +1387,8 @@ def extract_api():
 
     groups = [
         {'id': 'names', 'label': 'Имена', 'items': _dedup_preserve(names)},
-        {'id': 'geo', 'label': 'Гео и адреса', 'items': _dedup_preserve(geo)},
-        {'id': 'streets', 'label': 'Улицы', 'items': _dedup_preserve(streets)},
+        {'id': 'geo', 'label': 'Города и страны', 'items': _dedup_preserve(geo)},
+        {'id': 'streets', 'label': 'Улицы и адреса', 'items': _dedup_preserve(streets)},
         {'id': 'dates', 'label': 'Даты', 'items': _dedup_preserve(dates)},
         {'id': 'money', 'label': 'Цены и суммы', 'items': _dedup_preserve(money)},
         {'id': 'emails', 'label': 'Email', 'items': _dedup_preserve(emails)},

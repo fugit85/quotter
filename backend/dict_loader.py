@@ -119,11 +119,14 @@ if _STREET_MARKERS:
     # (?<![\w\-]) — don't match mid-word ("пр" inside "прибор")
     # marker + optional dot + whitespace + 1-3 Cyrillic capitalized words
     # final group optionally captures house number
+    # NB: inter-token separators are [ \t]+ rather than \s+ so the match
+    # cannot jump across a newline and glue the next keyword-list line
+    # ("улица жандосова\nул береке" → two separate streets, not one).
     _NAME_TOKEN = r"[A-Za-zА-Яа-яЁёІіЇїЄєҐґЎўӘәҒғҚқҢңӨөҰұҮүҺһ][\w\-]*"
     STREET_MARKER_RE = re.compile(
-        r"(?<![\w\-])(?:" + _marker_alt + r")\.?\s+"
-        r"(?:" + _NAME_TOKEN + r")(?:\s+" + _NAME_TOKEN + r"){0,3}"
-        r"(?:\s*,?\s*(?:д\.?|дом|буд\.?|үй)?\s*\d+[а-яA-Za-z]?(?:/\d+[а-яA-Za-z]?)?)?",
+        r"(?<![\w\-])(?:" + _marker_alt + r")\.?[ \t]+"
+        r"(?:" + _NAME_TOKEN + r")(?:[ \t]+" + _NAME_TOKEN + r"){0,3}"
+        r"(?:[ \t]*,?[ \t]*(?:д\.?|дом|буд\.?|үй)?[ \t]*\d+[а-яA-Za-z]?(?:/\d+[а-яA-Za-z]?)?)?",
         re.IGNORECASE | re.UNICODE,
     )
     # Short form for "just find the marker at a word boundary" — used for

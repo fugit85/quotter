@@ -31,6 +31,7 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parent.parent
 TOOLS_DIR = ROOT / "tools"
 NAMES_DIR = TOOLS_DIR / "names"
+STREETS_DIR = TOOLS_DIR / "streets"
 CACHE_DIR = TOOLS_DIR / ".cache"
 DATA_DIR = ROOT / "backend" / "data"
 
@@ -296,6 +297,111 @@ def build_names() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Streets
+# ---------------------------------------------------------------------------
+
+# Street-type markers: people write these in many short/long forms.
+# Stored here so the runtime regex stays consistent with dictionary builds.
+STREET_MARKERS = [
+    # RU
+    "улица", "ул",
+    "проспект", "пр-т", "пр-кт", "пр",
+    "переулок", "пер",
+    "шоссе", "ш",
+    "бульвар", "б-р", "бул",
+    "набережная", "наб",
+    "площадь", "пл",
+    "проезд", "тупик", "аллея",
+    "микрорайон", "мкр", "мкрн",
+    "квартал", "кв-л",
+    # UK
+    "вулиця", "вул",
+    "проспект",
+    "провулок", "пров",
+    "бульвар",
+    "площа", "пл",
+    "узвіз",
+    "набережна",
+    "шосе",
+    # BE
+    "вуліца", "вул",
+    "праспект", "пр-т",
+    "завулак", "зав",
+    "плошча", "пл",
+    "набярэжная",
+    "шаша",
+    # KK
+    "көше", "коше",
+    "даңғыл", "дангыл",
+    "алаң", "алан",
+    "тұйық",
+    "шағын ауданы", "ықшам ауданы",
+]
+
+
+def build_streets() -> None:
+    buckets: dict[str, list[str]] = {}
+    all_names: set[str] = set()
+    total = 0
+    for lang in ("ru", "uk", "be", "kk"):
+        src = STREETS_DIR / f"{lang}.txt"
+        if not src.exists():
+            log(f"  WARNING: {src} missing — skipping {lang}")
+            buckets[lang] = []
+            continue
+        names: set[str] = set()
+        for line in src.read_text(encoding="utf-8").splitlines():
+            s = line.strip()
+            if not s or s.startswith("#"):
+                continue
+            names.add(s.lower())
+        buckets[lang] = sorted(names)
+        all_names |= names
+        total += len(names)
+        log(f"  {lang}: {len(names)} streets from {src.name}")
+
+    # --- Safety net: don't let a street entry overshadow a city ------------
+    # If the same string exists in cities.json, the street lookup must not
+    # swallow it — otherwise "Нур-Султан" becomes a street instead of a city.
+    # We drop multi-token collisions aggressively (safer) and keep single-token
+    # ones (they only fire with a house number anyway).
+    cities_path = DATA_DIR / "cities.json"
+    if cities_path.exists():
+        try:
+            with cities_path.open("r", encoding="utf-8") as f:
+                _cities = json.load(f)
+            city_multi = {s for s in _cities.get("multi", []) if s}
+            pruned = all_names & city_multi
+            if pruned:
+                log(f"  pruning {len(pruned)} street entries that clash with cities.json")
+                all_names -= pruned
+        except (OSError, json.JSONDecodeError) as exc:
+            log(f"  WARNING: could not inspect cities.json for collisions: {exc}")
+
+    single = sorted({n for n in all_names if " " not in n and "-" not in n})
+    multi = sorted(
+        {n for n in all_names if (" " in n or "-" in n)},
+        key=len,
+        reverse=True,
+    )
+
+    out = {
+        "by_lang": buckets,
+        "single": single,
+        "multi": multi,
+        "markers": sorted(set(m.lower() for m in STREET_MARKERS), key=len, reverse=True),
+    }
+    path = DATA_DIR / "streets.json"
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
+    kb = path.stat().st_size / 1024
+    log(
+        f"✓ streets.json — {len(single)} single + {len(multi)} multi, "
+        f"{len(out['markers'])} markers, {total} total per-lang ({kb:.0f} KB)"
+    )
+
+
+# ---------------------------------------------------------------------------
 # Currencies
 # ---------------------------------------------------------------------------
 
@@ -410,6 +516,7 @@ def main() -> int:
     try:
         build_cities()
         build_names()
+        build_streets()
         build_currencies()
     except Exception as exc:
         log(f"FAILED: {exc!r}")

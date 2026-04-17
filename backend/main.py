@@ -829,8 +829,11 @@ _URL_RE = re.compile(
     r'(?:/[^\s<>"\'`]*)?)',
     re.IGNORECASE,
 )
+# NB: separators are [ \t\-\.] — not \s. Using \s would let the regex jump
+# across newlines and glue a trailing digit from the next line to a valid
+# phone (e.g. "87474776246\n8" being captured as one match).
 _PHONE_RE = re.compile(
-    r'(?:\+?\d{1,3}[\s\-\.]?)?(?:\(\d{2,5}\)|\d{2,5})[\s\-\.]?\d{2,4}[\s\-\.]?\d{2,4}(?:[\s\-\.]?\d{1,4})?'
+    r'(?:\+?\d{1,3}[ \t\-\.]?)?(?:\(\d{2,5}\)|\d{2,5})[ \t\-\.]?\d{2,4}[ \t\-\.]?\d{2,4}(?:[ \t\-\.]?\d{1,4})?'
 )
 _HASHTAG_RE = re.compile(r'#[\wа-яёА-ЯЁ_-]+', re.UNICODE)
 _NUMBER_RE = re.compile(r'\b\d+(?:[.,]\d+)?\b')
@@ -961,6 +964,15 @@ _RU_PATRONYMIC_RE = re.compile(
 )
 _CYR_WORD_RE = re.compile(r'[а-яёА-ЯЁ]+(?:-[а-яёА-ЯЁ]+)*', re.UNICODE)
 
+# Names that collide with common Russian nouns — only emit them if followed
+# by a patronymic or surname, so "купить веру" (buy faith) and similar PPC
+# queries don't produce a false name match.
+_AMBIGUOUS_SOLO_NAMES = frozenset({
+    'вера', 'любовь', 'надежда', 'слава', 'роман', 'мир', 'злата',
+    'рада', 'лев', 'ева', 'ян', 'аврора', 'серафим', 'марк',
+    'соня', 'соломон', 'кира',
+})
+
 _DATE_SUPPLEMENT_RE = re.compile(
     r'\b\d{1,2}\s+(?:январ[яь]|феврал[яь]|март[ая]?|апрел[яь]|ма[йя]|'
     r'июн[яь]|июл[яь]|август[а]?|сентябр[яь]|октябр[яь]|ноябр[яь]|декабр[яь])'
@@ -1048,12 +1060,13 @@ def _filter_digit_only(items):
 
 
 def _extract_phones(text):
-    raw = _PHONE_RE.findall(text)
     out = []
-    for m in raw:
+    for m in _PHONE_RE.findall(text):
         digits = re.sub(r'\D', '', m)
-        if len(digits) >= 7:
-            out.append(m.strip())
+        # ITU caps international numbers at 15 digits. Below 7 is noise.
+        if not (7 <= len(digits) <= 15):
+            continue
+        out.append(re.sub(r'[ \t]+', ' ', m).strip())
     return out
 
 
@@ -1086,9 +1099,9 @@ def _tokenize_cyrillic(text: str):
 def _extract_names_lookup(text: str):
     """Detect personal names in lowercase text: first [+patronymic] [+surname].
 
-    Requires at least a patronymic or surname context — solo first-name
-    mentions are skipped to avoid false positives on homographs like
-    "вера", "любовь", "надежда".
+    Solo first names are emitted unless they collide with a common Russian
+    noun (listed in _AMBIGUOUS_SOLO_NAMES) — those still require a
+    patronymic or surname for context.
     """
     tokens = _tokenize_cyrillic(text)
     out = []
@@ -1111,7 +1124,7 @@ def _extract_names_lookup(text: str):
             if _RU_SURNAME_SUFFIX_RE.search(nxt_lemma):
                 parts.append(tokens[j][0])
                 j += 1
-        if len(parts) >= 2:
+        if len(parts) >= 2 or lemma not in _AMBIGUOUS_SOLO_NAMES:
             out.append(' '.join(parts))
         i = max(j, i + 1)
     return out

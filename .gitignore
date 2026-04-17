@@ -1,0 +1,19 @@
+# Local dictionary-builder cache (GeoNames dumps, ~20 MB).
+# Re-downloads on demand, no need to check in.
+tools/.cache/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Secrets / local state
+*.env
+.env.*

@@ -217,30 +217,233 @@ function decodePlannerFileBuffer(raw) {
     return String(raw);
 }
 
-function extractKeywordsFromPlannerTsv(text) {
-    var lines = text.split('\n');
+var KEYWORD_COLUMN_ALIASES = [
+    'keyword', 'keywords',
+    'search term', 'search terms', 'search query', 'search queries',
+    'поисковый запрос', 'поисковые запросы',
+    'ключевое слово', 'ключевые слова',
+    'пошуковий запит', 'пошукові запити',
+    'ключове слово', 'ключові слова',
+    'słowo kluczowe', 'słowa kluczowe',
+    'wyszukiwane hasło', 'hasła wyszukiwania', 'zapytanie', 'zapytania',
+    'ключавое слова', 'ключавыя словы', 'пошукавы запыт',
+    'кілт сөз', 'кілт сөздер', 'іздеу сұранысы', 'іздеу сұраныстары'
+];
+
+var TOTAL_ROW_RE = /^(итого|итог|total|totals|загалом|разом|всього|сума|suma|sumie|łącznie|yhteensä|барлығы|жиынтығы)\s*[\(:]/i;
+
+function parseCsvRow(line, delimiter) {
+    var out = [];
+    var cur = '';
+    var inQuote = false;
+    for (var i = 0; i < line.length; i++) {
+        var ch = line.charAt(i);
+        if (inQuote) {
+            if (ch === '"') {
+                if (i + 1 < line.length && line.charAt(i + 1) === '"') {
+                    cur += '"';
+                    i++;
+                } else {
+                    inQuote = false;
+                }
+            } else {
+                cur += ch;
+            }
+        } else if (ch === '"') {
+            inQuote = true;
+        } else if (ch === delimiter) {
+            out.push(cur);
+            cur = '';
+        } else {
+            cur += ch;
+        }
+    }
+    out.push(cur);
+    return out;
+}
+
+function detectPlannerDelimiter(lines) {
+    var candidates = ['\t', ',', ';'];
+    var best = null;
+    var bestScore = 0;
+    var sampleLimit = 0;
+    for (var c = 0; c < candidates.length; c++) {
+        var d = candidates[c];
+        var maxInLine = 0;
+        sampleLimit = 0;
+        for (var i = 0; i < lines.length && sampleLimit < 30; i++) {
+            var line = lines[i];
+            if (!line.trim()) {
+                continue;
+            }
+            sampleLimit++;
+            var count = 0;
+            var inQuote = false;
+            for (var j = 0; j < line.length; j++) {
+                var ch = line.charAt(j);
+                if (ch === '"') {
+                    inQuote = !inQuote;
+                } else if (!inQuote && ch === d) {
+                    count++;
+                }
+            }
+            if (count > maxInLine) {
+                maxInLine = count;
+            }
+        }
+        if (maxInLine > bestScore) {
+            bestScore = maxInLine;
+            best = d;
+        }
+    }
+    return { delimiter: best, score: bestScore };
+}
+
+function findKeywordColumnIndex(cells) {
+    for (var i = 0; i < cells.length; i++) {
+        var v = String(cells[i] || '').trim().toLowerCase().replace(/^\uFEFF/, '');
+        if (KEYWORD_COLUMN_ALIASES.indexOf(v) !== -1) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function collectPlainKeywordList(lines) {
+    var out = [];
+    for (var i = 0; i < lines.length; i++) {
+        var raw = String(lines[i] || '').trim();
+        if (!raw) {
+            continue;
+        }
+        if (TOTAL_ROW_RE.test(raw)) {
+            continue;
+        }
+        out.push(raw);
+    }
+    return out;
+}
+
+function extractKeywordsFromRows(rows) {
     var keywords = [];
     var headerFound = false;
-    var kwIndex = 0;
+    var kwIndex = -1;
 
-    for (var i = 0; i < lines.length; i++) {
-        var cols = lines[i].split('\t');
+    for (var i = 0; i < rows.length; i++) {
+        var cells = rows[i];
+        if (!cells || !cells.length) {
+            continue;
+        }
+        var anyCell = false;
+        for (var a = 0; a < cells.length; a++) {
+            if (String(cells[a] || '').trim()) {
+                anyCell = true;
+                break;
+            }
+        }
+        if (!anyCell) {
+            continue;
+        }
         if (!headerFound) {
-            for (var c = 0; c < cols.length; c++) {
-                if (cols[c].trim().toLowerCase() === 'keyword') {
-                    kwIndex = c;
-                    headerFound = true;
-                    break;
-                }
+            var idx = findKeywordColumnIndex(cells);
+            if (idx !== -1) {
+                kwIndex = idx;
+                headerFound = true;
             }
             continue;
         }
-        var kw = cols[kwIndex] ? cols[kwIndex].trim() : '';
-        if (kw) {
-            keywords.push(kw);
+        var kw = String(cells[kwIndex] || '').trim();
+        if (!kw) {
+            continue;
         }
+        if (TOTAL_ROW_RE.test(kw)) {
+            continue;
+        }
+        keywords.push(kw);
     }
-    return keywords;
+
+    if (headerFound) {
+        return keywords;
+    }
+
+    var fallback = [];
+    for (var j = 0; j < rows.length; j++) {
+        var row = rows[j];
+        if (!row || !row.length) {
+            continue;
+        }
+        var first = String(row[0] || '').trim();
+        if (!first) {
+            continue;
+        }
+        if (TOTAL_ROW_RE.test(first)) {
+            continue;
+        }
+        fallback.push(first);
+    }
+    return fallback;
+}
+
+function extractKeywordsFromPlannerTsv(text) {
+    var clean = (text || '').replace(/^\uFEFF/, '');
+    var lines = clean.split(/\r?\n/);
+    var detection = detectPlannerDelimiter(lines);
+
+    if (!detection.delimiter || detection.score === 0) {
+        return collectPlainKeywordList(lines);
+    }
+
+    var rows = [];
+    for (var i = 0; i < lines.length; i++) {
+        if (!lines[i].trim()) {
+            continue;
+        }
+        rows.push(parseCsvRow(lines[i], detection.delimiter));
+    }
+    return extractKeywordsFromRows(rows);
+}
+
+var _xlsxLibPromise = null;
+function loadXlsxLib() {
+    if (typeof window !== 'undefined' && window.XLSX) {
+        return Promise.resolve(window.XLSX);
+    }
+    if (_xlsxLibPromise) {
+        return _xlsxLibPromise;
+    }
+    _xlsxLibPromise = new Promise(function (resolve, reject) {
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+        script.async = true;
+        script.onload = function () {
+            if (window.XLSX) {
+                resolve(window.XLSX);
+            } else {
+                reject(new Error('XLSX library failed to initialise'));
+            }
+        };
+        script.onerror = function () {
+            _xlsxLibPromise = null;
+            reject(new Error('XLSX library failed to load'));
+        };
+        document.head.appendChild(script);
+    });
+    return _xlsxLibPromise;
+}
+
+function extractKeywordsFromXlsxBuffer(arrayBuffer) {
+    return loadXlsxLib().then(function (XLSX) {
+        var wb = XLSX.read(arrayBuffer, { type: 'array' });
+        if (!wb || !wb.SheetNames || !wb.SheetNames.length) {
+            return [];
+        }
+        var sheet = wb.Sheets[wb.SheetNames[0]];
+        if (!sheet) {
+            return [];
+        }
+        var rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
+        return extractKeywordsFromRows(rows);
+    });
 }
 
 function escapeCsvField(line) {
@@ -1188,20 +1391,18 @@ function wireExtractor() {
         groupsRoot.innerHTML = '';
         state.groups = [];
 
-        if (!apiGroups || !apiGroups.length) {
+        var hasGroups = !!(apiGroups && apiGroups.length);
+
+        if (!hasGroups) {
             if (emptyEl) {
                 emptyEl.style.display = 'block';
                 emptyEl.textContent = 'Ничего не нашли. Попробуйте другой текст или уточните формулировку.';
             }
-            if (masterWrap) masterWrap.style.display = 'none';
-            if (actionsRoot) actionsRoot.style.display = 'none';
             updateUiState();
             return;
         }
 
         if (emptyEl) emptyEl.style.display = 'none';
-        if (masterWrap) masterWrap.style.display = 'flex';
-        if (actionsRoot) actionsRoot.style.display = 'flex';
 
         apiGroups.forEach(function (g) {
             if (!g.items || !g.items.length) {
@@ -1291,10 +1492,9 @@ function wireExtractor() {
                 emptyEl.style.display = 'block';
                 emptyEl.textContent = 'Введите текст, чтобы извлечь данные.';
             }
-            if (masterWrap) masterWrap.style.display = 'none';
-            if (actionsRoot) actionsRoot.style.display = 'none';
             groupsRoot.innerHTML = '';
             state.groups = [];
+            updateUiState();
             return;
         }
 
@@ -1397,10 +1597,7 @@ function wireExtractor() {
             cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
             if (cleanResult) {
                 setTextareaValue(cleanResult, cleaned);
-            }
-            if (cleanSection) {
-                cleanSection.classList.add('is-visible');
-                cleanSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                cleanResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             if (counterEl) {
                 var n = cleaned ? cleaned.split('\n').filter(function (l) { return l.trim(); }).length : 0;
@@ -1456,9 +1653,6 @@ function wireExtractor() {
     if (clearCleanBtn && cleanResult) {
         clearCleanBtn.addEventListener('click', function () {
             setTextareaValue(cleanResult, '');
-            if (cleanSection) {
-                cleanSection.classList.remove('is-visible');
-            }
             if (counterEl) {
                 counterEl.textContent = L.lineLabel(0);
             }
@@ -1472,11 +1666,12 @@ function wireExtractor() {
             input.dispatchEvent(new Event('input', { bubbles: true }));
             groupsRoot.innerHTML = '';
             state.groups = [];
-            if (emptyEl) emptyEl.style.display = 'none';
-            if (masterWrap) masterWrap.style.display = 'none';
-            if (actionsRoot) actionsRoot.style.display = 'none';
-            if (cleanSection) cleanSection.classList.remove('is-visible');
+            if (emptyEl) {
+                emptyEl.style.display = 'block';
+                emptyEl.textContent = 'Нажмите «Извлечь», чтобы увидеть списки имён, гео, дат и других сущностей.';
+            }
             if (cleanResult) setTextareaValue(cleanResult, '');
+            if (counterEl) counterEl.textContent = L.lineLabel(0);
             updateUiState();
         });
     }
@@ -1548,16 +1743,45 @@ function wireCsvUpload(inputId, alertFn) {
         if (!file) {
             return;
         }
-        var reader = new FileReader();
-        reader.onload = function (ev) {
-            var text = decodePlannerFileBuffer(ev.target.result);
-            var keywords = extractKeywordsFromPlannerTsv(text);
-            var inputTarget = document.getElementById('input');
-            if (keywords.length > 0 && inputTarget) {
+        var inputTarget = document.getElementById('input');
+        var fileName = String(file.name || '').toLowerCase();
+        var isExcel = /\.(xlsx|xlsm|xlsb|xls|ods)$/i.test(fileName);
+
+        var applyKeywords = function (keywords) {
+            if (keywords && keywords.length > 0 && inputTarget) {
                 inputTarget.value = keywords.join('\n');
+                try {
+                    inputTarget.dispatchEvent(new Event('input', { bubbles: true }));
+                } catch (err) {
+                    var evt = document.createEvent('Event');
+                    evt.initEvent('input', true, true);
+                    inputTarget.dispatchEvent(evt);
+                }
             } else {
                 alertFn();
             }
+            csvUpload.value = '';
+        };
+
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+            if (isExcel) {
+                extractKeywordsFromXlsxBuffer(ev.target.result)
+                    .then(applyKeywords)
+                    .catch(function (err) {
+                        if (window.console && console.error) {
+                            console.error('Excel parse failed:', err);
+                        }
+                        alertFn();
+                        csvUpload.value = '';
+                    });
+            } else {
+                var text = decodePlannerFileBuffer(ev.target.result);
+                applyKeywords(extractKeywordsFromPlannerTsv(text));
+            }
+        };
+        reader.onerror = function () {
+            alertFn();
             csvUpload.value = '';
         };
         reader.readAsArrayBuffer(file);

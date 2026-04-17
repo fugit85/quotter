@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Извлечь имена, гео, даты и цены из ключевых слов</title>
+    <title>Извлечь имена, гео, даты и цены из списка слов</title>
     <meta name="description"
-        content="Извлекатор — онлайн инструмент для PPC-специалистов. Извлекает имена, гео, даты, цены, телефоны и домены из списка ключевых слов и одним кликом удаляет их из текста. Готово для Google Ads.">
+        content="Извлекатор — онлайн инструмент для PPC-специалистов. Извлекает имена, гео, даты, цены, телефоны и домены из списка ключевых слов и одним кликом удаляет их из текста. Попробуйте!">
     <script src="script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/extract.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/extract.html">
@@ -94,8 +94,8 @@
                 <span class="page-title-dot"></span>
                 Извлечь данные из ключевых слов
             </h1>
-            <p class="page-subtitle">Находит в тексте имена, города, даты, цены, телефоны и домены — отмечайте
-                ненужное одним кликом и удаляйте из всего списка. Освобождает вечера PPC-специалистов.</p>
+            <p class="page-subtitle">Находит в тексте структурированные данные: имена, города, даты, цены, телефоны и домены — отмечайте
+                нужное одним кликом, копируйте или получайте очищенный список без них. </p>
         </div>
 
         <div class="card">
@@ -104,8 +104,8 @@
 
             <div class="toolbar">
                 <label class="btn btn-ghost btn-upload" for="csvUploadExtract"
-                    title="Загрузить выгрузку из Планировщика Google Ads (CSV)">⇪ Загрузить CSV</label>
-                <input type="file" id="csvUploadExtract" accept=".csv" class="file-input-hidden">
+                    title="Загрузить CSV, TSV, TXT или Excel — из Планировщика, отчёта или свой список">⇪ Загрузить CSV</label>
+                    <input type="file" id="csvUploadExtract" accept=".csv,.tsv,.txt,.xlsx,.xls,.xlsm,.xlsb,.ods" class="file-input-hidden">
                 <button class="btn btn-primary" id="button-extract">✦ Извлечь</button>
                 <button class="btn btn-ghost" id="clear-input">✕ Очистить</button>
                 <span class="counter" id="counter">0 строк</span>
@@ -113,22 +113,22 @@
             <div class="extract-busy" id="extractBusy">Анализируем текст…</div>
         </div>
 
-        <div class="extract-hint">Кликайте на слова, чтобы выбрать. Чекбокс выделяет весь список ↓</div>
+        <div class="extract-hint">Кликайте на отдельные слова, чтобы выбрать их. Или отмечайте список целиком ↓</div>
 
         <div class="card">
-            <label class="extract-master" id="extractMaster" style="display:none;">
+            <label class="extract-master" id="extractMaster">
                 <input type="checkbox" id="extractMasterCheckbox">
                 <span>Выделить все списки</span>
                 <span class="extract-master-count" id="extractMasterCount">0 / 0 выбрано</span>
             </label>
 
-            <div class="extract-empty" id="extractEmpty" style="display:none;">
-                Нажмите «Извлечь», чтобы увидеть результаты.
+            <div class="extract-empty" id="extractEmpty">
+                Нажмите «Извлечь», чтобы увидеть списки имён, гео, дат и других сущностей.
             </div>
 
             <div class="extract-groups" id="extractGroups"></div>
 
-            <div class="extract-actions" id="extractActions" style="display:none;">
+            <div class="extract-actions" id="extractActions">
                 <div class="extract-mode">
                     <span class="extract-mode-label">Режим удаления</span>
                     <label class="decline-label">
@@ -145,13 +145,12 @@
             </div>
         </div>
 
-        <div class="card" id="cleanSection" style="display:none;">
-            <div class="field-label">Очищенный текст</div>
-            <textarea id="clean-result" readonly placeholder="Сюда попадёт текст без отмеченных слов…"></textarea>
+        <div class="card" id="cleanSection">
+            <div class="field-label">Очищенный список</div>
+            <textarea id="clean-result" readonly placeholder="Сюда попадёт очищенный список — без отмеченных слов или строк. Исходный текст не меняется."></textarea>
             <div class="toolbar">
                 <button class="btn btn-ghost" id="copy-clean">⎘ Копировать</button>
                 <button class="btn btn-ghost" id="export-csv-clean">↓ Экспорт CSV</button>
-                <button class="btn btn-ghost" id="clear-clean">✕ Очистить</button>
                 <span class="counter" id="counter-clean">0 строк</span>
             </div>
         </div>
@@ -162,17 +161,12 @@
 
                 <details class="faq-item">
                     <summary>Как работает Извлекатор?</summary>
-                    <p>Инструмент использует библиотеку Natasha и её рулевой движок Yargy — это правило-ориентированный
-                        парсер русского языка. Он находит именованные сущности (имена людей, гео, даты, цены), а также
-                        стандартные паттерны: email, телефоны, домены. Модель ничего не «галлюцинирует» — все
-                        совпадения берутся точно из вашего текста.</p>
-                </details>
-
-                <details class="faq-item">
-                    <summary>Зачем это PPC-специалисту?</summary>
-                    <p>Типичный список запросов из Планировщика содержит случайные гео, чужие бренды, имена конкурентов
-                        и прочий мусор — всё это кормит клики мимо цели. Извлекатор за секунду подсвечивает все
-                        «опасные» слова. Дальше — чекбоксы: отметили → удалили → получили чистый список.</p>
+                    <p>Вставьте список ключевых слов или загрузите CSV/Excel — инструмент сам пробежится по тексту и
+                        сгруппирует находки: имена, гео, даты, цены, телефоны, email, домены, хэштеги. Отметьте галочкой
+                        весь список или кликайте по отдельным словам — всё, что выбрали, можно скопировать одной кнопкой
+                        или получить очищенный список без этих слов (или целиком без строк, где они встречаются).
+                        Исходный текст при этом не меняется — результат приходит в отдельное поле, так что можно
+                        пробовать разные комбинации, ничего не теряя.</p>
                 </details>
 
                 <details class="faq-item">
@@ -185,17 +179,11 @@
                 </details>
 
                 <details class="faq-item">
-                    <summary>Можно ли загрузить CSV из Планировщика Google Ads?</summary>
-                    <p>Да, кнопка «Загрузить CSV» принимает выгрузку из Google Keyword Planner напрямую — ключевые
-                        слова подставятся в поле ввода без ручного редактирования.</p>
-                </details>
-
-                <details class="faq-item">
-                    <summary>Данные уходят на сервер?</summary>
-                    <p>Для извлечения сущностей текст отправляется на наш сервер (Natasha — Python-библиотека и не
-                        может работать в браузере). Мы ничего не логируем и не храним — после ответа данные
-                        выбрасываются. Удаление слов из исходного текста происходит у вас в браузере без сетевых
-                        запросов.</p>
+                    <summary>Какие файлы принимает кнопка «Загрузить CSV»?</summary>
+                    <p>Выгрузки из Google Keyword Planner и отчёта о поисковых запросах Google Ads (CSV/TSV),
+                        обычные <b>.txt</b>-списки (одно ключевое слово на строку — заголовок не нужен),
+                        а также <b>.xlsx</b>/<b>.xls</b> из Excel и Google Sheets. Колонку с ключевыми словами
+                        парсер находит сам — по заголовку на RU/UK/PL/EN/KZ/BE или просто берёт первую колонку.</p>
                 </details>
 
                 <details class="faq-item">

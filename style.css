@@ -320,6 +320,10 @@ main {
   transition: background 0.3s, border-color 0.3s;
 }
 
+.card + .card {
+  margin-top: 20px;
+}
+
 .field-label {
   font-size: 11px;
   font-weight: 600;
@@ -1821,14 +1825,14 @@ footer {
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, #ef4444, #f97316);
+  background: linear-gradient(135deg, var(--blue-mid), var(--accent2));
   color: #fff;
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+  box-shadow: var(--shadow-btn);
 }
 
 .btn-danger:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
 }
 
 .btn-danger:active {

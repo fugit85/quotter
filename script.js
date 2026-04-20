@@ -36,6 +36,8 @@ var UI_STRINGS = {
         inflectLoading: 'Inflecting…',
         serverError: function (s) { return 'Server error: ' + s; },
         connectionError: 'Could not reach the server',
+        tooManyRequests: 'Too many requests — take a short break and try again.',
+        tooLong: 'The text is too long. Try splitting it into smaller parts.',
         csvAlertMinus: 'Could not find keywords. Make sure the file is exported from Google Keyword Planner.',
         csvAlertQuote: 'Could not find keywords.',
         verify: 'Verifying…',
@@ -62,6 +64,8 @@ var UI_STRINGS = {
         inflectLoading: 'Склоняем…',
         serverError: function (s) { return 'Ошибка сервера: ' + s; },
         connectionError: 'Ошибка при соединении с сервером',
+        tooManyRequests: 'Слишком много запросов — подождите минуту и попробуйте снова.',
+        tooLong: 'Текст слишком длинный. Попробуйте разбить его на части.',
         csvAlertMinus: 'Не удалось найти ключевые слова. Убедитесь что файл выгружен из Планировщика Google.',
         csvAlertQuote: 'Не удалось найти ключевые слова.',
         verify: 'Проверка...',
@@ -96,6 +100,8 @@ var UI_STRINGS = {
         inflectLoading: 'Склонім…',
         serverError: function (s) { return 'Памылка сервера: ' + s; },
         connectionError: 'Не атрымалася звязацца з серверам',
+        tooManyRequests: 'Занадта шмат запытаў — пачакайце хвіліну і паспрабуйце зноў.',
+        tooLong: 'Тэкст занадта доўгі. Паспрабуйце разбіць яго на часткі.',
         csvAlertMinus: 'Не знойдзены ключавыя словы. Пераканайцеся, што файл з Планіроўшчыка Google.',
         csvAlertQuote: 'Не знойдзены ключавыя словы.',
         verify: 'Праверка...',
@@ -130,6 +136,8 @@ var UI_STRINGS = {
         inflectLoading: 'Відмінюємо…',
         serverError: function (s) { return 'Помилка сервера: ' + s; },
         connectionError: 'Не вдалося зв’язатися з сервером',
+        tooManyRequests: 'Забагато запитів — зачекайте хвилину і спробуйте знову.',
+        tooLong: 'Текст задовгий. Спробуйте розбити його на частини.',
         csvAlertMinus: 'Не знайдено ключові слова. Переконайтеся, що файл з Планувальника Google.',
         csvAlertQuote: 'Не знайдено ключові слова.',
         verify: 'Перевірка...',
@@ -164,6 +172,8 @@ var UI_STRINGS = {
         inflectLoading: 'Odmieniamy…',
         serverError: function (s) { return 'Błąd serwera: ' + s; },
         connectionError: 'Nie udało się połączyć z serwerem',
+        tooManyRequests: 'Za dużo zapytań — poczekaj chwilę i spróbuj ponownie.',
+        tooLong: 'Tekst jest za długi. Spróbuj podzielić go na mniejsze części.',
         csvAlertMinus: 'Nie znaleziono słów kluczowych. Upewnij się, że plik pochodzi z Planera słów kluczowych Google.',
         csvAlertQuote: 'Nie znaleziono słów kluczowych.',
         verify: 'Weryfikacja…',
@@ -185,6 +195,8 @@ var UI_STRINGS = {
         inflectLoading: 'Септіреміз…',
         serverError: function (s) { return 'Сервер қатесі: ' + s; },
         connectionError: 'Серверге қосылу мүмкін болмады',
+        tooManyRequests: 'Сұрау саны тым көп — бір минут күтіп, қайталап көріңіз.',
+        tooLong: 'Мәтін тым ұзын. Оны бөліктерге бөліп көріңіз.',
         csvAlertMinus: 'Кілт сөздер табылмады. Файл Google сөз жоспарлаушысынан шығарылғанына көз жеткізіңіз.',
         csvAlertQuote: 'Кілт сөздер табылмады.',
         verify: 'Тексеру…',
@@ -1208,7 +1220,10 @@ function wireInflect() {
             .then(function (res) {
                 if (!res.ok) {
                     originalForms = [];
-                    setTextareaValue(resultEl, L.serverError(res.status));
+                    var msg = res.status === 429 ? L.tooManyRequests
+                        : res.status === 413 ? L.tooLong
+                        : L.serverError(res.status);
+                    setTextareaValue(resultEl, msg);
                     return Promise.reject(new Error('http'));
                 }
                 return res.json();
@@ -1510,9 +1525,9 @@ function wireExtractor() {
         })
             .then(function (res) {
                 if (!res.ok) {
-                    return res.text().then(function () {
-                        throw new Error('http_' + res.status);
-                    });
+                    var err = new Error('http_' + res.status);
+                    err.status = res.status;
+                    return res.text().then(function () { throw err; });
                 }
                 return res.json();
             })
@@ -1523,7 +1538,10 @@ function wireExtractor() {
             .catch(function (err) {
                 if (emptyEl) {
                     emptyEl.style.display = 'block';
-                    emptyEl.textContent = 'Не удалось связаться с сервером. Попробуйте позже.';
+                    var status = err && err.status;
+                    emptyEl.textContent = status === 429 ? L.tooManyRequests
+                        : status === 413 ? L.tooLong
+                        : L.connectionError;
                 }
                 console.error('Extract API error:', err);
             })
@@ -2258,6 +2276,10 @@ if (feedbackModal && feedbackClose && feedbackForm && feedbackMsgBox) {
                     if (!pack.ok) {
                         if (pack.status === 503 && pack.data && pack.data.error === 'navec_unavailable') {
                             setStatus('Сервис подсказок недоступен (модель не загружена на сервере).');
+                        } else if (pack.status === 429) {
+                            setStatus(L.tooManyRequests);
+                        } else if (pack.status === 413) {
+                            setStatus(L.tooLong);
                         } else {
                             setStatus('Ошибка ' + pack.status);
                         }

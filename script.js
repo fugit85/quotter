@@ -1,6 +1,19 @@
 'use strict';
 
-var API_ORIGIN = 'https://quotter-api-923883205237.europe-west1.run.app';
+// API_ORIGIN can be overridden per-page via <meta name="api-origin" content="…">
+// — handy for local/staging overrides without editing this file. The default
+// points at our own Cloudflare-proxied custom domain, not the raw Cloud Run URL,
+// so the URL stays stable even if we move the backend.
+var API_ORIGIN = (function () {
+    try {
+        var meta = document.querySelector('meta[name="api-origin"]');
+        if (meta && meta.content) {
+            return meta.content.trim().replace(/\/+$/, '');
+        }
+    } catch (e) { /* ignore */ }
+    return 'https://api.qoutter.cloud';
+})();
+
 var CONFIG = {
     declineApiUrl: API_ORIGIN + '/decline',
     extractApiUrl: API_ORIGIN + '/extract',

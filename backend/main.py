@@ -3,8 +3,10 @@ import re
 import sys
 import threading
 import unicodedata
+from urllib.parse import urlparse
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_limiter import Limiter
 import pymorphy3
 import morfeusz2
 import requests
@@ -18,18 +20,109 @@ from natasha import (
 )
 
 app = Flask(__name__)
-CORS(app)
+
+# --- Security hardening ------------------------------------------------------
+# Abuse protection: the API is called by an unauthenticated static site, so the
+# main concern is a third party scripting our Cloud Run service to burn the
+# billing quota. Three layers guard against that:
+#   1. CORS whitelist — preflight rejections kill browser-based abuse from
+#      other origins (non-browser clients bypass CORS but hit layers 2/3).
+#   2. MAX_CONTENT_LENGTH — Flask short-circuits oversized bodies before any
+#      handler runs, so a 10 MB POST can't tie up a worker for seconds.
+#   3. Per-IP rate limits via Flask-Limiter (in-memory; fine because Cloud Run
+#      max-instances is capped, so effective limit is limits × instances).
+
+_ALLOWED_ORIGINS = [
+    "https://qoutter.cloud",
+    "https://www.qoutter.cloud",
+]
+# Dev convenience: allow localhost if explicitly enabled via env. Off by default
+# so a forgotten flag in production doesn't broaden the surface.
+if os.environ.get("ALLOW_LOCAL_DEV") == "1":
+    _ALLOWED_ORIGINS += [
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:5173",
+    ]
+
+CORS(
+    app,
+    resources={r"/*": {"origins": _ALLOWED_ORIGINS}},
+    methods=["GET", "POST", "HEAD", "OPTIONS"],
+    allow_headers=["Content-Type"],
+    max_age=86400,  # cache preflight for a day — fewer OPTIONS round-trips
+)
+
+# Reject bodies > 600 KB outright. /extract truncates to 500 KB internally,
+# /decline caps to 200 KB — 600 KB leaves some overhead for JSON envelope.
+app.config["MAX_CONTENT_LENGTH"] = 600 * 1024
+
+
+def _client_ip() -> str:
+    """Extract the true client IP through Cloudflare → Cloud Run proxy chain.
+
+    Cloudflare sets CF-Connecting-IP to the original client IP; if the API
+    isn't proxied through CF (direct *.run.app access) we fall back to the
+    leftmost X-Forwarded-For entry set by the Google front-end, which is the
+    client IP for all external requests. `remote_addr` by itself would give
+    us the proxy's IP and funnel every visitor into one bucket.
+    """
+    cf_ip = request.headers.get("CF-Connecting-IP")
+    if cf_ip:
+        return cf_ip.strip()
+    xff = request.headers.get("X-Forwarded-For", "")
+    if xff:
+        return xff.split(",")[0].strip()
+    return request.remote_addr or "0.0.0.0"
+
+
+limiter = Limiter(
+    key_func=_client_ip,
+    app=app,
+    default_limits=["120 per minute", "2000 per hour"],
+    storage_uri="memory://",
+    strategy="fixed-window",
+    # Don't rate-limit health checks or CORS preflights.
+    default_limits_exempt_when=lambda: request.method == "OPTIONS",
+)
+
 
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
+# Per-endpoint input caps. These are deliberately generous (real PPC lists rarely
+# cross 50 KB) but set a hard ceiling so a single request can't monopolise CPU.
+_MAX_DECLINE_TEXT = 200_000   # ~50k keywords of 4 words each
+_MAX_EXTRACT_TEXT = 500_000   # /extract is read-heavy but not exponential
+_MAX_SIMILAR_WORDS = 20
+_MAX_COMMENT_LEN = 4000
+_MAX_CONTACT_LEN = 200
+_MAX_URL_LEN = 500
+
+def _is_safe_feedback_url(url: str) -> bool:
+    """Only accept http(s) URLs that look like a real browser location.
+
+    Blocks `javascript:` pranks, data URIs and empty schemes from being
+    forwarded into Telegram where an admin might click them.
+    """
+    if not url or len(url) > _MAX_URL_LEN:
+        return False
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return False
+    return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+
+
 @app.route("/submit", methods=["POST"])
+@limiter.limit("5 per minute; 30 per hour")
 def submit():
     data = request.get_json(silent=True) or {}
-    comment = data.get("comment", "")
-    contact = data.get("contact", "")
-    url = data.get("url", "")
-    token = data.get("recaptcha_token", "")
+    comment = str(data.get("comment", "") or "")[:_MAX_COMMENT_LEN].strip()
+    contact = str(data.get("contact", "") or "")[:_MAX_CONTACT_LEN].strip()
+    url_raw = str(data.get("url", "") or "")
+    url = url_raw if _is_safe_feedback_url(url_raw) else ""
+    token = str(data.get("recaptcha_token", "") or "")
     rating_raw = data.get("rating", 0)
     try:
         rating = int(rating_raw)
@@ -41,17 +134,29 @@ def submit():
     if not comment:
         return jsonify({"ok": False}), 400
 
+    # Fail-closed reCAPTCHA: if the secret isn't configured OR the token is
+    # missing/invalid, refuse the request. This removes the silent bypass
+    # that existed when RECAPTCHA_SECRET was unset.
     secret = os.environ.get("RECAPTCHA_SECRET")
-    if secret and token:
+    if not secret:
+        app.logger.error("RECAPTCHA_SECRET is not configured; rejecting /submit")
+        return jsonify({"ok": False, "error": "captcha_unavailable"}), 503
+    if not token:
+        return jsonify({"ok": False, "error": "captcha_required"}), 400
+    try:
         r = requests.post(
             "https://www.google.com/recaptcha/api/siteverify",
-            data={"secret": secret, "response": token},
+            data={"secret": secret, "response": token, "remoteip": _client_ip()},
             timeout=10,
         )
         result = r.json()
-        score = result.get("score", 0)
-        if not result.get("success") or score < 0.5:
-            return jsonify({"ok": False, "error": "Проверка не пройдена"}), 400
+    except (requests.RequestException, ValueError) as exc:
+        app.logger.warning("reCAPTCHA verification failed: %r", exc)
+        return jsonify({"ok": False, "error": "captcha_network"}), 502
+    score = result.get("score", 0)
+    action = result.get("action", "")
+    if not result.get("success") or score < 0.5 or (action and action != "feedback"):
+        return jsonify({"ok": False, "error": "Проверка не пройдена"}), 400
 
     rating_line = f"Оценка: {rating} из 5" if 1 <= rating <= 5 else "Оценка: не указана"
 
@@ -590,11 +695,14 @@ def _collect_phrase_forms(tokens, parsed_list, by_gender, by_number, by_case, ca
 
 
 @app.route('/decline', methods=['POST'])
+@limiter.limit("60 per minute; 600 per hour")
 def decline_api():
     data = request.get_json(silent=True) or {}
     raw = data.get('text', '') or ''
     if not raw.strip():
         return jsonify({'lines': []}), 200
+    if len(raw) > _MAX_DECLINE_TEXT:
+        return jsonify({'error': 'text_too_long', 'limit': _MAX_DECLINE_TEXT}), 413
 
     lang = (data.get('lang') or 'ru').strip().lower()
     if lang not in ('uk', 'pl'):
@@ -782,6 +890,7 @@ def _find_similar_for_word(nd, raw: str, limit: int) -> dict:
 
 
 @app.route('/similar', methods=['POST'])
+@limiter.limit("30 per minute; 300 per hour")
 def similar_words():
     nd = _get_navec()
     if nd is None:
@@ -799,8 +908,9 @@ def similar_words():
         words = [single] if single else []
     if not isinstance(words, list):
         words = []
-    words = [str(w).strip() for w in words if str(w).strip()]
-    words = words[:20]
+    # Cap each word at 64 chars so a "word" of 10 MB can't slip past JSON parsing.
+    words = [str(w).strip()[:64] for w in words if str(w).strip()]
+    words = words[:_MAX_SIMILAR_WORDS]
 
     try:
         limit = int(data.get('limit', 12))
@@ -1333,14 +1443,15 @@ def _extract_money_with_dict(text: str):
 
 
 @app.route('/extract', methods=['POST'])
+@limiter.limit("30 per minute; 300 per hour")
 def extract_api():
     data = request.get_json(silent=True) or {}
     text = data.get('text', '') or ''
     if not text.strip():
         return jsonify({'groups': []}), 200
 
-    if len(text) > 500_000:
-        text = text[:500_000]
+    if len(text) > _MAX_EXTRACT_TEXT:
+        text = text[:_MAX_EXTRACT_TEXT]
 
     streets, street_spans = _extract_streets(text)
 
@@ -1407,8 +1518,29 @@ def root():
     return 'Service is up', 200
 
 @app.route('/healthz', methods=['GET', 'HEAD'])
+@limiter.exempt
 def healthz():
     return 'OK', 200
+
+
+# --- Error handlers: always return JSON so the static site can display a
+# friendly message regardless of failure mode (413/429/500). ------------------
+@app.errorhandler(413)
+def _too_large(_err):
+    return jsonify({'ok': False, 'error': 'payload_too_large'}), 413
+
+
+@app.errorhandler(429)
+def _rate_limited(err):
+    # err.description holds the limit string — useful for debugging but not
+    # exposed publicly. Retry-After is set by Flask-Limiter automatically.
+    return jsonify({'ok': False, 'error': 'rate_limited'}), 429
+
+
+@app.errorhandler(500)
+def _server_error(_err):
+    return jsonify({'ok': False, 'error': 'server_error'}), 500
+
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))

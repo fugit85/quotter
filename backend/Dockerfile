@@ -17,4 +17,13 @@ COPY data ./data
 
 # Cloud Run задаёт PORT (по умолчанию 8080)
 ENV PORT=8080
-CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 120 main:app
+# --timeout 20 matches the Cloud Run request timeout and frees a stuck worker
+# quickly so a crafted slow request can't tie up threads.
+# --limit-request-line / --limit-request-fields tighten the HTTP parser against
+# malformed headers.
+CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 \
+    --timeout 20 \
+    --limit-request-line 8190 \
+    --limit-request-fields 64 \
+    --access-logfile - \
+    main:app

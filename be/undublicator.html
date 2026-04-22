@@ -2,18 +2,13 @@
 <html lang="be">
 
 <head>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://qoutter.cloud/gtmgateaway/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-TGXGCDGN');</script>
-    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Выдаліць дублікаты</title>
     <meta name="description"
-        content="Выдаленне паўторных радкоў або слоў. Опцыя: аднолькавыя словы ў розным парадку = адзін радок." />
+        content="Выдаленне відавочных і невідавочных дублікатаў радкоў або слоў. Опцыя: аднолькавыя словы ў розным парадку = адзін радок." />
+    <meta name="keywords"
+        content="невідавочныя дублікаты, выдаліць дублікаты, выдаліць нябачныя дублікаты, прыбраць паўторы, неясныя дублікаты" />
     <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/be/undublicator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/undublicator.html">
@@ -31,10 +26,6 @@
 </head>
 
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://qoutter.cloud/gtmgateaway/ns.html?id=GTM-TGXGCDGN"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
     <nav>
         <div class="nav-inner">
             <span class="nav-logo">Qoutter</span>
@@ -87,8 +78,8 @@
                 <span class="page-title-dot"></span>
                 Прыбраць дублікаты радкоў
             </h1>
-            <p class="page-subtitle">Прыбірае паўторныя радкі або словы. Калі парадак слоў не важны — уключыце галачку
-                ніжэй.</p>
+            <p class="page-subtitle">Прыбірае паўторныя радкі або словы, у тым ліку невідавочныя дублікаты. Калі
+                парадак слоў не важны — уключыце галачку ніжэй.</p>
         </div>
 
         <div class="card">
@@ -103,7 +94,7 @@
                 <button class="btn btn-primary" id="button-dublicate">✦ Ачысціць</button>
                 <label class="decline-label" id="ignoreOrderWrap">
                     <input type="checkbox" id="ignoreOrder">
-                    <span>Парадак слоў не важны</span>
+                    <span>Невідавочныя дублікаты</span>
                 </label>
                 <span class="counter" id="counter">0 радкоў</span>
             </div>
@@ -128,8 +119,9 @@
                 </details>
 
                 <details class="faq-item">
-                    <summary>Ці лічацца «купіць канапу» і «канапу купіць» дублікатам?</summary>
-                    <p>Па змаўчанні не. Уключыце «Парадак слоў не важны».</p>
+                    <summary>Як выдаліць невідавочныя дублікаты?</summary>
+                    <p>Уключыце <strong>Невідавочныя дублікаты</strong>. Тады невідавочныя дублікаты, напрыклад «купіць канапу»
+                        і «канапу купіць», будуць лічыцца адным радком.</p>
                 </details>
 
                 <details class="faq-item">

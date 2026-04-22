@@ -2,18 +2,13 @@
 <html lang="pl">
 
 <head>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://qoutter.cloud/gtmgateaway/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-TGXGCDGN');</script>
-    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuń duplikaty</title>
     <meta name="description"
-        content="Usuwaj duplikaty wierszy lub słów. Opcja: ta sama treść w innej kolejności słów = jeden wiersz." />
+        content="Usuwaj oczywiste i nieoczywiste duplikaty wierszy lub słów. Opcja: ta sama treść w innej kolejności słów = jeden wiersz." />
+    <meta name="keywords"
+        content="nieoczywiste duplikaty, usuń duplikaty, usuń niewidoczne duplikaty, usuń powtórzenia, niejasne duplikaty" />
     <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/pl/undublicator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/undublicator.html">
@@ -31,10 +26,6 @@
 </head>
 
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://qoutter.cloud/gtmgateaway/ns.html?id=GTM-TGXGCDGN"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
     <nav>
         <div class="nav-inner">
             <span class="nav-logo">Qoutter</span>
@@ -105,7 +96,7 @@
                 <button class="btn btn-primary" id="button-dublicate">✦ Usuń duplikaty</button>
                 <label class="decline-label" id="ignoreOrderWrap">
                     <input type="checkbox" id="ignoreOrder">
-                    <span>Ignoruj kolejność słów (wiersze)</span>
+                    <span>Nieoczywiste duplikaty</span>
                 </label>
                 <span class="counter" id="counter">0 wierszy</span>
             </div>
@@ -131,9 +122,9 @@
                 </details>
 
                 <details class="faq-item">
-                    <summary>Czy „kup kanapę” i „kanapę kup” to duplikat?</summary>
-                    <p>Domyślnie nie. Włącz <strong>Ignoruj kolejność słów</strong>, żeby te same słowa w dowolnej
-                        kolejności liczyły się jako jeden wiersz.</p>
+                    <summary>Jak usuwać nieoczywiste duplikaty?</summary>
+                    <p>Włącz <strong>Nieoczywiste duplikaty</strong>. Wtedy nieoczywiste duplikaty, np. „kup kanapę” i „kanapę
+                        kup”, będą traktowane jako ten sam wiersz.</p>
                 </details>
 
                 <details class="faq-item">

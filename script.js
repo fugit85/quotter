@@ -1954,10 +1954,13 @@ function initFeedbackStarRating() {
             setHoverUpTo(n);
         });
         btn.addEventListener('click', function () {
+            var rating = this.getAttribute('data-value');
             if (currentValue() === n) {
                 applyVisual(0);
             } else {
                 applyVisual(n);
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({ feedbackRating: rating });
             }
         });
     });

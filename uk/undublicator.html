@@ -2,18 +2,13 @@
 <html lang="uk">
 
 <head>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://qoutter.cloud/gtmgateaway/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-TGXGCDGN');</script>
-    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Видалити дублікати</title>
     <meta name="description"
-        content="Видалення повторів рядків або слів. Опція: однакові слова в іншому порядку = один рядок." />
+        content="Видалення явних і неочевидних дублікатів рядків або слів. Опція: однакові слова в іншому порядку = один рядок." />
+    <meta name="keywords"
+        content="неочевидні дублікати, видалити дублікати, видалити невидимі дублікати, прибрати повтори, неясні дублікати" />
     <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/uk/undublicator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/undublicator.html">
@@ -31,10 +26,6 @@
 </head>
 
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://qoutter.cloud/gtmgateaway/ns.html?id=GTM-TGXGCDGN"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
     <nav>
         <div class="nav-inner">
             <span class="nav-logo">Qoutter</span>
@@ -89,8 +80,8 @@
                 <span class="page-title-dot"></span>
                 Прибрати дублікати рядків
             </h1>
-            <p class="page-subtitle">Прибирає повторювані рядки або слова. Якщо порядок слів не важливий — позначте
-                прапорець нижче.</p>
+            <p class="page-subtitle">Прибирає повторювані рядки або слова, включно з неочевидними дублікатами. Якщо
+                порядок слів не важливий — позначте прапорець нижче.</p>
         </div>
 
         <div class="card">
@@ -105,7 +96,7 @@
                 <button class="btn btn-primary" id="button-dublicate">✦ Очистити</button>
                 <label class="decline-label" id="ignoreOrderWrap">
                     <input type="checkbox" id="ignoreOrder">
-                    <span>Порядок слів не важливий</span>
+                    <span>Неочевидні дублікати</span>
                 </label>
                 <span class="counter" id="counter">0 рядків</span>
             </div>
@@ -130,8 +121,9 @@
                 </details>
 
                 <details class="faq-item">
-                    <summary>Чи «купити диван» і «диван купити» — дублікат?</summary>
-                    <p>За замовчуванням ні. Увімкніть «Порядок слів не важливий».</p>
+                    <summary>Як видалити неочевидні дублікати?</summary>
+                    <p>Увімкніть <strong>Неочевидні дублікати</strong>. Тоді неочевидні дублікати на кшталт «купити диван»
+                        і «диван купити» вважатимуться одним рядком.</p>
                 </details>
 
                 <details class="faq-item">

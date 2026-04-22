@@ -2,18 +2,13 @@
 <html lang="en">
 
 <head>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://qoutter.cloud/gtmgateaway/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-TGXGCDGN');</script>
-    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Remove duplicates</title>
     <meta name="description"
-        content="Deduplicate lines or words in a list. Optional: treat different word order as the same line." />
+        content="Delete unobtrusive duplicates (invisible duplicates) in lines or words online. Optional: treat different word order as the same line." />
+    <meta name="keywords"
+        content="delete unobtrusive duplicates, deleting invisible duplicates, unclear duplicates, unclear doubles, deduplicate lines, remove duplicates" />
     <script src="../script.js" defer></script>
     <link rel="canonical" href="https://qoutter.cloud/en/undublicator.html">
     <link rel="alternate" hreflang="ru" href="https://qoutter.cloud/undublicator.html">
@@ -31,10 +26,6 @@
 </head>
 
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://qoutter.cloud/gtmgateaway/ns.html?id=GTM-TGXGCDGN"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
     <nav>
         <div class="nav-inner">
             <span class="nav-logo">Qoutter</span>
@@ -87,8 +78,9 @@
                 <span class="page-title-dot"></span>
                 Remove duplicates
             </h1>
-            <p class="page-subtitle">Removes repeated lines or words. If word order should not matter, “keyword
-                research” and “research keyword” can count as one line — use the checkbox below.</p>
+            <p class="page-subtitle">Removes repeated lines or words, including unobtrusive duplicates (invisible
+                duplicates). If word order should not matter, “keyword research” and “research keyword” can count as
+                one line — use the checkbox below.</p>
         </div>
 
         <div class="card">
@@ -103,7 +95,7 @@
                 <button class="btn btn-primary" id="button-dublicate">✦ Deduplicate</button>
                 <label class="decline-label" id="ignoreOrderWrap">
                     <input type="checkbox" id="ignoreOrder">
-                    <span>Ignore word order (lines)</span>
+                    <span>Unobtrusive duplicates</span>
                 </label>
                 <span class="counter" id="counter">0 lines</span>
             </div>
@@ -129,9 +121,10 @@
                 </details>
 
                 <details class="faq-item">
-                    <summary>Are “buy sofa” and “sofa buy” treated as duplicates?</summary>
-                    <p>Not by default. Enable <strong>Ignore word order (lines)</strong> to treat same words in any
-                        order as one line.</p>
+                    <summary>How do I delete unobtrusive duplicates (invisible duplicates)?</summary>
+                    <p>Enable <strong>Unobtrusive duplicates</strong>. This treats unclear duplicates / unclear doubles
+                        like “buy sofa” and “sofa buy” as the same line when they contain the same words in a different
+                        order.</p>
                 </details>
 
                 <details class="faq-item">

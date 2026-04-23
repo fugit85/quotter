@@ -1406,7 +1406,7 @@ footer {
   top: 0;
 }
 
-.feedback-form--hidden {
+#feedbackForm.feedback-form--hidden {
   display: none;
 }
 

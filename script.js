@@ -1282,12 +1282,22 @@ function pushDeclineApiResult(payload) {
     if (typeof window === 'undefined') {
         return;
     }
+    var p = payload || {};
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
         event: 'decline_api_result',
         endpoint: 'decline',
         page_lang: DOC_LANG || 'ru',
-        payload: payload || {}
+        ok: p.ok,
+        status: p.status,
+        error_type: p.error_type,
+        error_message: p.error_message,
+        text_len: p.text_len,
+        by_gender: p.by_gender,
+        by_number: p.by_number,
+        by_case: p.by_case,
+        by_tense: p.by_tense,
+        payload: p
     });
 }
 

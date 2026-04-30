@@ -1278,6 +1278,19 @@ function setDeclineInflectBusy(button, busy, statusLabel) {
     }
 }
 
+function pushDeclineApiResult(payload) {
+    if (typeof window === 'undefined') {
+        return;
+    }
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+        event: 'decline_api_result',
+        endpoint: 'decline',
+        page_lang: DOC_LANG || 'ru',
+        payload: payload || {}
+    });
+}
+
 function wireInflect() {
     var button = document.getElementById('button-inflect');
     var inputEl = document.getElementById('input');
@@ -1336,6 +1349,16 @@ function wireInflect() {
             .then(function (res) {
                 if (!res.ok) {
                     originalForms = [];
+                    pushDeclineApiResult({
+                        ok: false,
+                        status: res.status,
+                        error_type: 'http_error',
+                        text_len: text.length,
+                        by_gender: byGender,
+                        by_number: byNumber,
+                        by_case: byCase,
+                        by_tense: byTense
+                    });
                     var msg = res.status === 429 ? L.tooManyRequests
                         : res.status === 413 ? L.tooLong
                         : L.serverError(res.status);
@@ -1345,6 +1368,16 @@ function wireInflect() {
                     }
                     return Promise.reject(new Error('http'));
                 }
+                pushDeclineApiResult({
+                    ok: true,
+                    status: res.status,
+                    error_type: '',
+                    text_len: text.length,
+                    by_gender: byGender,
+                    by_number: byNumber,
+                    by_case: byCase,
+                    by_tense: byTense
+                });
                 return res.json();
             })
             .then(function (data) {
@@ -1366,6 +1399,17 @@ function wireInflect() {
                 if (err && err.message === 'http') {
                     return;
                 }
+                pushDeclineApiResult({
+                    ok: false,
+                    status: 'network_error',
+                    error_type: 'network_error',
+                    text_len: text.length,
+                    by_gender: byGender,
+                    by_number: byNumber,
+                    by_case: byCase,
+                    by_tense: byTense,
+                    error_message: err && err.message ? String(err.message) : ''
+                });
                 originalForms = [];
                 console.error('Decline API error:', err);
                 setTextareaValue(resultEl, L.connectionError);

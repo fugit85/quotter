@@ -93,29 +93,7 @@
             <div class="field-label">Исходный текст</div>
             <textarea id="input" placeholder="Введите слово или фразу"></textarea>
 
-            <div class="toolbar">
-                <div class="decline-options">
-                    <label class="decline-label">
-                        <input type="checkbox" id="byAll" checked>
-                        <span>Все</span>
-                    </label>
-                    <label class="decline-label">
-                        <input type="checkbox" id="byGender">
-                        <span>Рода</span>
-                    </label>
-                    <label class="decline-label">
-                        <input type="checkbox" id="byNumber">
-                        <span>Числа</span>
-                    </label>
-                    <label class="decline-label">
-                        <input type="checkbox" id="byCase">
-                        <span>Падежи</span>
-                    </label>
-                    <label class="decline-label">
-                        <input type="checkbox" id="byTense">
-                        <span>Времена</span>
-                    </label>
-                </div>
+            <div class="toolbar toolbar-decline-main">
                 <div class="decline-actions">
                     <button type="button" class="btn btn-primary btn-inflect" id="button-inflect"
                         data-label-default="✦ Склонять" aria-busy="false">
@@ -144,6 +122,29 @@
                         </span>
                     </button>
                 </div>
+                <div class="decline-options">
+                    <label class="decline-label">
+                        <input type="checkbox" id="byAll" checked>
+                        <span>Все</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byGender">
+                        <span>Рода</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byNumber">
+                        <span>Числа</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byCase">
+                        <span>Падежи</span>
+                    </label>
+                    <label class="decline-label">
+                        <input type="checkbox" id="byTense">
+                        <span>Времена</span>
+                    </label>
+                </div>
+                <span class="counter" id="declineInputStats">0 строк : 0 слов</span>
             </div>
 
             <div class="decline-suggest-panel" id="suggestBubble" hidden>
@@ -180,6 +181,7 @@
                 <button type="button" class="btn btn-ghost" id="selectAllResult">⧉ Выделить всё</button>
                 <button class="btn btn-ghost" id="copy">⎘ Копировать</button>
                 <button class="btn btn-ghost" id="clear">✕ Очистить</button>
+                <span class="counter" id="declineResultStats">0 строк : 0 слов</span>
             </div>
        
         <section class="faq">

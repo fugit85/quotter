@@ -1294,6 +1294,21 @@ select:focus {
   flex-basis: 100%;
 }
 
+.toolbar-decline-main .decline-actions {
+  order: 1;
+  flex-basis: auto;
+}
+
+.toolbar-decline-main .counter {
+  order: 2;
+  margin-left: auto;
+}
+
+.toolbar-decline-main .decline-options {
+  order: 3;
+  flex-basis: 100%;
+}
+
 .decline-label {
   display: flex;
   align-items: center;

@@ -225,6 +225,79 @@ var L = UI_STRINGS[DOC_LANG] || UI_STRINGS.ru;
 
 var originalForms = [];
 
+function lineWordUnit(n) {
+    var lang = DOC_LANG || 'ru';
+    if (lang === 'ru') {
+        var n100ru = n % 100;
+        var n10ru = n % 10;
+        if (n100ru >= 11 && n100ru <= 14) {
+            return 'слов';
+        }
+        if (n10ru === 1) {
+            return 'слово';
+        }
+        if (n10ru >= 2 && n10ru <= 4) {
+            return 'слова';
+        }
+        return 'слов';
+    }
+    if (lang === 'uk') {
+        var n100uk = n % 100;
+        var n10uk = n % 10;
+        if (n100uk >= 11 && n100uk <= 14) {
+            return 'слів';
+        }
+        if (n10uk === 1) {
+            return 'слово';
+        }
+        if (n10uk >= 2 && n10uk <= 4) {
+            return 'слова';
+        }
+        return 'слів';
+    }
+    if (lang === 'pl') {
+        if (n === 1) {
+            return 'słowo';
+        }
+        var n100pl = n % 100;
+        var n10pl = n % 10;
+        if (n100pl >= 12 && n100pl <= 14) {
+            return 'słów';
+        }
+        if (n10pl >= 2 && n10pl <= 4) {
+            return 'słowa';
+        }
+        return 'słów';
+    }
+    if (lang === 'be') {
+        return 'слоў';
+    }
+    if (lang === 'kk') {
+        return 'сөз';
+    }
+    return n === 1 ? 'word' : 'words';
+}
+
+function countLinesAndWords(text) {
+    var value = text == null ? '' : String(text);
+    var lines = value.split(/\r?\n/).map(function (line) {
+        return line.trim();
+    }).filter(Boolean);
+    var words = 0;
+    lines.forEach(function (line) {
+        words += line.split(/\s+/).filter(Boolean).length;
+    });
+    return {
+        lines: lines.length,
+        words: words
+    };
+}
+
+function formatLineWordCounter(text) {
+    var stats = countLinesAndWords(text);
+    return L.lineLabel(stats.lines) + ' : ' + stats.words + ' ' + lineWordUnit(stats.words);
+}
+
 function setTextareaValue(el, value) {
     if (el && String(el.tagName).toUpperCase() === 'TEXTAREA') {
         el.value = value == null ? '' : value;
@@ -731,6 +804,9 @@ function wireClear() {
     buttonClear.addEventListener('click', function () {
         inputElement.value = '';
         setTextareaValue(resultElement, '');
+        if (typeof window !== 'undefined' && typeof window.updateDeclineCounters === 'function') {
+            window.updateDeclineCounters();
+        }
         if (document.getElementById('addTranslit')) {
             originalForms = [];
         }
@@ -1078,6 +1154,30 @@ function applyTransforms() {
     var wantTranslit = declineTransformOptionChecked('addTranslit');
     var wantLayout = declineTransformOptionChecked('addLayout');
     setTextareaValue(resultEl, buildDeclineOutput(originalForms, wantTranslit, wantLayout));
+    if (typeof window !== 'undefined' && typeof window.updateDeclineCounters === 'function') {
+        window.updateDeclineCounters();
+    }
+}
+
+function initDeclineCounters() {
+    var inputEl = document.getElementById('input');
+    var resultEl = document.getElementById('result');
+    var inputStatsEl = document.getElementById('declineInputStats');
+    var resultStatsEl = document.getElementById('declineResultStats');
+    var inflectBtn = document.getElementById('button-inflect');
+    if (!(inputEl && resultEl && inputStatsEl && resultStatsEl && inflectBtn)) {
+        return;
+    }
+
+    function update() {
+        inputStatsEl.textContent = formatLineWordCounter(inputEl.value);
+        resultStatsEl.textContent = formatLineWordCounter(resultEl.value);
+    }
+
+    inputEl.addEventListener('input', update);
+    resultEl.addEventListener('input', update);
+    window.updateDeclineCounters = update;
+    update();
 }
 
 document.addEventListener('change', function (e) {
@@ -1195,6 +1295,9 @@ function wireInflect() {
         if (!text) {
             originalForms = [];
             setTextareaValue(resultEl, L.declineEmpty);
+            if (typeof window !== 'undefined' && typeof window.updateDeclineCounters === 'function') {
+                window.updateDeclineCounters();
+            }
             return;
         }
 
@@ -1237,6 +1340,9 @@ function wireInflect() {
                         : res.status === 413 ? L.tooLong
                         : L.serverError(res.status);
                     setTextareaValue(resultEl, msg);
+                    if (typeof window !== 'undefined' && typeof window.updateDeclineCounters === 'function') {
+                        window.updateDeclineCounters();
+                    }
                     return Promise.reject(new Error('http'));
                 }
                 return res.json();
@@ -1249,6 +1355,9 @@ function wireInflect() {
                 });
                 if (!originalForms.length) {
                     setTextareaValue(resultEl, '');
+                    if (typeof window !== 'undefined' && typeof window.updateDeclineCounters === 'function') {
+                        window.updateDeclineCounters();
+                    }
                     return;
                 }
                 applyTransforms();
@@ -1260,6 +1369,9 @@ function wireInflect() {
                 originalForms = [];
                 console.error('Decline API error:', err);
                 setTextareaValue(resultEl, L.connectionError);
+                if (typeof window !== 'undefined' && typeof window.updateDeclineCounters === 'function') {
+                    window.updateDeclineCounters();
+                }
             })
             .finally(function () {
                 setDeclineInflectBusy(button, false);
@@ -1267,6 +1379,7 @@ function wireInflect() {
     });
 }
 wireInflect();
+initDeclineCounters();
 
 initDeclineCheckboxes();
 
